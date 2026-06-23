@@ -13,6 +13,7 @@
 
     :root {
       --negro: #0A0A0A;
+      --bg-alt: #0C1410;
       --verde-selva: #1E3A0F;
       --verde-neon: #7CB518;
       --crema: #F2EDD7;
@@ -29,6 +30,37 @@
       font-family: 'Crimson Pro', Georgia, serif;
       overflow-x: hidden;
     }
+    body::after {
+      content: '';
+      position: fixed; inset: 0; pointer-events: none; z-index: 10000;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      opacity: 0.035;
+    }
+
+    /* ── MARQUEE STRIP ───────────────────────────────── */
+    .marquee-strip {
+      overflow: hidden; padding: 0.7rem 0;
+      background: var(--verde-selva);
+      border-top: 1px solid rgba(124,181,24,0.18);
+      border-bottom: 1px solid rgba(124,181,24,0.18);
+    }
+    .marquee-track {
+      display: inline-flex; align-items: center; gap: 2.2rem;
+      white-space: nowrap;
+      animation: marqueeScroll 32s linear infinite;
+    }
+    .marquee-strip span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.78rem; letter-spacing: 0.28em;
+      color: rgba(242,237,215,0.6);
+    }
+    .marquee-strip .sep { color: var(--verde-neon); font-size: 0.45rem; opacity: 0.9; }
+    @keyframes marqueeScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
 
     /* ── WHATSAPP FLOTANTE ───────────────────────────── */
     .wa-float {
@@ -289,7 +321,7 @@
     .tag:hover { background: rgba(200,136,42,0.1); }
 
     /* ── SERVICIOS ───────────────────────────────────── */
-    #servicios { padding: 6rem 5vw; background: var(--gris-oscuro); }
+    #servicios { padding: 6rem 5vw; background: var(--bg-alt); }
 
     .section-header { display: flex; align-items: baseline; gap: 1.2rem; margin-bottom: 3.5rem; }
     .section-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--oro); opacity: 0.7; }
@@ -378,7 +410,7 @@
     /* ── RESERVA + MAPA ──────────────────────────────── */
     #reserva {
       padding: 6rem 5vw;
-      background: var(--gris-oscuro);
+      background: var(--bg-alt);
       display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
     }
 
@@ -1116,7 +1148,7 @@
     /* ══ SOBRE EL BARBERO ═══════════════════════ */
     #barbero {
       padding: 6rem 5vw;
-      background: var(--gris-oscuro);
+      background: var(--bg-alt);
       position: relative; overflow: hidden;
     }
     #barbero::after {
@@ -1487,6 +1519,13 @@
   </div>
 </section>
 
+<!-- MARQUEE 1 -->
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-track">
+    <span>FADE</span><span class="sep">✦</span><span>DEGRADADO</span><span class="sep">✦</span><span>DISEÑO</span><span class="sep">✦</span><span>BARBA</span><span class="sep">✦</span><span>OROPESA</span><span class="sep">✦</span><span>WELCOME TO THE JUNGLE</span><span class="sep">✦</span><span>TIJERAS</span><span class="sep">✦</span><span>ESTILO</span><span class="sep">✦</span><span>UNDERCUT</span><span class="sep">✦</span><span>POMPADOUR</span><span class="sep">✦</span><span>FADE</span><span class="sep">✦</span><span>DEGRADADO</span><span class="sep">✦</span><span>DISEÑO</span><span class="sep">✦</span><span>BARBA</span><span class="sep">✦</span><span>OROPESA</span><span class="sep">✦</span><span>WELCOME TO THE JUNGLE</span><span class="sep">✦</span><span>TIJERAS</span><span class="sep">✦</span><span>ESTILO</span><span class="sep">✦</span><span>UNDERCUT</span><span class="sep">✦</span><span>POMPADOUR</span><span class="sep">✦</span>
+  </div>
+</div>
+
 <!-- SERVICIOS -->
 <section id="servicios">
   <div class="section-header reveal">
@@ -1704,6 +1743,13 @@
 </section>
 
 
+
+<!-- MARQUEE 2 -->
+<div class="marquee-strip" aria-hidden="true">
+  <div class="marquee-track" style="animation-direction: reverse;">
+    <span>BARBER SHOP</span><span class="sep">✦</span><span>WTJ</span><span class="sep">✦</span><span>ARTESANÍA</span><span class="sep">✦</span><span>PRECISIÓN</span><span class="sep">✦</span><span>CROP TOP</span><span class="sep">✦</span><span>RIZO NATURAL</span><span class="sep">✦</span><span>TINTE</span><span class="sep">✦</span><span>TEXTURA</span><span class="sep">✦</span><span>BARBER SHOP</span><span class="sep">✦</span><span>WTJ</span><span class="sep">✦</span><span>ARTESANÍA</span><span class="sep">✦</span><span>PRECISIÓN</span><span class="sep">✦</span><span>CROP TOP</span><span class="sep">✦</span><span>RIZO NATURAL</span><span class="sep">✦</span><span>TINTE</span><span class="sep">✦</span><span>TEXTURA</span><span class="sep">✦</span>
+  </div>
+</div>
 
 <!-- SOBRE EL BARBERO -->
 <section id="barbero">
