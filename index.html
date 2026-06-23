@@ -2232,28 +2232,92 @@
   /* ── Hojas flotantes jungla ─────────── */
   (function() {
     const container = document.getElementById('leavesContainer');
-    const fills = [
-      'rgba(124,181,24,.55)','rgba(30,95,15,.65)','rgba(80,148,10,.50)',
-      'rgba(100,162,20,.52)','rgba(55,108,12,.60)'
-    ];
     const anims = ['jFall0','jFall1','jFall2','jFall3'];
-    function svg(f) {
-      const s = Math.floor(Math.random()*3);
-      return [
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 72"><path d="M14,1 C22,12 25,34 21,53 C17,67 14,70 14,70 C14,70 11,67 7,53 C3,34 6,12 14,1Z" fill="${f}"/><path d="M14,4 L14,67" stroke="rgba(0,25,0,.35)" stroke-width=".9" fill="none"/></svg>`,
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 36"><path d="M26,3 C44,7 50,19 44,29 C38,37 14,37 8,29 C2,19 8,7 26,3Z" fill="${f}"/><path d="M9,19 L44,18" stroke="rgba(0,25,0,.28)" stroke-width=".8" fill="none"/></svg>`,
-        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 80"><path d="M18,2 C31,15 33,40 27,60 C22,74 18,78 18,78 C18,78 9,69 5,52 C0,31 7,13 18,2Z" fill="${f}"/><path d="M18,5 L16,74" stroke="rgba(0,25,0,.3)" stroke-width=".9" fill="none"/></svg>`,
-      ][s];
+
+    /* Paleta: verdes muy oscuros como jungla real */
+    const fills = [
+      'rgba(8,38,8,.88)','rgba(12,50,10,.84)','rgba(6,28,6,.92)',
+      'rgba(16,58,14,.80)','rgba(10,42,9,.86)'
+    ];
+
+    /* ── Hoja de palmera (fronda) ── */
+    function palmFrond(f) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 280">
+        <path d="M52,0 C50,40 48,80 46,120 C44,160 43,200 42,250" stroke="${f}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <g fill="${f}">
+          <path d="M52,16 C48,13 41,13 36,18 C41,15 48,15 52,16Z"/>
+          <path d="M52,16 C56,13 63,13 68,18 C63,15 56,15 52,16Z"/>
+          <path d="M51,36 C44,30 33,31 23,38 C33,33 44,33 51,36Z"/>
+          <path d="M51,36 C58,30 69,31 79,38 C69,33 58,33 51,36Z"/>
+          <path d="M50,56 C40,49 26,50 14,59 C26,52 40,52 50,56Z"/>
+          <path d="M50,56 C60,49 74,50 86,59 C74,52 60,52 50,56Z"/>
+          <path d="M49,76 C37,68 21,70 9,81 C21,72 37,72 49,76Z"/>
+          <path d="M49,76 C61,68 77,70 89,81 C77,72 61,72 49,76Z"/>
+          <path d="M48,96 C37,88 23,90 11,101 C23,92 37,92 48,96Z"/>
+          <path d="M48,96 C59,88 73,90 85,101 C73,92 59,92 48,96Z"/>
+          <path d="M47,116 C37,108 24,110 13,121 C24,112 37,112 47,116Z"/>
+          <path d="M47,116 C57,108 70,110 81,121 C70,112 57,112 47,116Z"/>
+          <path d="M46,136 C37,128 25,130 15,141 C25,132 37,132 46,136Z"/>
+          <path d="M46,136 C55,128 67,130 77,141 C67,132 55,132 46,136Z"/>
+          <path d="M45,156 C37,148 27,150 18,161 C27,152 37,152 45,156Z"/>
+          <path d="M45,156 C53,148 63,150 72,161 C63,152 53,152 45,156Z"/>
+          <path d="M44,176 C37,168 28,170 21,181 C28,172 37,172 44,176Z"/>
+          <path d="M44,176 C51,168 60,170 67,181 C60,172 51,172 44,176Z"/>
+          <path d="M43,196 C38,188 30,190 24,201 C30,192 38,192 43,196Z"/>
+          <path d="M43,196 C48,188 56,190 62,201 C56,192 48,192 43,196Z"/>
+          <path d="M43,216 C39,208 32,210 27,221 C32,212 39,212 43,216Z"/>
+          <path d="M43,216 C47,208 54,210 59,221 C54,212 47,212 43,216Z"/>
+        </g>
+      </svg>`;
     }
-    for (let i = 0; i < 26; i++) {
-      const el = document.createElement('div');
-      el.className = 'leaf';
-      const sz = (Math.random()*3.5+1.8).toFixed(2);
+
+    /* ── Hoja tropical ancha con venas ── */
+    function tropicalLeaf(f) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 65 130">
+        <path d="M32,2 C48,14 56,44 53,76 C50,102 37,122 32,126 C27,122 14,102 11,76 C8,44 16,14 32,2Z" fill="${f}"/>
+        <path d="M32,5 L32,122" stroke="rgba(0,15,0,.45)" stroke-width="1.4" fill="none"/>
+        <path d="M32,28 C23,35 15,40 10,45" stroke="rgba(0,15,0,.3)" stroke-width="0.9" fill="none"/>
+        <path d="M32,50 C21,58 13,65 8,72" stroke="rgba(0,15,0,.3)" stroke-width="0.9" fill="none"/>
+        <path d="M32,72 C22,80 14,87 10,94" stroke="rgba(0,15,0,.3)" stroke-width="0.9" fill="none"/>
+        <path d="M32,90 C23,98 16,105 12,112" stroke="rgba(0,15,0,.25)" stroke-width="0.8" fill="none"/>
+        <path d="M32,28 C41,35 49,40 54,45" stroke="rgba(0,15,0,.3)" stroke-width="0.9" fill="none"/>
+        <path d="M32,50 C43,58 51,65 56,72" stroke="rgba(0,15,0,.3)" stroke-width="0.9" fill="none"/>
+        <path d="M32,72 C42,80 50,87 54,94" stroke="rgba(0,15,0,.3)" stroke-width="0.9" fill="none"/>
+        <path d="M32,90 C41,98 48,105 52,112" stroke="rgba(0,15,0,.25)" stroke-width="0.8" fill="none"/>
+      </svg>`;
+    }
+
+    /* ── Hoja ancha horizontal (tipo monstera simplificada) ── */
+    function wideLeaf(f) {
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 100">
+        <path d="M80,4 C108,10 138,26 148,52 C155,72 135,88 80,90 C25,88 5,72 12,52 C22,26 52,10 80,4Z" fill="${f}"/>
+        <path d="M12,52 L148,52" stroke="rgba(0,15,0,.4)" stroke-width="1.8" fill="none"/>
+        <path d="M80,6 C70,22 64,36 62,52" stroke="rgba(0,15,0,.3)" stroke-width="1.2" fill="none"/>
+        <path d="M80,6 C90,22 96,36 98,52" stroke="rgba(0,15,0,.3)" stroke-width="1.2" fill="none"/>
+        <path d="M80,6 C60,18 40,32 20,50" stroke="rgba(0,15,0,.22)" stroke-width="1" fill="none"/>
+        <path d="M80,6 C100,18 120,32 140,50" stroke="rgba(0,15,0,.22)" stroke-width="1" fill="none"/>
+        <path d="M80,6 C55,14 30,26 14,44" stroke="rgba(0,15,0,.15)" stroke-width="0.8" fill="none"/>
+        <path d="M80,6 C105,14 130,26 146,44" stroke="rgba(0,15,0,.15)" stroke-width="0.8" fill="none"/>
+      </svg>`;
+    }
+
+    const types = [
+      { fn: palmFrond,    ar: 2.8, minW: 2.5, maxW: 5.5 },
+      { fn: tropicalLeaf, ar: 2.0, minW: 2.0, maxW: 4.5 },
+      { fn: wideLeaf,     ar: 0.62,minW: 3.5, maxW: 7.5 },
+    ];
+
+    for (let i = 0; i < 22; i++) {
+      const t    = types[i % 3];
       const fill = fills[i % fills.length];
-      const anim = anims[Math.floor(Math.random()*4)];
-      const dur  = (Math.random()*16+11).toFixed(1);
-      el.innerHTML = svg(fill);
-      el.style.cssText = `left:${(Math.random()*88+4).toFixed(1)}%;width:${sz}rem;height:${(+sz*2.2).toFixed(2)}rem;animation-name:${anim};animation-duration:${dur}s;animation-delay:-${(Math.random()*+dur).toFixed(1)}s;animation-timing-function:linear;animation-iteration-count:infinite;`;
+      const anim = anims[Math.floor(Math.random() * 4)];
+      const dur  = (Math.random() * 18 + 12).toFixed(1);
+      const w    = (Math.random() * (t.maxW - t.minW) + t.minW).toFixed(1);
+      const h    = (w * t.ar).toFixed(1);
+      const el   = document.createElement('div');
+      el.className = 'leaf';
+      el.innerHTML = t.fn(fill);
+      el.style.cssText = `left:${(Math.random()*86+4).toFixed(1)}%;width:${w}rem;height:${h}rem;filter:drop-shadow(0 3px 12px rgba(0,20,0,.6));animation-name:${anim};animation-duration:${dur}s;animation-delay:-${(Math.random()*+dur).toFixed(1)}s;animation-timing-function:linear;animation-iteration-count:infinite;`;
       container.appendChild(el);
     }
   })();
