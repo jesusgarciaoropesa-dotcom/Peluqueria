@@ -1378,21 +1378,15 @@
       border-top-color: rgba(124,181,24,0.35) !important;
     }
     .serv-icon {
-      background: rgba(124,181,24,0.1);
-      border-radius: 50%;
-      width: 3rem; height: 3rem;
+      width: 5rem; height: 5rem;
       display: inline-flex !important;
       align-items: center; justify-content: center;
       margin-bottom: 1.2rem !important;
-      color: var(--verde-neon);
-      transition: background 0.3s, transform 0.3s;
-      border: 1px solid rgba(124,181,24,0.15);
+      transition: transform 0.3s;
     }
-    .serv-icon svg { width: 1.7rem; height: 1.7rem; }
+    .serv-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .servicio-card:hover .serv-icon {
-      background: rgba(124,181,24,0.2);
       transform: scale(1.1) rotate(-8deg);
-      border-color: rgba(124,181,24,0.35);
     }
 
     /* ── Precios: atmósfera + watermark visible ──── */
@@ -1665,37 +1659,37 @@
   </div>
   <div class="servicios-grid">
     <div class="servicio-card reveal">
-      <span class="serv-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
+      <span class="serv-icon"><img src="assets/icons/corte-clasico.png" alt="Corte Clásico"></span>
       <div class="serv-name">Corte Clásico</div>
       <div class="serv-desc">Precisión y detalle para un acabado perfecto adaptado a tu estilo y personalidad.</div>
       <div class="serv-price">Desde <span>12€</span></div>
     </div>
     <div class="servicio-card reveal">
-      <span class="serv-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round"><path fill="currentColor" stroke="none" d="M12 21C8.1 21 5.5 18.4 5.5 15V11C5.5 7.5 8.4 5 12 5S18.5 7.5 18.5 11V15C18.5 18.4 15.9 21 12 21Z"/><path fill="currentColor" stroke="none" d="M5.5 11C5.5 7.5 8.4 4.5 12 4.5S18.5 7.5 18.5 11C16.5 8.5 14.5 8 12 8C9.5 8 7.5 8.5 5.5 11Z"/><path fill="none" stroke="currentColor" stroke-width="1.3" d="M2 11.5L5.5 11.5M2.5 13.5L5.5 13.5M3.5 15.5L5.5 15.5M22 11.5L18.5 11.5M21.5 13.5L18.5 13.5M20.5 15.5L18.5 15.5"/></svg></span>
+      <span class="serv-icon"><img src="assets/icons/degradado.png" alt="Degradado / Fade"></span>
       <div class="serv-name">Degradado / Fade</div>
       <div class="serv-desc">Desde un fade sutil hasta un corte bien marcado. Precisión milimétrica en cada línea.</div>
       <div class="serv-price">Desde <span>15€</span></div>
     </div>
     <div class="servicio-card reveal">
-      <span class="serv-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-linecap="round"><path fill="currentColor" stroke="none" d="M10 21C7 21 4.5 18.5 4.5 15V11C4.5 7.5 7 5 10 5S15.5 7.5 15.5 11V15C15.5 18.5 13 21 10 21Z"/><path fill="currentColor" stroke="none" d="M4.5 11C4.5 7.5 7 4.5 10 4.5S15.5 7.5 15.5 11C13.5 8.5 12 8 10 8S6.5 8.5 4.5 11Z"/><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" d="M20 6.5L17 13H20L17 19.5"/></svg></span>
+      <span class="serv-icon"><img src="assets/icons/disenos.png" alt="Diseños"></span>
       <div class="serv-name">Diseños</div>
       <div class="serv-desc">Líneas, patrones y diseños personalizados. Tu corte como nadie más lo tiene.</div>
       <div class="serv-price">Desde <span>+5€</span></div>
     </div>
     <div class="servicio-card reveal">
-      <span class="serv-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8L10.5 3H13.5L15 8"/><path d="M8 8H16V19C16 20.7 14.2 22 12 22S8 20.7 8 19V8Z"/><line x1="9" y1="14" x2="15" y2="14"/><path d="M20 11C20 11 21 9 21 12C21 13.7 20.5 14.5 20 14.5S19 13.7 19 12C19 9 20 11 20 11Z"/><path d="M20 16C20 16 21 14 21 17C21 18.7 20.5 19.5 20 19.5S19 18.7 19 17C19 14 20 16 20 16Z"/></svg></span>
+      <span class="serv-icon"><img src="assets/icons/tintes.png" alt="Tintes"></span>
       <div class="serv-name">Tintes</div>
       <div class="serv-desc">Decoloración, tintes completos y mechas. Técnica de coloración con resultado profesional.</div>
       <div class="serv-price">Desde <span>25€</span></div>
     </div>
     <div class="servicio-card reveal">
-      <span class="serv-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5.5"/><path d="M6.5 12C5.5 14.5 5.5 17 6.5 19C7.5 21 9.5 22.5 12 22.5S16.5 21 17.5 19C18.5 17 18.5 14.5 17.5 12"/><path d="M9.5 13.5C10.5 12.5 11.3 13 12 13S13.5 12.5 14.5 13.5"/></svg></span>
+      <span class="serv-icon"><img src="assets/icons/arreglo-barba.png" alt="Arreglo de Barba"></span>
       <div class="serv-name">Arreglo de Barba</div>
       <div class="serv-desc">Perfilado y recorte para mantener una imagen limpia, elegante y cuidada.</div>
       <div class="serv-price">Desde <span>8€</span></div>
     </div>
     <div class="servicio-card reveal">
-      <span class="serv-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 9.5C5.5 6 8.4 3.5 12 3.5S18.5 6 18.5 9.5" stroke-width="2.8"/><path d="M5.5 9.5V12.5C5.5 15.5 8.4 17.5 12 17.5S18.5 15.5 18.5 12.5V9.5" stroke-width="1.5"/><path d="M5.5 12.5C4.5 14.5 4.5 17 5.5 19C7 21.5 9 22.5 12 22.5S17 21.5 18.5 19C19.5 17 19.5 14.5 18.5 12.5" stroke-width="1.5"/><path d="M9 17C10 15.8 11 16.3 12 16.3S14 15.8 15 17" stroke-width="1.5"/></svg></span>
+      <span class="serv-icon"><img src="assets/icons/corte-barba.png" alt="Corte + Barba"></span>
       <div class="serv-name">Corte + Barba</div>
       <div class="serv-desc">El combo completo. Corte a medida y arreglo de barba en una sola sesión.</div>
       <div class="serv-price">Desde <span>20€</span></div>
