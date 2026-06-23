@@ -1342,6 +1342,112 @@
       .leaf, .wa-float, .step-dot.active, .conf-check { animation: none !important; }
     }
 
+    /* ═══════════════════════════════════════════════
+       MEJORAS VISUALES SECCIONES
+    ═══════════════════════════════════════════════ */
+
+    /* ── Servicios: atmósfera + card upgrade ─────── */
+    #servicios {
+      background:
+        radial-gradient(ellipse at 90% 10%, rgba(124,181,24,0.08) 0%, transparent 50%),
+        var(--bg-alt) !important;
+    }
+    .servicios-grid { counter-reset: serv-counter; }
+    .servicio-card {
+      counter-increment: serv-counter;
+      border-top: 2px solid rgba(124,181,24,0.1) !important;
+      transition: background 0.3s, border-top-color 0.3s, transform 0.3s, box-shadow 0.3s !important;
+    }
+    .servicio-card > * { position: relative; z-index: 1; }
+    .servicio-card::before {
+      content: counter(serv-counter, decimal-leading-zero);
+      position: absolute; bottom: 1rem; right: 1.2rem;
+      font-family: 'Bebas Neue', sans-serif; font-size: 4rem; line-height: 1;
+      color: rgba(124,181,24,0.1); pointer-events: none; letter-spacing: 0.05em;
+      z-index: 0;
+    }
+    .servicio-card::after {
+      top: -2px !important; bottom: auto !important;
+      height: 3px !important;
+      background: var(--verde-neon) !important;
+    }
+    .servicio-card:hover {
+      background: #0e1a0e !important;
+      transform: translateY(-5px);
+      box-shadow: 0 16px 48px rgba(124,181,24,0.14), 0 2px 8px rgba(0,0,0,0.4);
+      border-top-color: rgba(124,181,24,0.35) !important;
+    }
+    .serv-icon {
+      background: rgba(124,181,24,0.1);
+      border-radius: 50%;
+      width: 3rem; height: 3rem;
+      display: inline-flex !important;
+      align-items: center; justify-content: center;
+      margin-bottom: 1.2rem !important;
+      font-size: 1.5rem !important;
+      transition: background 0.3s, transform 0.3s;
+      border: 1px solid rgba(124,181,24,0.15);
+    }
+    .servicio-card:hover .serv-icon {
+      background: rgba(124,181,24,0.2);
+      transform: scale(1.1) rotate(-8deg);
+      border-color: rgba(124,181,24,0.35);
+    }
+
+    /* ── Precios: atmósfera + watermark visible ──── */
+    #precios {
+      background:
+        radial-gradient(ellipse at 8% 75%, rgba(124,181,24,0.06) 0%, transparent 45%),
+        var(--negro) !important;
+    }
+    #precios::before { color: rgba(124,181,24,0.07) !important; }
+    .precio-categoria {
+      border-top: 2px solid rgba(124,181,24,0.12) !important;
+      transition: border-top-color 0.3s, background 0.3s;
+    }
+    .precio-categoria:hover { border-top-color: rgba(124,181,24,0.4) !important; background: rgba(124,181,24,0.03); }
+    .precio-cat-header {
+      border-bottom: 1px solid rgba(124,181,24,0.12) !important;
+    }
+    .precio-cat-name { color: var(--verde-neon) !important; letter-spacing: 0.15em !important; }
+
+    /* ── Barbero: watermark visible + bio quote ──── */
+    #barbero::after { color: rgba(124,181,24,0.08) !important; }
+    .barbero-bio {
+      padding-left: 1.4rem;
+      border-left: 2px solid rgba(124,181,24,0.3);
+    }
+    #barbero {
+      background:
+        radial-gradient(ellipse at 20% 60%, rgba(124,181,24,0.05) 0%, transparent 50%),
+        var(--bg-alt) !important;
+    }
+
+    /* ── Intro card atmosphere ───────────────────── */
+    .intro-card {
+      background: linear-gradient(145deg, rgba(124,181,24,0.05) 0%, rgba(17,17,17,0.9) 100%) !important;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .intro-card:hover {
+      border-color: rgba(124,181,24,0.35) !important;
+      box-shadow: 0 0 30px rgba(124,181,24,0.07);
+    }
+
+    /* ── Galería: atmosfera ──────────────────────── */
+    #galeria {
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(124,181,24,0.04) 0%, transparent 60%),
+        var(--negro);
+    }
+
+    /* ── Horario: atmósfera ──────────────────────── */
+    #horario {
+      background:
+        radial-gradient(ellipse at 80% 50%, rgba(124,181,24,0.05) 0%, transparent 45%),
+        var(--negro);
+    }
+    .dia-row.today { background: rgba(124,181,24,0.07); border-radius: 2px; padding-left: 0.5rem; padding-right: 0.5rem; }
+
     /* ── RESPONSIVE ──────────────────────────────────── */
     @media (max-width: 768px) {
       nav { padding: 0.9rem 1.3rem; }
