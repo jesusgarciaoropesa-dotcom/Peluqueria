@@ -1,0 +1,2414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WTJ Barber Shop — Welcome to the Jungle · Oropesa</title>
+  <meta name="description" content="Barbería WTJ en C/ Calzada Real 14, Oropesa. Degradados, diseños, tintes y barba. Reserva por WhatsApp o Instagram." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --negro: #0A0A0A;
+      --verde-selva: #1E3A0F;
+      --verde-neon: #7CB518;
+      --crema: #F2EDD7;
+      --oro: #C8882A;
+      --gris-oscuro: #111;
+      --gris-medio: #1A1A1A;
+      --whatsapp: #25D366;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--negro);
+      color: var(--crema);
+      font-family: 'Crimson Pro', Georgia, serif;
+      overflow-x: hidden;
+    }
+
+    /* ── WHATSAPP FLOTANTE ───────────────────────────── */
+    .wa-float {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 999;
+      width: 3.5rem;
+      height: 3.5rem;
+      background: var(--whatsapp);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: waPulse 3s ease-in-out infinite;
+    }
+    .wa-float:hover { transform: scale(1.1); box-shadow: 0 6px 28px rgba(37,211,102,0.6); }
+    @keyframes waPulse {
+      0%,100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4); }
+      50% { box-shadow: 0 4px 32px rgba(37,211,102,0.7); }
+    }
+    .wa-tooltip {
+      position: absolute;
+      right: 4.2rem;
+      background: var(--gris-oscuro);
+      color: var(--crema);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      padding: 0.5rem 0.9rem;
+      border: 1px solid rgba(37,211,102,0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .wa-float:hover .wa-tooltip { opacity: 1; }
+
+    /* ── NAV ─────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(124,181,24,0.12);
+      transition: background 0.3s;
+    }
+
+    /* WTJ Logo SVG inline */
+    .nav-logo-wrap { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; }
+    .wtj-badge {
+      width: 2.6rem; height: 2.6rem;
+      background: var(--negro);
+      border: 2px solid var(--verde-neon);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .wtj-badge span {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      color: var(--verde-neon);
+      line-height: 1;
+    }
+    .nav-logo-img {
+      width: 2.8rem; height: 2.8rem;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      display: block;
+    }
+    .nav-logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.18em;
+      color: var(--crema);
+      line-height: 1.1;
+    }
+    .nav-logo-text small {
+      display: block;
+      font-size: 0.55rem;
+      letter-spacing: 0.22em;
+      color: var(--verde-neon);
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+    }
+
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--crema);
+      text-decoration: none;
+      opacity: 0.6;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--oro); }
+
+    .nav-cta {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: var(--whatsapp);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.3rem;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 700;
+      transition: background 0.2s, transform 0.15s;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .nav-cta:hover { background: #1fb356; transform: translateY(-1px); }
+
+    /* ── HERO ────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+      padding: 8rem 5vw 5rem;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 45%, rgba(30,58,15,0.6) 0%, transparent 60%),
+        radial-gradient(ellipse at 5% 85%, rgba(124,181,24,0.07) 0%, transparent 45%),
+        var(--negro);
+      z-index: 0;
+    }
+
+    .leaves-container { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .leaf {
+      position: absolute; opacity: 0.1; font-size: 5rem;
+      animation: floatLeaf linear infinite; filter: blur(0.5px);
+    }
+    @keyframes floatLeaf {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10%  { opacity: 0.1; }
+      90%  { opacity: 0.1; }
+      100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+    }
+
+    .hero-content { position: relative; z-index: 2; max-width: 950px; }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--verde-neon); margin-bottom: 1.2rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .hero-eyebrow::before { content: ''; display: block; width: 3rem; height: 1px; background: var(--verde-neon); }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4.5rem, 13vw, 12rem);
+      line-height: 0.88; letter-spacing: 0.02em; color: var(--crema);
+    }
+    .hero-title .accent {
+      color: var(--verde-neon);
+      position: relative;
+      display: inline-block;
+    }
+    .hero-title .accent::after {
+      content: '';
+      position: absolute; left: -1.5%; right: -1.5%; bottom: 0.1em;
+      height: 0.07em;
+      background: var(--oro);
+      transform: skewX(-14deg);
+      opacity: 0.85;
+    }
+
+    .hero-sub {
+      font-family: 'Crimson Pro', serif;
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      font-style: italic; color: rgba(242,237,215,0.6);
+      max-width: 460px; margin: 1.6rem 0 2.5rem; line-height: 1.55;
+    }
+
+    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      background: var(--verde-neon); color: var(--negro);
+      padding: 0.95rem 2rem; text-decoration: none;
+      transition: background 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary:hover { background: #9ADB20; transform: translateY(-2px); }
+
+    .btn-wa {
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      background: var(--whatsapp); color: #fff;
+      padding: 0.95rem 2rem; text-decoration: none;
+      transition: background 0.2s, transform 0.15s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-wa:hover { background: #1fb356; transform: translateY(-2px); }
+
+    .btn-secondary {
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--crema); border: 1px solid rgba(242,237,215,0.28);
+      padding: 0.95rem 2rem; text-decoration: none;
+      transition: border-color 0.2s, color 0.2s; display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-secondary:hover { border-color: var(--oro); color: var(--oro); }
+
+    /* Hero stats + location bar */
+    .hero-bottom {
+      margin-top: 3.5rem;
+      display: flex; gap: 3rem; flex-wrap: wrap; align-items: center;
+    }
+    .stat { }
+    .stat-number { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; color: var(--verde-neon); line-height: 1; }
+    .stat-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,237,215,0.45); margin-top: 0.25rem; }
+
+    .hero-location {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 0.6rem;
+      font-family: 'Space Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.08em; color: rgba(242,237,215,0.45);
+      text-decoration: none;
+    }
+    .hero-location:hover { color: var(--oro); }
+    .hero-location span { color: var(--oro); font-size: 1rem; }
+
+    /* ── SECCIÓN INTRO ───────────────────────────────── */
+    #intro {
+      padding: 6rem 5vw;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    .intro-text h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+      line-height: 1; letter-spacing: 0.04em; margin-bottom: 1.3rem;
+    }
+    .intro-text h2 em { font-style: normal; color: var(--verde-neon); }
+    .intro-text p { font-size: 1.1rem; line-height: 1.75; color: rgba(242,237,215,0.7); margin-bottom: 0.9rem; }
+    .intro-text p strong { color: var(--crema); }
+
+    /* Specialties pills */
+    .intro-card { background: var(--gris-oscuro); border: 1px solid rgba(124,181,24,0.15); padding: 2rem; }
+    .intro-card-title {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--oro); margin-bottom: 1.3rem;
+    }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .tag {
+      font-family: 'Space Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid rgba(200,136,42,0.35); color: var(--oro);
+      padding: 0.35rem 0.8rem; transition: background 0.2s, color 0.2s;
+    }
+    .tag:hover { background: rgba(200,136,42,0.1); }
+
+    /* ── SERVICIOS ───────────────────────────────────── */
+    #servicios { padding: 6rem 5vw; background: var(--gris-oscuro); }
+
+    .section-header { display: flex; align-items: baseline; gap: 1.2rem; margin-bottom: 3.5rem; }
+    .section-label { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--oro); opacity: 0.7; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.2rem, 4.5vw, 3.8rem); letter-spacing: 0.04em; color: var(--crema); line-height: 1; }
+
+    .servicios-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 1.5px; background: rgba(124,181,24,0.08); }
+    .servicio-card {
+      background: var(--gris-oscuro); padding: 2.2rem; position: relative; overflow: hidden;
+      transition: background 0.25s; cursor: default;
+    }
+    .servicio-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: var(--oro); transition: width 0.35s ease; }
+    .servicio-card:hover { background: #161616; }
+    .servicio-card:hover::after { width: 100%; }
+    .serv-icon { font-size: 1.8rem; margin-bottom: 1rem; display: block; }
+    .serv-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.08em; color: var(--crema); margin-bottom: 0.5rem; }
+    .serv-desc { font-size: 0.92rem; line-height: 1.6; color: rgba(242,237,215,0.55); margin-bottom: 1.3rem; }
+    .serv-price { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--oro); letter-spacing: 0.1em; }
+    .serv-price span { font-size: 1.25rem; font-weight: 700; }
+
+    /* ── GALERÍA CON FILTROS ─────────────────────────── */
+    #galeria { padding: 6rem 5vw; }
+
+    .galeria-filters {
+      display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 2.5rem; margin-top: 2rem;
+    }
+    .filter-btn {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      border: 1px solid rgba(242,237,215,0.2); color: rgba(242,237,215,0.5);
+      background: transparent; padding: 0.45rem 1rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      border-color: var(--verde-neon); color: var(--verde-neon); background: rgba(124,181,24,0.07);
+    }
+
+    .galeria-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    .galeria-item {
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; cursor: pointer;
+      transition: transform 0.3s;
+      background: #0A0A0A;
+    }
+    .galeria-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; transition: transform 0.4s ease;
+    }
+    .galeria-item:hover img { transform: scale(1.05); }
+    .galeria-item[data-featured="true"] { grid-column: span 2; aspect-ratio: 2/1; }
+    .galeria-item.hidden { display: none; }
+
+    /* Gradient placeholders styled like real barber photos */
+    .ph-fade     { background: linear-gradient(145deg, #0D1F08 0%, #1A3810 40%, #0A1205 100%); }
+    .ph-diseño   { background: linear-gradient(145deg, #1A0E00 0%, #2D1900 40%, #120B00 100%); }
+    .ph-tinte    { background: linear-gradient(145deg, #08121A 0%, #0F2030 40%, #050C12 100%); }
+    .ph-barba    { background: linear-gradient(145deg, #12080A 0%, #28121A 40%, #0A0507 100%); }
+    .ph-clasico  { background: linear-gradient(145deg, #101008 0%, #201F0A 40%, #080800 100%); }
+    .ph-rizo     { background: linear-gradient(145deg, #0A0A18 0%, #151528 40%, #050508 100%); }
+
+    /* Barber-style photo overlays with scissors pattern */
+    .galeria-item::before {
+      content: attr(data-label);
+      position: absolute; bottom: 0.7rem; left: 0.7rem;
+      font-family: 'Space Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(242,237,215,0.5); background: rgba(10,10,10,0.6);
+      padding: 0.25rem 0.5rem; z-index: 2;
+    }
+
+    .galeria-overlay {
+      position: absolute; inset: 0;
+      background: rgba(10,10,10,0.75);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem;
+      opacity: 0; transition: opacity 0.3s; z-index: 3;
+    }
+    .galeria-item:hover .galeria-overlay { opacity: 1; }
+    .galeria-overlay-text { font-family: 'Space Mono', monospace; font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--oro); }
+    .galeria-overlay-sub { font-family: 'Crimson Pro', serif; font-size: 0.85rem; font-style: italic; color: rgba(242,237,215,0.6); }
+
+    .galeria-cta { text-align: center; margin-top: 2.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+
+    /* ── RESERVA + MAPA ──────────────────────────────── */
+    #reserva {
+      padding: 6rem 5vw;
+      background: var(--gris-oscuro);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start;
+    }
+
+    .reserva-left h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      line-height: 0.95; letter-spacing: 0.03em; margin-bottom: 1.2rem;
+    }
+    .reserva-left h2 em { font-style: normal; color: var(--oro); }
+    .reserva-left p { font-size: 1.05rem; color: rgba(242,237,215,0.62); margin-bottom: 2rem; line-height: 1.65; }
+
+    .reserva-buttons { display: flex; flex-direction: column; gap: 0.9rem; }
+    .reserva-btn-wa, .reserva-btn-ig {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.1rem 1.5rem;
+      text-decoration: none; font-family: 'Space Mono', monospace;
+      font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      transition: transform 0.15s, background 0.2s;
+    }
+    .reserva-btn-wa { background: var(--whatsapp); color: #fff; }
+    .reserva-btn-wa:hover { background: #1fb356; transform: translateX(4px); }
+    .reserva-btn-ig { background: transparent; color: var(--crema); border: 1px solid rgba(242,237,215,0.2); }
+    .reserva-btn-ig:hover { border-color: var(--oro); color: var(--oro); transform: translateX(4px); }
+    .reserva-btn-icon { font-size: 1.3rem; }
+    .reserva-btn-meta { display: flex; flex-direction: column; }
+    .reserva-btn-meta small { font-size: 0.58rem; font-weight: 400; opacity: 0.6; margin-top: 0.1rem; letter-spacing: 0.08em; }
+
+    .contact-info { margin-top: 2rem; display: flex; flex-direction: column; gap: 0.9rem; }
+    .contact-row {
+      display: flex; align-items: flex-start; gap: 0.8rem;
+      padding-bottom: 0.9rem; border-bottom: 1px solid rgba(242,237,215,0.06);
+    }
+    .contact-row:last-child { border-bottom: none; }
+    .contact-icon { font-size: 1rem; margin-top: 0.1rem; flex-shrink: 0; }
+    .contact-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--oro); margin-bottom: 0.2rem; }
+    .contact-val { font-size: 0.95rem; color: var(--crema); }
+    .contact-val a { color: inherit; text-decoration: none; }
+    .contact-val a:hover { color: var(--oro); }
+
+    /* MAPA */
+    .mapa-right { }
+    .mapa-container {
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(124,181,24,0.2);
+    }
+    .mapa-container iframe {
+      width: 100%; height: 380px; border: none; filter: invert(90%) hue-rotate(160deg) saturate(0.8) brightness(0.85);
+      display: block;
+    }
+    .mapa-label {
+      background: var(--negro); padding: 1rem 1.2rem;
+      display: flex; align-items: center; gap: 0.7rem;
+      border-top: 1px solid rgba(124,181,24,0.15);
+    }
+    .mapa-label-text { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242,237,215,0.5); }
+    .mapa-label-addr { font-size: 0.9rem; color: var(--crema); font-family: 'Crimson Pro', serif; margin-top: 0.15rem; }
+    .mapa-open-btn {
+      margin-left: auto; font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--verde-neon); text-decoration: none;
+      border: 1px solid rgba(124,181,24,0.3); padding: 0.4rem 0.8rem;
+      transition: background 0.2s;
+    }
+    .mapa-open-btn:hover { background: rgba(124,181,24,0.08); }
+
+    /* ── HORARIO ─────────────────────────────────────── */
+    #horario { padding: 5rem 5vw; }
+    .horario-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+    .dia-row { display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0; border-bottom: 1px solid rgba(242,237,215,0.05); }
+    .dia-nombre { font-family: 'Space Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242,237,215,0.45); }
+    .dia-hora { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--crema); }
+    .dia-hora.cerrado { color: rgba(242,237,215,0.2); }
+    .dia-row.today .dia-nombre { color: var(--verde-neon); }
+    .dia-row.today .dia-hora { color: var(--verde-neon); font-weight: 700; }
+    .today-badge { font-family: 'Space Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; background: var(--verde-neon); color: var(--negro); padding: 0.15rem 0.4rem; margin-left: 0.5rem; }
+
+    .horario-nota {
+      margin-top: 2rem; padding: 1.2rem; background: rgba(124,181,24,0.06);
+      border-left: 3px solid var(--verde-neon);
+    }
+    .horario-nota p { font-size: 0.88rem; color: rgba(242,237,215,0.6); line-height: 1.6; }
+    .horario-nota strong { color: var(--crema); }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    footer {
+      padding: 2.5rem 5vw;
+      background: #080808;
+      border-top: 1px solid rgba(124,181,24,0.12);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem;
+    }
+    .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.15em; color: var(--crema); line-height: 1; }
+    .footer-logo span { color: var(--verde-neon); }
+    .footer-social { display: flex; gap: 0.8rem; }
+    .social-link {
+      font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(242,237,215,0.4); text-decoration: none;
+      border: 1px solid rgba(242,237,215,0.12); padding: 0.45rem 0.85rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .social-link:hover { color: var(--oro); border-color: var(--oro); }
+    .footer-copy { font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; color: rgba(242,237,215,0.2); text-transform: uppercase; }
+
+
+    /* ── SPLASH SCREEN ───────────────────────────────── */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--negro);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 1.5rem;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .splash-logo {
+      width: 220px; height: 220px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      animation: splashPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+      opacity: 0;
+      overflow: hidden;
+    }
+    .splash-logo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    @keyframes splashPop {
+      0%   { opacity: 0; transform: scale(0.4) rotate(-15deg); }
+      100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+    .splash-logo-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem; letter-spacing: 0.08em; color: var(--verde-neon);
+      line-height: 1;
+    }
+    .splash-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(242,237,215,0.35);
+      animation: fadeInUp 0.5s 0.5s ease forwards; opacity: 0;
+    }
+    .splash-bar {
+      width: 8rem; height: 1px;
+      background: rgba(124,181,24,0.15);
+      position: relative; overflow: hidden;
+      animation: fadeInUp 0.5s 0.5s ease forwards; opacity: 0;
+    }
+    .splash-bar::after {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: var(--verde-neon);
+      animation: splashLoad 1.2s 0.6s ease forwards;
+    }
+    @keyframes splashLoad {
+      0%   { left: -100%; }
+      100% { left: 0%; }
+    }
+    @keyframes fadeInUp {
+      0%   { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .splash-tagline {
+      font-family: 'Crimson Pro', serif;
+      font-style: italic; font-size: 1rem;
+      color: rgba(242,237,215,0.4);
+      animation: fadeInUp 0.5s 0.8s ease forwards; opacity: 0;
+    }
+
+    /* ── PRECIOS ─────────────────────────────────────── */
+    #precios {
+      padding: 6rem 5vw;
+      background: var(--negro);
+      position: relative; overflow: hidden;
+    }
+    #precios::before {
+      content: 'MENU';
+      position: absolute; top: 2rem; right: 3vw;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(6rem, 18vw, 14rem);
+      color: rgba(124,181,24,0.03);
+      pointer-events: none; line-height: 1; letter-spacing: 0.1em;
+    }
+
+    .precios-intro {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-bottom: 3.5rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .precios-nota {
+      font-family: 'Space Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(242,237,215,0.3);
+      border-left: 2px solid var(--oro);
+      padding-left: 0.8rem;
+    }
+
+    .precios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 0;
+    }
+
+    .precio-categoria {
+      border: 1px solid rgba(124,181,24,0.1);
+      padding: 2rem;
+      position: relative;
+    }
+    .precio-categoria + .precio-categoria { border-left: none; }
+    .precio-categoria:nth-child(3) { border-top: none; }
+    .precio-categoria:nth-child(4) { border-top: none; border-left: none; }
+
+    .precio-cat-header {
+      display: flex; align-items: center; gap: 0.8rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(124,181,24,0.1);
+    }
+    .precio-cat-icon { font-size: 1.4rem; }
+    .precio-cat-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem; letter-spacing: 0.12em; color: var(--crema);
+    }
+
+    .precio-item {
+      display: flex; justify-content: space-between; align-items: baseline;
+      padding: 0.6rem 0;
+      border-bottom: 1px dashed rgba(242,237,215,0.07);
+      gap: 1rem;
+    }
+    .precio-item:last-child { border-bottom: none; }
+    .precio-item-name {
+      font-family: 'Crimson Pro', serif;
+      font-size: 1rem; color: rgba(242,237,215,0.75);
+      flex: 1;
+    }
+    .precio-item-dots {
+      flex: 1; border-bottom: 1px dotted rgba(242,237,215,0.12);
+      margin: 0 0.5rem; margin-bottom: 0.2rem; min-width: 2rem;
+    }
+    .precio-item-price {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem; font-weight: 700;
+      color: var(--oro); white-space: nowrap;
+    }
+    .precio-item.destacado .precio-item-name { color: var(--crema); font-weight: 600; }
+    .precio-item.destacado .precio-item-price { color: var(--oro); font-size: 0.95rem; }
+
+    .precio-badge {
+      font-family: 'Space Mono', monospace; font-size: 0.52rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--verde-neon); color: var(--negro);
+      padding: 0.12rem 0.4rem; margin-left: 0.4rem; vertical-align: middle;
+    }
+
+    /* ── ANTES/DESPUÉS ───────────────────────────────── */
+    #antes-despues {
+      padding: 6rem 5vw;
+      background: var(--gris-oscuro);
+    }
+    .ad-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem; margin-top: 3rem;
+    }
+    .ad-card {
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(124,181,24,0.1);
+      cursor: pointer;
+    }
+    .ad-card-inner {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 2px; background: rgba(124,181,24,0.08);
+    }
+    .ad-img {
+      aspect-ratio: 1; overflow: hidden; position: relative;
+    }
+    .ad-img img {
+      width: 100%; height: 100%; object-fit: cover; object-position: top;
+      filter: grayscale(0.2);
+    }
+    .ad-img.antes img { filter: grayscale(0.6) brightness(0.85); }
+    .ad-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      text-align: center; padding: 0.4rem;
+      background: rgba(10,10,10,0.8);
+    }
+    .ad-label.antes-label { color: rgba(242,237,215,0.4); }
+    .ad-label.despues-label { color: var(--oro); }
+    .ad-card-footer {
+      padding: 0.9rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--gris-oscuro);
+    }
+    .ad-card-title {
+      font-family: 'Crimson Pro', serif; font-size: 0.95rem;
+      color: var(--crema); font-style: italic;
+    }
+    .ad-card-tipo {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--oro);
+    }
+
+
+    /* ══════════════════════════════════════════
+       FASE 4 — SISTEMA DE RESERVA + WA CHAT
+    ══════════════════════════════════════════ */
+
+    /* ── WA CHAT MEJORADO ───────────────────── */
+    .wa-float {
+      width: auto !important;
+      border-radius: 2rem !important;
+      padding: 0 1.2rem !important;
+      gap: 0.6rem !important;
+      font-family: 'Space Mono', monospace !important;
+      font-size: 0.68rem !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.08em !important;
+      text-transform: uppercase !important;
+      color: #fff !important;
+      min-height: 3rem !important;
+    }
+    .wa-float-label { display: inline; }
+    @media (max-width: 480px) { .wa-float-label { display: none; } .wa-float { width: 3.5rem !important; border-radius: 50% !important; padding: 0 !important; justify-content: center !important; } }
+
+    /* Chat bubble popup */
+    .wa-bubble {
+      position: fixed; bottom: 5.5rem; right: 2rem; z-index: 998;
+      background: var(--gris-oscuro);
+      border: 1px solid rgba(37,211,102,0.25);
+      padding: 1rem 1.2rem;
+      max-width: 220px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      animation: bubbleIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+      transform-origin: bottom right;
+    }
+    .wa-bubble.hidden { display: none; }
+    @keyframes bubbleIn {
+      0%   { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .wa-bubble::after {
+      content: '';
+      position: absolute; bottom: -0.5rem; right: 1.5rem;
+      width: 0.8rem; height: 0.8rem;
+      background: var(--gris-oscuro);
+      border-right: 1px solid rgba(37,211,102,0.25);
+      border-bottom: 1px solid rgba(37,211,102,0.25);
+      transform: rotate(45deg);
+    }
+    .wa-bubble-avatar {
+      width: 2.2rem; height: 2.2rem; border-radius: 50%;
+      background: var(--verde-selva); border: 2px solid var(--verde-neon);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.7rem; color: var(--verde-neon);
+      float: left; margin-right: 0.7rem; margin-bottom: 0.3rem;
+    }
+    .wa-bubble-name {
+      font-family: 'Space Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--verde-neon);
+    }
+    .wa-bubble-status {
+      font-family: 'Space Mono', monospace; font-size: 0.55rem;
+      color: rgba(37,211,102,0.6); margin-top: 0.1rem;
+    }
+    .wa-bubble-msg {
+      clear: both; margin-top: 0.7rem;
+      font-family: 'Crimson Pro', serif; font-size: 0.92rem;
+      color: rgba(242,237,215,0.8); line-height: 1.5;
+    }
+    .wa-bubble-close {
+      position: absolute; top: 0.5rem; right: 0.6rem;
+      background: none; border: none; color: rgba(242,237,215,0.3);
+      cursor: pointer; font-size: 0.9rem; line-height: 1;
+      transition: color 0.15s;
+    }
+    .wa-bubble-close:hover { color: var(--crema); }
+
+    /* ── SISTEMA RESERVA ─────────────────────── */
+    #sistema-reserva {
+      padding: 6rem 5vw;
+      background: var(--negro);
+      position: relative; overflow: hidden;
+    }
+    #sistema-reserva::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(30,58,15,0.3) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .reserva-sistema-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 4rem; align-items: start;
+      position: relative; z-index: 1;
+    }
+
+    /* Pasos de selección */
+    .reserva-steps {
+      display: flex; flex-direction: column; gap: 0;
+    }
+    .step-indicator {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .step-dot {
+      width: 0.5rem; height: 0.5rem; border-radius: 50%;
+      background: rgba(124,181,24,0.2);
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .step-dot.active { background: var(--verde-neon); box-shadow: 0 0 8px var(--verde-neon); }
+    .step-dot.done { background: rgba(124,181,24,0.5); }
+    .step-line {
+      flex: 1; height: 1px;
+      background: rgba(124,181,24,0.12);
+    }
+
+    /* Panel de pasos */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+
+    .step-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.08em; color: var(--crema);
+      margin-bottom: 0.4rem;
+    }
+    .step-subtitle {
+      font-family: 'Space Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: rgba(242,237,215,0.35); margin-bottom: 1.5rem;
+    }
+
+    /* Selector de servicio */
+    .servicio-selector {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.6rem; margin-bottom: 1.5rem;
+    }
+    .serv-opt {
+      border: 1px solid rgba(242,237,215,0.1);
+      padding: 0.9rem 1rem; cursor: pointer;
+      transition: all 0.2s; text-align: left;
+      background: transparent;
+    }
+    .serv-opt:hover { border-color: rgba(124,181,24,0.4); }
+    .serv-opt.selected { border-color: var(--verde-neon); background: rgba(124,181,24,0.08); }
+    .serv-opt-name {
+      font-family: 'Crimson Pro', serif; font-size: 0.95rem;
+      color: var(--crema); display: block; margin-bottom: 0.2rem;
+    }
+    .serv-opt-price {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      color: var(--oro);
+    }
+    .serv-opt.selected .serv-opt-name { color: var(--verde-neon); }
+
+    /* Calendario */
+    .calendario {
+      background: var(--gris-oscuro);
+      border: 1px solid rgba(124,181,24,0.12);
+      padding: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+    .cal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1rem;
+    }
+    .cal-mes {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem; letter-spacing: 0.1em; color: var(--crema);
+    }
+    .cal-nav {
+      background: none; border: 1px solid rgba(124,181,24,0.2);
+      color: var(--verde-neon); width: 2rem; height: 2rem;
+      cursor: pointer; font-size: 0.9rem; display: flex;
+      align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+    .cal-nav:hover { background: rgba(124,181,24,0.1); }
+    .cal-dias-semana {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 2px; margin-bottom: 4px;
+    }
+    .cal-dia-sem {
+      font-family: 'Space Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(242,237,215,0.3); text-align: center; padding: 0.3rem 0;
+    }
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+    .cal-celda {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Mono', monospace; font-size: 0.72rem;
+      cursor: pointer; transition: all 0.15s; position: relative;
+      color: rgba(242,237,215,0.6);
+    }
+    .cal-celda:hover:not(.disabled):not(.vacio) { background: rgba(124,181,24,0.12); color: var(--crema); }
+    .cal-celda.selected { background: var(--verde-neon); color: var(--negro); font-weight: 700; }
+    .cal-celda.hoy { color: var(--oro); }
+    .cal-celda.hoy::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--oro); }
+    .cal-celda.disabled { color: rgba(242,237,215,0.15); cursor: not-allowed; }
+    .cal-celda.vacio { cursor: default; }
+    .cal-celda.cerrado { color: rgba(242,237,215,0.1); cursor: not-allowed; text-decoration: line-through; }
+
+    /* Slots de hora */
+    .horas-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem; margin-bottom: 1.5rem;
+    }
+    .hora-slot {
+      font-family: 'Space Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.06em; text-align: center;
+      border: 1px solid rgba(242,237,215,0.12);
+      padding: 0.6rem 0.4rem; cursor: pointer;
+      transition: all 0.15s; background: transparent; color: var(--crema);
+    }
+    .hora-slot:hover:not(.ocupado) { border-color: var(--verde-neon); color: var(--verde-neon); }
+    .hora-slot.selected { background: var(--verde-neon); color: var(--negro); border-color: var(--verde-neon); font-weight: 700; }
+    .hora-slot.ocupado { color: rgba(242,237,215,0.15); cursor: not-allowed; border-color: rgba(242,237,215,0.05); text-decoration: line-through; }
+
+    /* Resumen reserva */
+    .reserva-resumen {
+      background: var(--gris-oscuro);
+      border: 1px solid rgba(124,181,24,0.2);
+      padding: 1.5rem;
+    }
+    .resumen-title {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--oro); margin-bottom: 1.2rem;
+    }
+    .resumen-item {
+      display: flex; justify-content: space-between;
+      padding: 0.6rem 0; border-bottom: 1px solid rgba(242,237,215,0.06);
+      font-size: 0.92rem;
+    }
+    .resumen-item:last-child { border-bottom: none; }
+    .resumen-key { color: rgba(242,237,215,0.45); font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; }
+    .resumen-val { color: var(--crema); font-family: 'Crimson Pro', serif; }
+    .resumen-val.highlight { color: var(--oro); font-weight: 600; }
+
+    .btn-reservar-wa {
+      display: flex; align-items: center; justify-content: center; gap: 0.8rem;
+      width: 100%; padding: 1.1rem;
+      background: var(--whatsapp); color: #fff;
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 1.2rem;
+    }
+    .btn-reservar-wa:hover { background: #1fb356; transform: translateY(-2px); }
+    .btn-reservar-wa:disabled { background: rgba(37,211,102,0.2); color: rgba(255,255,255,0.3); cursor: not-allowed; transform: none; }
+
+    .step-nav {
+      display: flex; gap: 0.6rem; margin-top: 1rem;
+    }
+    .btn-step {
+      font-family: 'Space Mono', monospace; font-size: 0.68rem;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      padding: 0.7rem 1.4rem; cursor: pointer; transition: all 0.2s; border: none;
+    }
+    .btn-step-next { background: var(--verde-neon); color: var(--negro); }
+    .btn-step-next:hover { background: #9ADB20; }
+    .btn-step-next:disabled { background: rgba(124,181,24,0.2); color: rgba(10,10,10,0.4); cursor: not-allowed; }
+    .btn-step-back { background: transparent; color: rgba(242,237,215,0.4); border: 1px solid rgba(242,237,215,0.15); }
+    .btn-step-back:hover { color: var(--crema); border-color: rgba(242,237,215,0.4); }
+
+    /* Panel derecho — visual */
+    .reserva-visual {
+      position: sticky; top: 7rem;
+    }
+    .reserva-visual-header {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: 0.04em; line-height: 0.95; margin-bottom: 1.5rem;
+    }
+    .reserva-visual-header em { font-style: normal; color: var(--oro); }
+    .reserva-visual-sub {
+      font-family: 'Crimson Pro', serif; font-size: 1rem;
+      font-style: italic; color: rgba(242,237,215,0.5); line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .reserva-promesas {
+      display: flex; flex-direction: column; gap: 0.8rem;
+    }
+    .promesa-item {
+      display: flex; align-items: flex-start; gap: 0.8rem;
+      padding: 0.9rem 1rem;
+      border: 1px solid rgba(124,181,24,0.1);
+      transition: border-color 0.2s;
+    }
+    .promesa-item:hover { border-color: rgba(124,181,24,0.3); }
+    .promesa-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .promesa-text { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: rgba(242,237,215,0.7); line-height: 1.5; }
+    .promesa-text strong { color: var(--crema); display: block; margin-bottom: 0.15rem; }
+
+    /* Confirmación */
+    .confirmacion {
+      display: none; text-align: center; padding: 3rem 1rem;
+    }
+    .confirmacion.visible { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .conf-check {
+      width: 4rem; height: 4rem; border-radius: 50%;
+      background: rgba(37,211,102,0.1); border: 2px solid var(--whatsapp);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      animation: confPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes confPop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+    .conf-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.1em; color: var(--crema); }
+    .conf-sub { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242,237,215,0.4); }
+
+    @media (max-width: 768px) {
+      .reserva-sistema-grid { grid-template-columns: 1fr; }
+      .reserva-visual { position: static; }
+      .servicio-selector { grid-template-columns: 1fr; }
+      .horas-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
+
+    /* ══ MENÚ HAMBURGUESA ══════════════════════ */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+      z-index: 200;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--crema);
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Menú móvil overlay */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      background: rgba(10,10,10,0.98);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      backdrop-filter: blur(20px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .mobile-menu.open {
+      display: flex;
+      opacity: 1;
+    }
+    .mobile-menu-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem; letter-spacing: 0.2em;
+      color: var(--verde-neon);
+      margin-bottom: 2.5rem;
+    }
+    .mobile-menu-logo-img {
+      width: 110px; height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 2rem;
+      display: block;
+    }
+    .mobile-menu a {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 8vw, 3rem);
+      letter-spacing: 0.1em;
+      color: var(--crema);
+      text-decoration: none;
+      padding: 0.6rem 2rem;
+      text-align: center;
+      width: 100%;
+      transition: color 0.2s;
+      border-bottom: 1px solid rgba(124,181,24,0.06);
+    }
+    .mobile-menu a:hover { color: var(--oro); }
+    .mobile-menu .mobile-wa {
+      margin-top: 2rem;
+      background: var(--whatsapp);
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 1rem 2.5rem;
+      border-radius: 0;
+      border-bottom: none;
+      width: auto;
+    }
+    .mobile-menu .mobile-wa:hover { background: #1fb356; color: #fff; }
+
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links { display: none !important; }
+      .nav-cta { display: none; }
+    }
+
+    /* ══ POP-UP OFERTA ══════════════════════════ */
+    .popup-overlay {
+      position: fixed; inset: 0; z-index: 8000;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; animation: fadeInOverlay 0.4s 2.5s ease forwards;
+    }
+    .popup-overlay.hidden { display: none !important; }
+    @keyframes fadeInOverlay {
+      to { opacity: 1; }
+    }
+    .popup-card {
+      background: var(--gris-oscuro);
+      border: 1px solid rgba(124,181,24,0.3);
+      max-width: 420px; width: 100%;
+      position: relative;
+      animation: slideUpPopup 0.5s 2.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes slideUpPopup {
+      0%   { transform: translateY(40px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    .popup-top {
+      background: var(--verde-selva);
+      padding: 2rem 2rem 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid var(--verde-neon);
+      position: relative;
+    }
+    .popup-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem; letter-spacing: 0.25em; text-transform: uppercase;
+      background: var(--verde-neon); color: var(--negro);
+      padding: 0.25rem 0.8rem; display: inline-block; margin-bottom: 1rem;
+    }
+    .popup-titulo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem; letter-spacing: 0.05em; line-height: 1;
+      color: var(--crema);
+    }
+    .popup-titulo span { color: var(--verde-neon); }
+    .popup-desc {
+      font-family: 'Crimson Pro', serif;
+      font-size: 1rem; font-style: italic;
+      color: rgba(242,237,215,0.7); margin-top: 0.6rem;
+    }
+    .popup-descuento {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4rem; color: var(--oro); line-height: 1;
+      margin: 0.5rem 0 0.2rem;
+    }
+    .popup-descuento small { font-size: 1.2rem; color: rgba(200,136,42,0.7); }
+    .popup-body {
+      padding: 1.5rem 2rem 2rem;
+      text-align: center;
+    }
+    .popup-condicion {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(242,237,215,0.3); margin-bottom: 1.2rem; line-height: 1.8;
+    }
+    .popup-btn {
+      display: block; width: 100%;
+      background: var(--whatsapp); color: #fff;
+      font-family: 'Space Mono', monospace; font-size: 0.75rem;
+      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
+      padding: 1rem; text-decoration: none; text-align: center;
+      transition: background 0.2s;
+    }
+    .popup-btn:hover { background: #1fb356; }
+    .popup-close {
+      position: absolute; top: 0.8rem; right: 0.8rem;
+      background: rgba(10,10,10,0.5); border: 1px solid rgba(242,237,215,0.15);
+      color: rgba(242,237,215,0.5); width: 1.8rem; height: 1.8rem;
+      cursor: pointer; font-size: 0.8rem; display: flex;
+      align-items: center; justify-content: center;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .popup-close:hover { color: var(--crema); border-color: var(--crema); }
+    .popup-skip {
+      font-family: 'Space Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(242,237,215,0.25); text-decoration: none;
+      display: block; margin-top: 0.9rem; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .popup-skip:hover { color: rgba(242,237,215,0.5); }
+
+    /* ══ SOBRE EL BARBERO ═══════════════════════ */
+    #barbero {
+      padding: 6rem 5vw;
+      background: var(--gris-oscuro);
+      position: relative; overflow: hidden;
+    }
+    #barbero::after {
+      content: 'WTJ';
+      position: absolute; bottom: -2rem; right: 2vw;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(8rem, 25vw, 18rem);
+      color: rgba(124,181,24,0.03);
+      pointer-events: none; line-height: 1;
+      letter-spacing: 0.1em;
+    }
+
+    .barbero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 5rem; align-items: center;
+      position: relative; z-index: 1;
+    }
+
+    .barbero-foto-wrap {
+      position: relative;
+    }
+    .barbero-foto-frame {
+      border: 2px solid rgba(124,181,24,0.2);
+      padding: 0.5rem;
+      position: relative;
+    }
+    .barbero-foto-frame::before {
+      content: '';
+      position: absolute;
+      top: -0.8rem; left: -0.8rem;
+      right: 0.8rem; bottom: 0.8rem;
+      border: 1px solid rgba(200,136,42,0.2);
+      pointer-events: none; z-index: 0;
+    }
+    .barbero-foto-placeholder {
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #1E3A0F 0%, #0A1205 60%, #0D2208 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem; opacity: 0.3;
+      position: relative; z-index: 1;
+    }
+    .barbero-foto-img {
+      width: 100%; aspect-ratio: 3/4;
+      object-fit: cover; object-position: top;
+      display: block; position: relative; z-index: 1;
+    }
+
+    .barbero-badge-foto {
+      position: absolute;
+      bottom: -1.2rem; right: -1.2rem;
+      background: var(--negro);
+      border: 1px solid rgba(124,181,24,0.3);
+      padding: 0.8rem 1.1rem;
+      z-index: 2;
+    }
+    .badge-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem; color: var(--verde-neon); line-height: 1;
+    }
+    .badge-txt {
+      font-family: 'Space Mono', monospace; font-size: 0.55rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(242,237,215,0.4);
+    }
+
+    .barbero-info {}
+    .barbero-eyebrow {
+      font-family: 'Space Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--oro); margin-bottom: 0.8rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .barbero-eyebrow::before { content: ''; display: block; width: 2rem; height: 1px; background: var(--verde-neon); }
+    .barbero-nombre {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.04em; line-height: 0.95; margin-bottom: 0.4rem;
+      color: var(--crema);
+    }
+    .barbero-titulo {
+      font-family: 'Crimson Pro', serif; font-style: italic;
+      font-size: 1.1rem; color: var(--oro); margin-bottom: 1.8rem;
+    }
+    .barbero-bio {
+      font-size: 1.05rem; line-height: 1.8;
+      color: rgba(242,237,215,0.7); margin-bottom: 2rem;
+    }
+    .barbero-bio strong { color: var(--crema); }
+
+    .barbero-stats {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+      padding: 1.5rem; background: rgba(124,181,24,0.04);
+      border: 1px solid rgba(124,181,24,0.1); margin-bottom: 2rem;
+    }
+    .b-stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem; color: var(--oro); line-height: 1;
+    }
+    .b-stat-txt {
+      font-family: 'Space Mono', monospace; font-size: 0.58rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(242,237,215,0.4); margin-top: 0.2rem;
+    }
+
+    .barbero-skills {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .skill-tag {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      border: 1px solid rgba(124,181,24,0.25); color: var(--oro);
+      padding: 0.3rem 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      .barbero-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .barbero-badge-foto { right: 0; bottom: -1rem; }
+    }
+
+    /* ══ HERO VIDEO ═════════════════════════════ */
+    .hero-video-bg {
+      position: absolute; inset: 0; z-index: 0;
+      overflow: hidden;
+    }
+    .hero-video-bg video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0.18;
+      filter: grayscale(0.6);
+    }
+    .hero-video-fallback {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 75% 45%, rgba(30,58,15,0.6) 0%, transparent 60%),
+        radial-gradient(ellipse at 5% 85%, rgba(124,181,24,0.07) 0%, transparent 45%),
+        var(--negro);
+    }
+
+    /* ── BLADE CUT (firma visual: machete + navaja) ───── */
+    .blade-cut {
+      position: relative;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--verde-selva) 18%, var(--oro) 50%, var(--verde-selva) 82%, transparent);
+    }
+    .blade-cut::before {
+      content: '';
+      position: absolute; left: 50%; top: 50%;
+      width: 22px; height: 22px;
+      transform: translate(-50%, -50%) rotate(45deg);
+      border: 1px solid var(--oro);
+      background: var(--negro);
+    }
+    .blade-cut::after {
+      content: '';
+      position: absolute; left: 50%; top: 50%;
+      width: 7px; height: 7px;
+      transform: translate(-50%, -50%) rotate(45deg);
+      background: var(--verde-neon);
+    }
+
+    /* ── SCROLL REVEAL ───────────────────────────────── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .leaf, .wa-float, .step-dot.active, .conf-check { animation: none !important; }
+    }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 0.9rem 1.3rem; }
+      .nav-links { display: none; }
+      #intro { grid-template-columns: 1fr; gap: 2rem; }
+      #reserva { grid-template-columns: 1fr; gap: 3rem; }
+      .horario-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .galeria-grid { grid-template-columns: 1fr 1fr; }
+      .galeria-item:nth-child(1) { grid-column: span 2; }
+      .hero-location { display: none; }
+      footer { flex-direction: column; text-align: center; }
+      .precios-grid { grid-template-columns: 1fr; }
+      .precio-categoria + .precio-categoria { border-left: 1px solid rgba(124,181,24,0.1); border-top: none; }
+      .ad-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- WA BUBBLE -->
+<div class="wa-bubble hidden" id="waBubble">
+  <button class="wa-bubble-close" id="waBubbleClose">✕</button>
+  <div class="wa-bubble-avatar">WTJ</div>
+  <div class="wa-bubble-name">WTJ Barber Shop</div>
+  <div class="wa-bubble-status">● En línea</div>
+  <div class="wa-bubble-msg">¡Hola! 👋 ¿Quieres reservar tu cita? Escríbenos y te atendemos al momento.</div>
+</div>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-logo">
+    <img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/logo.png" alt="Welcome to the Jungle Barber Shop Logo" />
+  </div>
+  <div class="splash-bar"></div>
+  <div class="splash-sub">Barber Shop · Oropesa</div>
+  <div class="splash-tagline">Welcome to the Jungle</div>
+</div>
+
+<!-- WhatsApp flotante -->
+<a class="wa-float" href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita%20en%20WTJ%20Barber%20Shop%20%F0%9F%8C%BF" target="_blank" rel="noopener" aria-label="Reservar por WhatsApp" id="waFloat">
+  💬 <span class="wa-float-label">Reservar cita</span>
+</a>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo-wrap" href="javascript:void(0)" data-scroll-to="hero">
+    <img class="nav-logo-img" src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/logo.png" alt="WTJ Barber Shop" />
+    <div class="nav-logo-text">
+      Barber Shop
+      <small>Oropesa · CLM</small>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="javascript:void(0)" data-scroll-to="servicios">Servicios</a></li>
+    <li><a href="javascript:void(0)" data-scroll-to="precios">Precios</a></li>
+    <li><a href="javascript:void(0)" data-scroll-to="galeria">Galería</a></li>
+    <li><a href="javascript:void(0)" data-scroll-to="barbero">El Barbero</a></li>
+    <li><a href="javascript:void(0)" data-scroll-to="reserva">Ubicación</a></li>
+    <li><a href="javascript:void(0)" data-scroll-to="horario">Horario</a></li>
+  </ul>
+  <a class="nav-cta" href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita" target="_blank" rel="noopener">
+    💬 Reservar
+  </a>
+  <button class="hamburger" id="hamburger" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+
+<!-- POP-UP OFERTA -->
+<div class="popup-overlay" id="popupOverlay">
+  <div class="popup-card">
+    <button class="popup-close" id="popupClose">✕</button>
+    <div class="popup-top">
+      <div class="popup-badge">✦ Oferta especial</div>
+      <div class="popup-descuento">-2€ <small>en tu primera visita</small></div>
+      <div class="popup-titulo">BIENVENIDO<br>A LA <span>JUNGLA</span></div>
+      <div class="popup-desc">Descuento exclusivo para nuevos clientes</div>
+    </div>
+    <div class="popup-body">
+      <div class="popup-condicion">
+        Válido para cualquier servicio · Solo primera visita<br>
+        Menciona "JUNGLE" al reservar por WhatsApp
+      </div>
+      <a class="popup-btn" id="popupWa"
+         href="https://wa.me/34637847114?text=Hola!%20Vengo%20de%20vuestra%20web%20y%20quiero%20aprovechar%20el%20descuento%20JUNGLE%20de%20bienvenida%20%F0%9F%8C%BF%20%C2%BFPuedo%20reservar%20cita%3F"
+         target="_blank" rel="noopener">
+        💬 Reservar con descuento
+      </a>
+      <span class="popup-skip" id="popupSkip">No gracias, seguir sin descuento</span>
+    </div>
+  </div>
+</div>
+
+<!-- MENÚ MÓVIL -->
+<div class="mobile-menu" id="mobileMenu">
+  <img class="mobile-menu-logo-img" src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/logo.png" alt="WTJ Logo" />
+  <a href="javascript:void(0)" data-scroll-to="servicios" class="mobile-link">Servicios</a>
+  <a href="javascript:void(0)" data-scroll-to="precios" class="mobile-link">Precios</a>
+  <a href="javascript:void(0)" data-scroll-to="galeria" class="mobile-link">Galería</a>
+  <a href="javascript:void(0)" data-scroll-to="barbero" class="mobile-link">El Barbero</a>
+  <a href="javascript:void(0)" data-scroll-to="sistema-reserva" class="mobile-link">Reservar</a>
+  <a href="javascript:void(0)" data-scroll-to="horario" class="mobile-link">Horario</a>
+  <a href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita" target="_blank" class="mobile-wa mobile-link">💬 WhatsApp</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="leaves-container" id="leavesContainer"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Barber Shop · Oropesa, Castilla-La Mancha</div>
+    <h1 class="hero-title">
+      WELCOME<br>
+      TO THE<br>
+      <span class="accent">JUNGLE</span>
+    </h1>
+    <p class="hero-sub">Degradados, diseños, tintes y barba. Artesanía sin concesiones en el corazón de Oropesa.</p>
+    <div class="hero-actions">
+      <a class="btn-wa" href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita%20en%20WTJ" target="_blank" rel="noopener">💬 Reservar por WhatsApp</a>
+      <a class="btn-secondary" href="javascript:void(0)" data-scroll-to="servicios">Ver servicios</a>
+    </div>
+    <div class="hero-bottom">
+      <div class="stat">
+        <div class="stat-number">12€</div>
+        <div class="stat-label">Corte desde</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">L–S</div>
+        <div class="stat-label">Abierto toda la semana</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">637 847 114</div>
+        <div class="stat-label">Reservas por WhatsApp</div>
+      </div>
+      <a class="hero-location" href="https://maps.google.com/?q=C%2F+Calzada+Real+14%2C+Oropesa%2C+Toledo" target="_blank" rel="noopener">
+        <span>📍</span> C/ Calzada Real 14 · Oropesa
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="blade-cut" aria-hidden="true"></div>
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="intro-text reveal">
+    <h2>Más que cortar<br>pelo. <em>Crear<br>identidad.</em></h2>
+    <p>En <strong>WTJ Barber Shop</strong> cada corte es una declaración. Trabajamos con precisión, respetamos tu estilo y lo llevamos al siguiente nivel.</p>
+    <p>Degradados limpios, diseños personalizados, tintes con técnica y barba perfecta. Todo bajo el mismo techo, en Oropesa.</p>
+  </div>
+  <div class="intro-visual reveal">
+    <div class="intro-card">
+      <div class="intro-card-title">// Especialidades reales</div>
+      <div class="tag-list">
+        <span class="tag">Degradados</span>
+        <span class="tag">Diseños</span>
+        <span class="tag">Tintes</span>
+        <span class="tag">Fade</span>
+        <span class="tag">Rizos</span>
+        <span class="tag">Arreglo barba</span>
+        <span class="tag">Corte clásico</span>
+        <span class="tag">Decoloración</span>
+        <span class="tag">Cabello largo</span>
+        <span class="tag">Perfilado</span>
+        <span class="tag">Líneas</span>
+        <span class="tag">Texturas</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="section-header reveal">
+    <span class="section-label">// Menú</span>
+    <h2 class="section-title">Servicios</h2>
+  </div>
+  <div class="servicios-grid">
+    <div class="servicio-card reveal">
+      <span class="serv-icon">✂️</span>
+      <div class="serv-name">Corte Clásico</div>
+      <div class="serv-desc">Precisión y detalle para un acabado perfecto adaptado a tu estilo y personalidad.</div>
+      <div class="serv-price">Desde <span>12€</span></div>
+    </div>
+    <div class="servicio-card reveal">
+      <span class="serv-icon">🔥</span>
+      <div class="serv-name">Degradado / Fade</div>
+      <div class="serv-desc">Desde un fade sutil hasta un corte bien marcado. Precisión milimétrica en cada línea.</div>
+      <div class="serv-price">Desde <span>15€</span></div>
+    </div>
+    <div class="servicio-card reveal">
+      <span class="serv-icon">⚡</span>
+      <div class="serv-name">Diseños</div>
+      <div class="serv-desc">Líneas, patrones y diseños personalizados. Tu corte como nadie más lo tiene.</div>
+      <div class="serv-price">Desde <span>+5€</span></div>
+    </div>
+    <div class="servicio-card reveal">
+      <span class="serv-icon">🎨</span>
+      <div class="serv-name">Tintes</div>
+      <div class="serv-desc">Decoloración, tintes completos y mechas. Técnica de coloración con resultado profesional.</div>
+      <div class="serv-price">Desde <span>25€</span></div>
+    </div>
+    <div class="servicio-card reveal">
+      <span class="serv-icon">🧔</span>
+      <div class="serv-name">Arreglo de Barba</div>
+      <div class="serv-desc">Perfilado y recorte para mantener una imagen limpia, elegante y cuidada.</div>
+      <div class="serv-price">Desde <span>8€</span></div>
+    </div>
+    <div class="servicio-card reveal">
+      <span class="serv-icon">💈</span>
+      <div class="serv-name">Corte + Barba</div>
+      <div class="serv-desc">El combo completo. Corte a medida y arreglo de barba en una sola sesión.</div>
+      <div class="serv-price">Desde <span>20€</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- PRECIOS -->
+<section id="precios">
+  <div class="section-header reveal">
+    <span class="section-label">// Tarifas</span>
+    <h2 class="section-title">Menú de precios</h2>
+  </div>
+  <div class="precios-intro">
+    <div></div>
+    <div class="precios-nota">Precios orientativos · Consulta tu caso concreto</div>
+  </div>
+
+  <div class="precios-grid reveal">
+
+    <div class="precio-categoria">
+      <div class="precio-cat-header">
+        <span class="precio-cat-icon">✂️</span>
+        <span class="precio-cat-name">Cortes</span>
+      </div>
+      <div class="precio-item destacado">
+        <span class="precio-item-name">Corte clásico <span class="precio-badge">TOP</span></span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">12€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Degradado / Fade</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">15€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Cabello largo</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">18€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Corte niño (hasta 12 años)</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">10€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Perfilado / Retoque</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">8€</span>
+      </div>
+    </div>
+
+    <div class="precio-categoria">
+      <div class="precio-cat-header">
+        <span class="precio-cat-icon">⚡</span>
+        <span class="precio-cat-name">Diseños</span>
+      </div>
+      <div class="precio-item destacado">
+        <span class="precio-item-name">Corte + diseño simple <span class="precio-badge">POPULAR</span></span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">18€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Diseño complejo / artwork</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">25€+</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Fade + diseño en nuca</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">22€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Líneas / patrones</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">+5€</span>
+      </div>
+    </div>
+
+    <div class="precio-categoria">
+      <div class="precio-cat-header">
+        <span class="precio-cat-icon">🎨</span>
+        <span class="precio-cat-name">Tintes & Color</span>
+      </div>
+      <div class="precio-item destacado">
+        <span class="precio-item-name">Decoloración parcial <span class="precio-badge">★</span></span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">25€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Decoloración total + tinte</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">40€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Platino / Rubio total</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">45€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Mechas / Babylights</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">35€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Tinte fantasía / color vivo</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">30€+</span>
+      </div>
+    </div>
+
+    <div class="precio-categoria">
+      <div class="precio-cat-header">
+        <span class="precio-cat-icon">🧔</span>
+        <span class="precio-cat-name">Barba & Combos</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Arreglo de barba</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">8€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Perfilado + afeitado</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">12€</span>
+      </div>
+      <div class="precio-item destacado">
+        <span class="precio-item-name">Corte + barba <span class="precio-badge">OFERTA</span></span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">20€</span>
+      </div>
+      <div class="precio-item destacado">
+        <span class="precio-item-name">Fade + barba completa <span class="precio-badge">★</span></span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">22€</span>
+      </div>
+      <div class="precio-item">
+        <span class="precio-item-name">Diseño + barba + fade</span>
+        <span class="precio-item-dots"></span>
+        <span class="precio-item-price">28€</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- GALERÍA CON FILTROS -->
+<section id="galeria">
+  <div class="section-header reveal">
+    <span class="section-label">// Trabajos reales</span>
+    <h2 class="section-title">Galería</h2>
+  </div>
+
+  <div class="galeria-filters reveal">
+    <button class="filter-btn active" data-cat="all">Todos</button>
+    <button class="filter-btn" data-cat="fade">Degradados</button>
+    <button class="filter-btn" data-cat="diseno">Diseños</button>
+    <button class="filter-btn" data-cat="tinte">Tintes</button>
+    <button class="filter-btn" data-cat="barba">Barba</button>
+    <button class="filter-btn" data-cat="rizo">Rizos</button>
+  </div>
+
+  <div class="galeria-grid" id="galeriaGrid">
+<div class="galeria-item" data-cat="fade" data-label="Buzz Cut" data-featured="true"><img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-buzz-cut.jpg" alt="Buzz Cut" loading="lazy" /><div class="galeria-overlay"><div class="galeria-overlay-text">Ver en Instagram</div><div class="galeria-overlay-sub">Buzz Cut</div></div></div>
+<div class="galeria-item" data-cat="diseno" data-label="Crop Top"><img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-crop-top.jpg" alt="Crop Top" loading="lazy" /><div class="galeria-overlay"><div class="galeria-overlay-text">Ver en Instagram</div><div class="galeria-overlay-sub">Crop Top</div></div></div>
+<div class="galeria-item" data-cat="fade" data-label="Undercut"><img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-undercut.jpg" alt="Undercut" loading="lazy" /><div class="galeria-overlay"><div class="galeria-overlay-text">Ver en Instagram</div><div class="galeria-overlay-sub">Undercut</div></div></div>
+<div class="galeria-item" data-cat="diseno" data-label="Pompadour"><img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-pompadour.jpg" alt="Pompadour" loading="lazy" /><div class="galeria-overlay"><div class="galeria-overlay-text">Ver en Instagram</div><div class="galeria-overlay-sub">Pompadour</div></div></div>
+<div class="galeria-item" data-cat="fade" data-label="Fade / Degradado"><img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-fade-degradado.jpg" alt="Fade / Degradado" loading="lazy" /><div class="galeria-overlay"><div class="galeria-overlay-text">Ver en Instagram</div><div class="galeria-overlay-sub">Fade / Degradado</div></div></div>
+<div class="galeria-item" data-cat="rizo" data-label="Quoft / Texturizado"><img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-quoft-texturizado.jpg" alt="Quoft / Texturizado" loading="lazy" /><div class="galeria-overlay"><div class="galeria-overlay-text">Ver en Instagram</div><div class="galeria-overlay-sub">Quoft / Texturizado</div></div></div>
+  </div>
+
+  <div class="galeria-cta">
+    <a class="btn-primary" href="https://www.instagram.com/barber_welcome_to_the_jungle" target="_blank" rel="noopener">📸 Ver todos los trabajos en Instagram</a>
+  </div>
+</section>
+
+<!-- ANTES / DESPUÉS -->
+<section id="antes-despues">
+  <div class="section-header reveal">
+    <span class="section-label">// Transformaciones</span>
+    <h2 class="section-title">El antes &amp; después</h2>
+  </div>
+  <div class="ad-grid">
+
+    <div class="ad-card reveal">
+      <div class="ad-card-inner">
+        <div class="ad-img antes">
+          <img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-buzz-cut.jpg" alt="Antes fade" />
+          <div class="ad-label antes-label">Antes</div>
+        </div>
+        <div class="ad-img">
+          <img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-fade-degradado.jpg" alt="Después fade" />
+          <div class="ad-label despues-label">Después</div>
+        </div>
+      </div>
+      <div class="ad-card-footer">
+        <span class="ad-card-title">Fade bajo con nuca limpia</span>
+        <span class="ad-card-tipo">Degradado</span>
+      </div>
+    </div>
+
+    <div class="ad-card reveal">
+      <div class="ad-card-inner">
+        <div class="ad-img antes">
+          <img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-undercut.jpg" alt="Antes rizado" />
+          <div class="ad-label antes-label">Antes</div>
+        </div>
+        <div class="ad-img">
+          <img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-quoft-texturizado.jpg" alt="Después rizado+tinte" />
+          <div class="ad-label despues-label">Después</div>
+        </div>
+      </div>
+      <div class="ad-card-footer">
+        <span class="ad-card-title">Rizado + decoloración</span>
+        <span class="ad-card-tipo">Tinte + Rizos</span>
+      </div>
+    </div>
+
+    <div class="ad-card reveal">
+      <div class="ad-card-inner">
+        <div class="ad-img antes">
+          <img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-crop-top.jpg" alt="Antes textura" />
+          <div class="ad-label antes-label">Antes</div>
+        </div>
+        <div class="ad-img">
+          <img src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-pompadour.jpg" alt="Después platino" />
+          <div class="ad-label despues-label">Después</div>
+        </div>
+      </div>
+      <div class="ad-card-footer">
+        <span class="ad-card-title">Platino total con fade</span>
+        <span class="ad-card-tipo">Decoloración</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- SOBRE EL BARBERO -->
+<section id="barbero">
+  <div class="barbero-grid">
+
+    <div class="barbero-foto-wrap reveal">
+      <div class="barbero-foto-frame">
+        <img class="barbero-foto-img" src="https://raw.githubusercontent.com/jesusgarciaoropesa-dotcom/Peluqueria/claude/barber-shop-github-assets-ak91y6/assets/gallery-quoft-texturizado.jpg" alt="WTJ Barber" />
+      </div>
+      <div class="barbero-badge-foto">
+        <div class="badge-num">100%</div>
+        <div class="badge-txt">Trabajo artesanal</div>
+      </div>
+    </div>
+
+    <div class="barbero-info reveal">
+      <div class="barbero-eyebrow">El artesano</div>
+      <div class="barbero-nombre">WELCOME<br>TO THE JUNGLE</div>
+      <div class="barbero-titulo">Fundador & Master Barber · Oropesa</div>
+      <div class="barbero-bio">
+        Detrás de cada corte hay una historia. <strong>WTJ Barber Shop</strong> nació con una idea clara: llevar a Oropesa el nivel de barbería que normalmente solo encuentras en las grandes ciudades.
+        <br><br>
+        Especializado en <strong>degradados, diseños y coloración</strong>, cada sesión es un trabajo artesanal. Sin prisas, sin mediocridades — solo el resultado que mereces.
+      </div>
+
+      <div class="barbero-stats">
+        <div>
+          <div class="b-stat-num">6+</div>
+          <div class="b-stat-txt">Especialidades</div>
+        </div>
+        <div>
+          <div class="b-stat-num">L–S</div>
+          <div class="b-stat-txt">Abierto cada semana</div>
+        </div>
+        <div>
+          <div class="b-stat-num">100%</div>
+          <div class="b-stat-txt">Dedicación</div>
+        </div>
+      </div>
+
+      <div class="barbero-skills">
+        <span class="skill-tag">Fade & Degradado</span>
+        <span class="skill-tag">Diseños</span>
+        <span class="skill-tag">Coloración</span>
+        <span class="skill-tag">Decoloración</span>
+        <span class="skill-tag">Rizos</span>
+        <span class="skill-tag">Barba</span>
+        <span class="skill-tag">Cabello largo</span>
+        <span class="skill-tag">Atención al detalle</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SISTEMA DE RESERVA -->
+<section id="sistema-reserva">
+  <div class="section-header reveal">
+    <span class="section-label">// Reserva online</span>
+    <h2 class="section-title">Tu cita en 3 pasos</h2>
+  </div>
+
+  <div class="reserva-sistema-grid">
+
+    <!-- IZQUIERDA: Wizard de reserva -->
+    <div class="reserva-steps">
+
+      <!-- Indicador de pasos -->
+      <div class="step-indicator">
+        <div class="step-dot active" id="dot-1"></div>
+        <div class="step-line"></div>
+        <div class="step-dot" id="dot-2"></div>
+        <div class="step-line"></div>
+        <div class="step-dot" id="dot-3"></div>
+      </div>
+
+      <!-- PASO 1: Servicio -->
+      <div class="step-panel active" id="step-1">
+        <div class="step-title">Elige tu servicio</div>
+        <div class="step-subtitle">Paso 1 de 3 · Selecciona qué quieres hacerte</div>
+        <div class="servicio-selector">
+          <button class="serv-opt" data-servicio="Corte Clásico" data-precio="12€">
+            <span class="serv-opt-name">✂️ Corte Clásico</span>
+            <span class="serv-opt-price">12€</span>
+          </button>
+          <button class="serv-opt" data-servicio="Degradado / Fade" data-precio="15€">
+            <span class="serv-opt-name">🔥 Degradado / Fade</span>
+            <span class="serv-opt-price">15€</span>
+          </button>
+          <button class="serv-opt" data-servicio="Diseño" data-precio="18€+">
+            <span class="serv-opt-name">⚡ Diseño</span>
+            <span class="serv-opt-price">18€+</span>
+          </button>
+          <button class="serv-opt" data-servicio="Tinte / Color" data-precio="25€+">
+            <span class="serv-opt-name">🎨 Tinte / Color</span>
+            <span class="serv-opt-price">25€+</span>
+          </button>
+          <button class="serv-opt" data-servicio="Arreglo de Barba" data-precio="8€">
+            <span class="serv-opt-name">🧔 Barba</span>
+            <span class="serv-opt-price">8€</span>
+          </button>
+          <button class="serv-opt" data-servicio="Corte + Barba" data-precio="20€">
+            <span class="serv-opt-name">💈 Corte + Barba</span>
+            <span class="serv-opt-price">20€</span>
+          </button>
+        </div>
+        <div class="step-nav">
+          <button class="btn-step btn-step-next" id="next-1" disabled>Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- PASO 2: Fecha y Hora -->
+      <div class="step-panel" id="step-2">
+        <div class="step-title">Elige día y hora</div>
+        <div class="step-subtitle">Paso 2 de 3 · Horario: Lun–Vie 10–14h / 16–20h · Sáb 10–14h</div>
+
+        <div class="calendario">
+          <div class="cal-header">
+            <button class="cal-nav" id="cal-prev">‹</button>
+            <span class="cal-mes" id="cal-mes-label"></span>
+            <button class="cal-nav" id="cal-next">›</button>
+          </div>
+          <div class="cal-dias-semana">
+            <span class="cal-dia-sem">L</span>
+            <span class="cal-dia-sem">M</span>
+            <span class="cal-dia-sem">X</span>
+            <span class="cal-dia-sem">J</span>
+            <span class="cal-dia-sem">V</span>
+            <span class="cal-dia-sem">S</span>
+            <span class="cal-dia-sem" style="color:rgba(242,237,215,0.1)">D</span>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+
+        <div id="horas-section" style="display:none;">
+          <div class="step-subtitle" style="margin-bottom:0.8rem;">Selecciona la hora</div>
+          <div class="horas-grid" id="horas-grid"></div>
+        </div>
+
+        <div class="step-nav">
+          <button class="btn-step btn-step-back" id="back-2">← Volver</button>
+          <button class="btn-step btn-step-next" id="next-2" disabled>Siguiente →</button>
+        </div>
+      </div>
+
+      <!-- PASO 3: Confirmación -->
+      <div class="step-panel" id="step-3">
+        <div class="step-title">Confirma tu cita</div>
+        <div class="step-subtitle">Paso 3 de 3 · Revisa los detalles y reserva por WhatsApp</div>
+
+        <div class="reserva-resumen" id="reserva-resumen">
+          <div class="resumen-title">// Resumen de tu reserva</div>
+          <div class="resumen-item">
+            <span class="resumen-key">Servicio</span>
+            <span class="resumen-val highlight" id="res-servicio">—</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-key">Fecha</span>
+            <span class="resumen-val" id="res-fecha">—</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-key">Hora</span>
+            <span class="resumen-val" id="res-hora">—</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-key">Precio estimado</span>
+            <span class="resumen-val highlight" id="res-precio">—</span>
+          </div>
+          <div class="resumen-item">
+            <span class="resumen-key">Lugar</span>
+            <span class="resumen-val">C/ Calzada Real 14, Oropesa</span>
+          </div>
+        </div>
+
+        <a class="btn-reservar-wa" id="btn-confirmar-wa" href="#" target="_blank" rel="noopener">
+          💬 Confirmar cita por WhatsApp
+        </a>
+        <div style="margin-top:0.8rem;font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(242,237,215,0.25);text-align:center;">
+          Te redirigiremos a WhatsApp con todos los datos de tu reserva
+        </div>
+
+        <div class="step-nav" style="margin-top:1rem;">
+          <button class="btn-step btn-step-back" id="back-3">← Modificar</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- DERECHA: Info visual -->
+    <div class="reserva-visual reveal">
+      <div class="reserva-visual-header">RESERVA<br>TU LUGAR EN <em>LA JUNGLA</em></div>
+      <div class="reserva-visual-sub">Sin esperas, sin llamadas. Elige tu servicio, tu día y tu hora — y te mandamos el recordatorio.</div>
+      <div class="reserva-promesas">
+        <div class="promesa-item">
+          <span class="promesa-icon">⚡</span>
+          <div class="promesa-text"><strong>Confirmación en minutos</strong>Te confirmamos la cita por WhatsApp en menos de 15 minutos.</div>
+        </div>
+        <div class="promesa-item">
+          <span class="promesa-icon">🔄</span>
+          <div class="promesa-text"><strong>Cancelación flexible</strong>¿Algo surgió? Cancela o cambia tu cita sin coste hasta 2 horas antes.</div>
+        </div>
+        <div class="promesa-item">
+          <span class="promesa-icon">📍</span>
+          <div class="promesa-text"><strong>C/ Calzada Real 14, Oropesa</strong>Fácil acceso, parking cercano. Te esperamos.</div>
+        </div>
+        <div class="promesa-item">
+          <span class="promesa-icon">🌿</span>
+          <div class="promesa-text"><strong>La experiencia WTJ</strong>Cada cita es un ritual. Café, música y el mejor corte de la zona.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- RESERVA + MAPA -->
+<section id="reserva">
+  <div class="reserva-left reveal">
+    <div class="section-label" style="margin-bottom:1rem;">// Reserva tu cita</div>
+    <h2>ENTRA EN<br><em>LA JUNGLA</em></h2>
+    <p>Escríbenos por WhatsApp o Instagram para reservar tu cita. Sin esperas, sin complicaciones — solo tú y el mejor corte de Oropesa.</p>
+    <div class="reserva-buttons">
+      <a class="reserva-btn-wa" href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita%20en%20WTJ%20Barber%20Shop%20%F0%9F%8C%BF" target="_blank" rel="noopener">
+        <span class="reserva-btn-icon">💬</span>
+        <span class="reserva-btn-meta">Reservar por WhatsApp<small>Respuesta rápida garantizada</small></span>
+      </a>
+      <a class="reserva-btn-ig" href="https://www.instagram.com/barber_welcome_to_the_jungle" target="_blank" rel="noopener">
+        <span class="reserva-btn-icon">📸</span>
+        <span class="reserva-btn-meta">Mensaje por Instagram<small>@barber_welcome_to_the_jungle</small></span>
+      </a>
+    </div>
+    <div class="contact-info">
+      <div class="contact-row">
+        <span class="contact-icon">📍</span>
+        <div>
+          <div class="contact-label">Dirección</div>
+          <div class="contact-val">C/ Calzada Real 14<br>Oropesa, Castilla-La Mancha</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <span class="contact-icon">📱</span>
+        <div>
+          <div class="contact-label">Instagram</div>
+          <div class="contact-val"><a href="https://www.instagram.com/barber_welcome_to_the_jungle" target="_blank">@barber_welcome_to_the_jungle</a></div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <span class="contact-icon">🕐</span>
+        <div>
+          <div class="contact-label">Horario general</div>
+          <div class="contact-val">Lun – Sáb · Consultar horario</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mapa-right reveal">
+    <div class="mapa-container">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3055.123!2d-5.1766!3d39.9217!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd41b5f6b8e4f1d5%3A0x1!2sCalle+Calzada+Real+14%2C+Oropesa%2C+Toledo!5e0!3m2!1ses!2ses!4v1718000000000!5m2!1ses!2ses"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        title="WTJ Barber Shop - C/ Calzada Real 14, Oropesa">
+      </iframe>
+      <div class="mapa-label">
+        <span style="font-size:1.1rem;">📍</span>
+        <div>
+          <div class="mapa-label-text">WTJ Barber Shop</div>
+          <div class="mapa-label-addr">C/ Calzada Real 14, Oropesa, Toledo</div>
+        </div>
+        <a class="mapa-open-btn" href="https://maps.google.com/?q=Calle+Calzada+Real+14,+Oropesa,+Toledo,+Spain" target="_blank" rel="noopener">Abrir Maps →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="blade-cut" aria-hidden="true"></div>
+
+<!-- HORARIO -->
+<section id="horario">
+  <div class="section-header reveal">
+    <span class="section-label">// Horario</span>
+    <h2 class="section-title" style="font-size:2.2rem;">Cuándo estamos</h2>
+  </div>
+  <div class="horario-inner">
+    <div class="reveal">
+      <div class="dia-row" id="d-lunes"><span class="dia-nombre">Lunes</span><span class="dia-hora">10:00 – 14:00 / 16:00 – 20:00</span></div>
+      <div class="dia-row" id="d-martes"><span class="dia-nombre">Martes</span><span class="dia-hora">10:00 – 14:00 / 16:00 – 20:00</span></div>
+      <div class="dia-row" id="d-miercoles"><span class="dia-nombre">Miércoles</span><span class="dia-hora">10:00 – 14:00 / 16:00 – 20:00</span></div>
+      <div class="dia-row" id="d-jueves"><span class="dia-nombre">Jueves</span><span class="dia-hora">10:00 – 14:00 / 16:00 – 20:00</span></div>
+      <div class="dia-row" id="d-viernes"><span class="dia-nombre">Viernes</span><span class="dia-hora">10:00 – 14:00 / 16:00 – 20:00</span></div>
+      <div class="dia-row" id="d-sabado"><span class="dia-nombre">Sábado</span><span class="dia-hora">10:00 – 14:00</span></div>
+      <div class="dia-row" id="d-domingo"><span class="dia-nombre">Domingo</span><span class="dia-hora cerrado">Cerrado</span></div>
+    </div>
+    <div class="reveal">
+      <div class="horario-nota">
+        <p>⚡ <strong>Consejo:</strong> Para asegurar tu turno, reserva con antelación por WhatsApp o Instagram. Aceptamos sin cita previa según disponibilidad.</p>
+      </div>
+      <div style="margin-top:2rem;">
+        <a class="btn-wa" href="https://wa.me/34637847114?text=Hola!%20Quiero%20saber%20el%20horario%20y%20reservar%20cita" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;font-family:'Space Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;background:var(--whatsapp);color:#fff;padding:0.95rem 2rem;text-decoration:none;">
+          💬 Confirmar horario por WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">WTJ<span>.</span><br><span style="font-size:0.9rem;letter-spacing:0.2em;color:rgba(242,237,215,0.4);">BARBER SHOP</span></div>
+  <div class="footer-social">
+    <a class="social-link" href="https://www.instagram.com/barber_welcome_to_the_jungle" target="_blank" rel="noopener">Instagram</a>
+    <a class="social-link" href="https://wa.me/34637847114" target="_blank" rel="noopener">WhatsApp</a>
+    <a class="social-link" href="javascript:void(0)" data-scroll-to="reserva">Ubicación</a>
+  </div>
+  <div class="footer-copy">© 2025 WTJ Barber Shop · Oropesa, CLM · Todos los derechos reservados</div>
+</footer>
+
+<script>
+
+  /* ── Splash screen ──────────────────── */
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('splash').classList.add('hidden');
+    }, 1800);
+  });
+
+  /* ── Scroll interno (sin abrir enlaces) ─ */
+  document.querySelectorAll('[data-scroll-to]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = el.getAttribute('data-scroll-to');
+      const target = document.getElementById(targetId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  /* ── Hojas flotantes ────────────────── */
+  const emojis = ['🌿','🍃','🌱','🍀','🌾'];
+  const leavesEl = document.getElementById('leavesContainer');
+  for (let i = 0; i < 16; i++) {
+    const l = document.createElement('div');
+    l.className = 'leaf';
+    l.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    l.style.left = Math.random() * 100 + 'vw';
+    l.style.fontSize = (Math.random() * 2.5 + 1.5) + 'rem';
+    const dur = Math.random() * 22 + 14;
+    l.style.animationDuration = dur + 's';
+    l.style.animationDelay = -(Math.random() * dur) + 's';
+    leavesEl.appendChild(l);
+  }
+
+  /* ── Scroll reveal ──────────────────── */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  /* ── Nav scroll ─────────────────────── */
+  const navEl = document.querySelector('nav');
+  window.addEventListener('scroll', () => {
+    navEl.style.background = window.scrollY > 60 ? 'rgba(10,10,10,0.98)' : 'rgba(10,10,10,0.92)';
+  });
+
+  /* ── Galería filtros ────────────────── */
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.galeria-item').forEach((item, i) => {
+        const show = cat === 'all' || item.dataset.cat === cat;
+        item.style.display = show ? 'flex' : 'none';
+        item.style.gridColumn = '';
+      });
+      const visibles = [...document.querySelectorAll('.galeria-item')].filter(el => el.style.display !== 'none');
+      document.querySelectorAll('.galeria-item').forEach(el => el.style.gridColumn = '');
+      if (visibles.length > 0) visibles[0].style.gridColumn = 'span 2';
+    });
+  });
+  const firstItem = document.querySelector('.galeria-item');
+  if (firstItem) firstItem.style.gridColumn = 'span 2';
+
+  /* ── Menú hamburguesa ──────────────────── */
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.contains('open');
+    hamburger.classList.toggle('open');
+    if (!isOpen) {
+      mobileMenu.style.display = 'flex';
+      requestAnimationFrame(() => mobileMenu.classList.add('open'));
+    } else {
+      mobileMenu.classList.remove('open');
+      setTimeout(() => { mobileMenu.style.display = 'none'; }, 300);
+    }
+    document.body.style.overflow = isOpen ? '' : 'hidden';
+  });
+
+  document.querySelectorAll('.mobile-link').forEach(link => {
+    link.addEventListener('click', () => {
+      hamburger.classList.remove('open');
+      mobileMenu.classList.remove('open');
+      setTimeout(() => { mobileMenu.style.display = 'none'; }, 300);
+      document.body.style.overflow = '';
+    });
+  });
+
+  /* ── Pop-up oferta ──────────────────────── */
+  const popupOverlay = document.getElementById('popupOverlay');
+  function cerrarPopup() {
+    popupOverlay.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('popupClose').addEventListener('click', cerrarPopup);
+  document.getElementById('popupSkip').addEventListener('click', cerrarPopup);
+  document.getElementById('popupWa').addEventListener('click', cerrarPopup);
+  popupOverlay.addEventListener('click', e => { if (e.target === popupOverlay) cerrarPopup(); });
+  popupOverlay.style.pointerEvents = 'none';
+  setTimeout(() => { popupOverlay.style.pointerEvents = 'auto'; }, 2600);
+
+  /* ── WA Bubble ─────────────────────────── */
+  let bubbleShown = false;
+  setTimeout(() => {
+    if (!bubbleShown) {
+      document.getElementById('waBubble').classList.remove('hidden');
+      bubbleShown = true;
+    }
+  }, 4000);
+  document.getElementById('waBubbleClose').addEventListener('click', () => {
+    document.getElementById('waBubble').classList.add('hidden');
+  });
+
+  /* ── SISTEMA RESERVA ────────────────────── */
+  let estado = { servicio: null, precio: null, fecha: null, hora: null };
+  let calFecha = new Date();
+  calFecha.setDate(1);
+
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+  function horasDisponibles(diaSemana) {
+    if (diaSemana === 0) return [];
+    if (diaSemana === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30'];
+    return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+  }
+
+  const ocupados = ['11:00','17:30','12:30'];
+
+  function renderCalendario() {
+    const grid = document.getElementById('cal-grid');
+    const label = document.getElementById('cal-mes-label');
+    const hoy = new Date();
+
+    label.textContent = MESES[calFecha.getMonth()] + ' ' + calFecha.getFullYear();
+    grid.innerHTML = '';
+
+    const primerDia = new Date(calFecha.getFullYear(), calFecha.getMonth(), 1);
+    let offset = (primerDia.getDay() + 6) % 7;
+    for (let i = 0; i < offset; i++) {
+      const v = document.createElement('div');
+      v.className = 'cal-celda vacio'; grid.appendChild(v);
+    }
+
+    const diasMes = new Date(calFecha.getFullYear(), calFecha.getMonth() + 1, 0).getDate();
+    for (let d = 1; d <= diasMes; d++) {
+      const fecha = new Date(calFecha.getFullYear(), calFecha.getMonth(), d);
+      const diaSem = fecha.getDay();
+      const celda = document.createElement('div');
+      celda.textContent = d;
+      const esHoy = fecha.toDateString() === hoy.toDateString();
+      const esPasado = fecha < new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+      const esDomingo = diaSem === 0;
+      const esSeleccionado = estado.fecha && fecha.toDateString() === estado.fecha.toDateString();
+
+      celda.className = 'cal-celda';
+      if (esHoy) celda.classList.add('hoy');
+      if (esPasado || esDomingo) celda.classList.add('disabled');
+      else {
+        celda.addEventListener('click', () => seleccionarFecha(fecha));
+      }
+      if (esSeleccionado) celda.classList.add('selected');
+      grid.appendChild(celda);
+    }
+  }
+
+  function seleccionarFecha(fecha) {
+    estado.fecha = fecha;
+    estado.hora = null;
+    renderCalendario();
+    renderHoras(fecha.getDay());
+    document.getElementById('next-2').disabled = true;
+  }
+
+  function renderHoras(diaSemana) {
+    const sec = document.getElementById('horas-section');
+    const grid = document.getElementById('horas-grid');
+    const horas = horasDisponibles(diaSemana);
+    if (!horas.length) { sec.style.display = 'none'; return; }
+    sec.style.display = 'block';
+    grid.innerHTML = '';
+    horas.forEach(h => {
+      const btn = document.createElement('button');
+      btn.className = 'hora-slot' + (ocupados.includes(h) ? ' ocupado' : '');
+      btn.textContent = h;
+      if (!ocupados.includes(h)) {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.hora-slot').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          estado.hora = h;
+          document.getElementById('next-2').disabled = false;
+        });
+      }
+      grid.appendChild(btn);
+    });
+  }
+
+  document.getElementById('cal-prev').addEventListener('click', () => {
+    calFecha.setMonth(calFecha.getMonth() - 1);
+    renderCalendario();
+  });
+  document.getElementById('cal-next').addEventListener('click', () => {
+    calFecha.setMonth(calFecha.getMonth() + 1);
+    renderCalendario();
+  });
+
+  document.querySelectorAll('.serv-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.serv-opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      estado.servicio = btn.dataset.servicio;
+      estado.precio = btn.dataset.precio;
+      document.getElementById('next-1').disabled = false;
+    });
+  });
+
+  function irAPaso(n) {
+    document.querySelectorAll('.step-panel').forEach((p, i) => {
+      p.classList.toggle('active', i + 1 === n);
+    });
+    document.querySelectorAll('.step-dot').forEach((d, i) => {
+      d.classList.toggle('active', i + 1 === n);
+      d.classList.toggle('done', i + 1 < n);
+    });
+    if (n === 2) renderCalendario();
+    if (n === 3) renderResumen();
+  }
+
+  document.getElementById('next-1').addEventListener('click', () => irAPaso(2));
+  document.getElementById('next-2').addEventListener('click', () => irAPaso(3));
+  document.getElementById('back-2').addEventListener('click', () => irAPaso(1));
+  document.getElementById('back-3').addEventListener('click', () => irAPaso(2));
+
+  function renderResumen() {
+    const ds = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const ms = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    document.getElementById('res-servicio').textContent = estado.servicio || '—';
+    document.getElementById('res-precio').textContent = estado.precio || '—';
+    document.getElementById('res-hora').textContent = estado.hora || '—';
+    if (estado.fecha) {
+      const f = estado.fecha;
+      document.getElementById('res-fecha').textContent =
+        ds[f.getDay()] + ', ' + f.getDate() + ' ' + ms[f.getMonth()] + ' ' + f.getFullYear();
+    }
+    const msg = encodeURIComponent(
+      '¡Hola WTJ Barber Shop! 🌿\n\nQuiero reservar una cita:\n' +
+      '• Servicio: ' + (estado.servicio||'') + '\n' +
+      '• Fecha: ' + (estado.fecha ? estado.fecha.toLocaleDateString('es-ES') : '') + '\n' +
+      '• Hora: ' + (estado.hora||'') + '\n\n¿Está disponible? 💈'
+    );
+    document.getElementById('btn-confirmar-wa').href = 'https://wa.me/34637847114?text=' + msg;
+  }
+
+  /* ── Hoy en horario ─────────────────── */
+  const dayMap = {0:'domingo',1:'lunes',2:'martes',3:'miercoles',4:'jueves',5:'viernes',6:'sabado'};
+  const todayKey = dayMap[new Date().getDay()];
+  const todayRow = document.getElementById('d-' + todayKey);
+  if (todayRow) {
+    todayRow.classList.add('today');
+    const badge = document.createElement('span');
+    badge.className = 'today-badge';
+    badge.textContent = 'HOY';
+    todayRow.querySelector('.dia-nombre').appendChild(badge);
+  }
+</script>
+</body>
+</html>
+
