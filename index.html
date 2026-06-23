@@ -13,7 +13,7 @@
 
     :root {
       --negro: #0A0A0A;
-      --bg-alt: #0C1410;
+      --bg-alt: #101C14;
       --verde-selva: #1E3A0F;
       --verde-neon: #7CB518;
       --crema: #F2EDD7;
@@ -35,27 +35,27 @@
       position: fixed; inset: 0; pointer-events: none; z-index: 10000;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
       background-repeat: repeat;
-      opacity: 0.035;
+      opacity: 0.06;
     }
 
     /* ── MARQUEE STRIP ───────────────────────────────── */
     .marquee-strip {
-      overflow: hidden; padding: 0.7rem 0;
+      overflow: hidden; padding: 0.85rem 0;
       background: var(--verde-selva);
-      border-top: 1px solid rgba(124,181,24,0.18);
-      border-bottom: 1px solid rgba(124,181,24,0.18);
+      border-top: 1px solid rgba(124,181,24,0.35);
+      border-bottom: 1px solid rgba(124,181,24,0.35);
     }
     .marquee-track {
-      display: inline-flex; align-items: center; gap: 2.2rem;
+      display: inline-flex; align-items: center; gap: 2.5rem;
       white-space: nowrap;
-      animation: marqueeScroll 32s linear infinite;
+      animation: marqueeScroll 28s linear infinite;
     }
     .marquee-strip span {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 0.78rem; letter-spacing: 0.28em;
-      color: rgba(242,237,215,0.6);
+      font-size: 0.92rem; letter-spacing: 0.3em;
+      color: rgba(242,237,215,0.85);
     }
-    .marquee-strip .sep { color: var(--verde-neon); font-size: 0.45rem; opacity: 0.9; }
+    .marquee-strip .sep { color: var(--verde-neon); font-size: 0.55rem; opacity: 1; }
     @keyframes marqueeScroll {
       0%   { transform: translateX(0); }
       100% { transform: translateX(-50%); }
