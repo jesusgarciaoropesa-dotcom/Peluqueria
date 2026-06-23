@@ -195,16 +195,40 @@
     }
 
     .leaves-container { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .leaf {
-      position: absolute; opacity: 0.1; font-size: 5rem;
-      animation: floatLeaf linear infinite; filter: blur(0.5px);
+    .leaf { position: absolute; top: -10vh; pointer-events: none; }
+    @keyframes jFall0 {
+      0%   { transform: translate(0,0) rotate(5deg); opacity:0; }
+      7%   { opacity:1; }
+      35%  { transform: translate(7vw,38vh) rotate(100deg); }
+      70%  { transform: translate(-3vw,74vh) rotate(185deg); }
+      93%  { opacity:.75; }
+      100% { transform: translate(4vw,112vh) rotate(270deg); opacity:0; }
     }
-    @keyframes floatLeaf {
-      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-      10%  { opacity: 0.1; }
-      90%  { opacity: 0.1; }
-      100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+    @keyframes jFall1 {
+      0%   { transform: translate(0,0) rotate(-8deg); opacity:0; }
+      7%   { opacity:1; }
+      30%  { transform: translate(-9vw,33vh) rotate(-88deg); }
+      65%  { transform: translate(-5vw,70vh) rotate(-170deg); }
+      93%  { opacity:.75; }
+      100% { transform: translate(-11vw,112vh) rotate(-255deg); opacity:0; }
     }
+    @keyframes jFall2 {
+      0%   { transform: translate(0,0) rotate(12deg); opacity:0; }
+      7%   { opacity:1; }
+      50%  { transform: translate(4vw,52vh) rotate(195deg); }
+      93%  { opacity:.75; }
+      100% { transform: translate(2vw,112vh) rotate(375deg); opacity:0; }
+    }
+    @keyframes jFall3 {
+      0%   { transform: translate(0,0) rotate(-4deg); opacity:0; }
+      7%   { opacity:1; }
+      25%  { transform: translate(-6vw,28vh) rotate(-58deg); }
+      55%  { transform: translate(4vw,58vh) rotate(-148deg); }
+      80%  { transform: translate(-2vw,82vh) rotate(-218deg); }
+      93%  { opacity:.75; }
+      100% { transform: translate(5vw,112vh) rotate(-308deg); opacity:0; }
+    }
+    @media (prefers-reduced-motion: reduce) { .leaf { animation: none !important; opacity: 0 !important; } }
 
     .hero-content { position: relative; z-index: 2; max-width: 950px; }
 
@@ -2099,20 +2123,34 @@
     });
   });
 
-  /* ── Hojas flotantes ────────────────── */
-  const emojis = ['🌿','🍃','🌱','🍀','🌾'];
-  const leavesEl = document.getElementById('leavesContainer');
-  for (let i = 0; i < 16; i++) {
-    const l = document.createElement('div');
-    l.className = 'leaf';
-    l.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-    l.style.left = Math.random() * 100 + 'vw';
-    l.style.fontSize = (Math.random() * 2.5 + 1.5) + 'rem';
-    const dur = Math.random() * 22 + 14;
-    l.style.animationDuration = dur + 's';
-    l.style.animationDelay = -(Math.random() * dur) + 's';
-    leavesEl.appendChild(l);
-  }
+  /* ── Hojas flotantes jungla ─────────── */
+  (function() {
+    const container = document.getElementById('leavesContainer');
+    const fills = [
+      'rgba(124,181,24,.55)','rgba(30,95,15,.65)','rgba(80,148,10,.50)',
+      'rgba(100,162,20,.52)','rgba(55,108,12,.60)'
+    ];
+    const anims = ['jFall0','jFall1','jFall2','jFall3'];
+    function svg(f) {
+      const s = Math.floor(Math.random()*3);
+      return [
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 72"><path d="M14,1 C22,12 25,34 21,53 C17,67 14,70 14,70 C14,70 11,67 7,53 C3,34 6,12 14,1Z" fill="${f}"/><path d="M14,4 L14,67" stroke="rgba(0,25,0,.35)" stroke-width=".9" fill="none"/></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 36"><path d="M26,3 C44,7 50,19 44,29 C38,37 14,37 8,29 C2,19 8,7 26,3Z" fill="${f}"/><path d="M9,19 L44,18" stroke="rgba(0,25,0,.28)" stroke-width=".8" fill="none"/></svg>`,
+        `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 80"><path d="M18,2 C31,15 33,40 27,60 C22,74 18,78 18,78 C18,78 9,69 5,52 C0,31 7,13 18,2Z" fill="${f}"/><path d="M18,5 L16,74" stroke="rgba(0,25,0,.3)" stroke-width=".9" fill="none"/></svg>`,
+      ][s];
+    }
+    for (let i = 0; i < 26; i++) {
+      const el = document.createElement('div');
+      el.className = 'leaf';
+      const sz = (Math.random()*3.5+1.8).toFixed(2);
+      const fill = fills[i % fills.length];
+      const anim = anims[Math.floor(Math.random()*4)];
+      const dur  = (Math.random()*16+11).toFixed(1);
+      el.innerHTML = svg(fill);
+      el.style.cssText = `left:${(Math.random()*88+4).toFixed(1)}%;width:${sz}rem;height:${(+sz*2.2).toFixed(2)}rem;animation-name:${anim};animation-duration:${dur}s;animation-delay:-${(Math.random()*+dur).toFixed(1)}s;animation-timing-function:linear;animation-iteration-count:infinite;`;
+      container.appendChild(el);
+    }
+  })();
 
   /* ── Scroll reveal ──────────────────── */
   const reveals = document.querySelectorAll('.reveal');
