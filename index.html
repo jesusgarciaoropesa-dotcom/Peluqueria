@@ -1398,6 +1398,53 @@
       .precio-categoria + .precio-categoria { border-left: 1px solid rgba(124,181,24,0.1); border-top: none; }
       .ad-grid { grid-template-columns: 1fr; }
     }
+    /* ── LIGHTBOX ──────────────────────────── */
+    #lightbox {
+      position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,0.96);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #lightbox.lb-open { opacity: 1; pointer-events: all; }
+    .lb-img-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      max-width: 90vw;
+    }
+    #lb-img {
+      max-width: 90vw; max-height: 80vh;
+      object-fit: contain;
+      border: 1px solid rgba(124,181,24,0.25);
+      display: block;
+    }
+    .lb-label {
+      margin-top: 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(242,237,215,0.45);
+    }
+    .lb-close {
+      position: fixed; top: 1.5rem; right: 1.5rem;
+      background: none; border: 1px solid rgba(242,237,215,0.2); color: var(--crema);
+      width: 2.6rem; height: 2.6rem; border-radius: 50%;
+      font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .lb-close:hover { border-color: var(--verde-neon); color: var(--verde-neon); }
+    .lb-prev, .lb-next {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      background: none; border: 1px solid rgba(242,237,215,0.15); color: var(--crema);
+      width: 3rem; height: 3rem; border-radius: 50%;
+      font-size: 1.6rem; line-height: 1; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .lb-prev { left: 1rem; }
+    .lb-next { right: 1rem; }
+    .lb-prev:hover, .lb-next:hover { border-color: var(--verde-neon); color: var(--verde-neon); }
+    @media (max-width: 600px) { .lb-prev { left: 0.4rem; } .lb-next { right: 0.4rem; } }
+
   </style>
 </head>
 <body>
@@ -2156,13 +2203,24 @@
   <div class="footer-copy">© 2025 WTJ Barber Shop · Oropesa, CLM · Todos los derechos reservados</div>
 </footer>
 
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button class="lb-close" aria-label="Cerrar">✕</button>
+  <button class="lb-prev" aria-label="Anterior">&#8249;</button>
+  <div class="lb-img-wrap">
+    <img id="lb-img" src="" alt="" />
+    <div id="lb-label" class="lb-label"></div>
+  </div>
+  <button class="lb-next" aria-label="Siguiente">&#8250;</button>
+</div>
+
 <script>
 
   /* ── Splash screen ──────────────────── */
   window.addEventListener('load', () => {
     setTimeout(() => {
       document.getElementById('splash').classList.add('hidden');
-    }, 1800);
+    }, 3700);
   });
 
   /* ── Scroll interno (sin abrir enlaces) ─ */
@@ -2425,6 +2483,54 @@
     badge.textContent = 'HOY';
     todayRow.querySelector('.dia-nombre').appendChild(badge);
   }
+
+  /* ── Lightbox ───────────────────────── */
+  (function() {
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lb-img');
+    const lbLbl = document.getElementById('lb-label');
+    let items = [];
+    let idx = 0;
+
+    function open(i) {
+      idx = i;
+      lbImg.src = items[i].src;
+      lbImg.alt = items[i].label;
+      lbLbl.textContent = items[i].label;
+      lb.classList.add('lb-open');
+      document.body.style.overflow = 'hidden';
+    }
+    function close() {
+      lb.classList.remove('lb-open');
+      document.body.style.overflow = '';
+    }
+    function nav(dir) {
+      idx = (idx + dir + items.length) % items.length;
+      lbImg.src = items[idx].src;
+      lbImg.alt = items[idx].label;
+      lbLbl.textContent = items[idx].label;
+    }
+
+    document.querySelectorAll('.galeria-item').forEach((el, i) => {
+      items.push({ src: el.querySelector('img').src, label: el.dataset.label || '' });
+      const ot = el.querySelector('.galeria-overlay-text');
+      if (ot) ot.textContent = 'Ver foto';
+      el.addEventListener('click', () => open(i));
+      el.style.cursor = 'pointer';
+    });
+
+    document.querySelector('.lb-close').addEventListener('click', close);
+    document.querySelector('.lb-prev').addEventListener('click', () => nav(-1));
+    document.querySelector('.lb-next').addEventListener('click', () => nav(1));
+    lb.addEventListener('click', e => { if (e.target === lb) close(); });
+    document.addEventListener('keydown', e => {
+      if (!lb.classList.contains('lb-open')) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') nav(-1);
+      if (e.key === 'ArrowRight') nav(1);
+    });
+  })();
+
 </script>
 </body>
 </html>
