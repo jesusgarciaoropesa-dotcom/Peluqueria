@@ -1653,8 +1653,8 @@
         <div class="stat-label">Corte desde</div>
       </div>
       <div class="stat">
-        <div class="stat-number">L–S</div>
-        <div class="stat-label">Abierto toda la semana</div>
+        <div class="stat-number">Mar–Sáb</div>
+        <div class="stat-label">Lunes cerrado</div>
       </div>
       <div class="stat">
         <div class="stat-number">637 847 114</div>
@@ -1966,8 +1966,8 @@
           <div class="b-stat-txt">Especialidades</div>
         </div>
         <div>
-          <div class="b-stat-num">L–S</div>
-          <div class="b-stat-txt">Abierto cada semana</div>
+          <div class="b-stat-num">Mar–Sáb</div>
+          <div class="b-stat-txt">Lunes cerrado</div>
         </div>
         <div>
           <div class="b-stat-num">100%</div>
@@ -2049,7 +2049,7 @@
       <!-- PASO 2: Fecha y Hora -->
       <div class="step-panel" id="step-2">
         <div class="step-title">Elige día y hora</div>
-        <div class="step-subtitle">Paso 2 de 3 · Horario: Lun–Vie 10–14h / 16–20h · Sáb 10–14h</div>
+        <div class="step-subtitle">Paso 2 de 3 · Horario: Mar–Vie 10–13h / 16–20h · Sáb 10–16h · Lun cerrado</div>
 
         <div class="calendario">
           <div class="cal-header">
@@ -2185,7 +2185,7 @@
         <span class="contact-icon">🕐</span>
         <div>
           <div class="contact-label">Horario general</div>
-          <div class="contact-val">Lun – Sáb · Consultar horario</div>
+          <div class="contact-val">Mar – Sáb · Lun cerrado</div>
         </div>
       </div>
     </div>
@@ -2456,8 +2456,8 @@
   const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
   function horasDisponibles(diaSemana) {
-    if (diaSemana === 0) return [];
-    if (diaSemana === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30'];
+    if (diaSemana === 0 || diaSemana === 1) return [];
+    if (diaSemana === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
     return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
   }
 
@@ -2486,12 +2486,12 @@
       celda.textContent = d;
       const esHoy = fecha.toDateString() === hoy.toDateString();
       const esPasado = fecha < new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-      const esDomingo = diaSem === 0;
+      const esCerrado = diaSem === 0 || diaSem === 1;
       const esSeleccionado = estado.fecha && fecha.toDateString() === estado.fecha.toDateString();
 
       celda.className = 'cal-celda';
       if (esHoy) celda.classList.add('hoy');
-      if (esPasado || esDomingo) celda.classList.add('disabled');
+      if (esPasado || esCerrado) celda.classList.add('disabled');
       else {
         celda.addEventListener('click', () => seleccionarFecha(fecha));
       }
