@@ -176,22 +176,32 @@
     /* ── HERO ────────────────────────────────────────── */
     #hero {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: flex-start;
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      align-items: center;
       position: relative;
       overflow: hidden;
       padding: 8rem 5vw 5rem;
+      gap: 4rem;
     }
 
     .hero-bg {
       position: absolute; inset: 0;
       background:
-        radial-gradient(ellipse at 75% 45%, rgba(30,58,15,0.6) 0%, transparent 60%),
-        radial-gradient(ellipse at 5% 85%, rgba(124,181,24,0.07) 0%, transparent 45%),
-        var(--negro);
+        radial-gradient(ellipse at 62% 52%, rgba(124,181,24,0.22) 0%, rgba(18,48,5,0.4) 38%, transparent 64%),
+        radial-gradient(ellipse at 8% 80%, rgba(124,181,24,0.13) 0%, transparent 50%),
+        radial-gradient(ellipse at 45% 0%, rgba(124,181,24,0.07) 0%, transparent 55%),
+        linear-gradient(155deg, #0e1d06 0%, #090d04 45%, #0a0a0a 100%);
       z-index: 0;
+    }
+
+    .hero-stripes {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background-image: repeating-linear-gradient(
+        -52deg,
+        transparent 0px, transparent 48px,
+        rgba(124,181,24,0.025) 48px, rgba(124,181,24,0.025) 50px
+      );
     }
 
     .leaves-container { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
@@ -249,6 +259,7 @@
       color: var(--verde-neon);
       position: relative;
       display: inline-block;
+      text-shadow: 0 0 40px rgba(124,181,24,0.6), 0 0 90px rgba(124,181,24,0.22);
     }
     .hero-title .accent::after {
       content: '';
@@ -298,10 +309,12 @@
 
     /* Hero stats + location bar */
     .hero-bottom {
-      margin-top: 3.5rem;
-      display: flex; gap: 3rem; flex-wrap: wrap; align-items: center;
+      margin-top: 2.8rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(124,181,24,0.25);
+      display: flex; gap: 2.5rem; flex-wrap: wrap; align-items: center;
     }
-    .stat { }
+    .stat { border-left: 2px solid rgba(124,181,24,0.5); padding-left: 1rem; }
     .stat-number { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; color: var(--verde-neon); line-height: 1; }
     .stat-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(242,237,215,0.45); margin-top: 0.25rem; }
 
@@ -314,6 +327,42 @@
     }
     .hero-location:hover { color: var(--oro); }
     .hero-location span { color: var(--oro); font-size: 1rem; }
+
+    /* Hero right-side visual */
+    .hero-visual {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .hero-logo-ring {
+      position: relative;
+      width: 300px; height: 300px;
+    }
+    .hero-logo-ring::before {
+      content: '';
+      position: absolute; inset: -20px;
+      border-radius: 50%;
+      border: 1px solid rgba(124,181,24,0.4);
+      animation: heroRingPulse 3.5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .hero-logo-ring::after {
+      content: '';
+      position: absolute; inset: -42px;
+      border-radius: 50%;
+      border: 1px solid rgba(124,181,24,0.14);
+      animation: heroRingPulse 3.5s ease-in-out infinite 0.9s;
+      pointer-events: none;
+    }
+    .hero-logo-img {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      filter: drop-shadow(0 0 38px rgba(124,181,24,0.45)) drop-shadow(0 0 75px rgba(124,181,24,0.18));
+    }
+    @keyframes heroRingPulse {
+      0%, 100% { opacity: 0.45; transform: scale(1); }
+      50%       { opacity: 1;    transform: scale(1.04); }
+    }
 
     /* ── SECCIÓN INTRO ───────────────────────────────── */
     #intro {
@@ -1447,6 +1496,8 @@
     @media (max-width: 768px) {
       nav { padding: 0.9rem 1.3rem; }
       .nav-links { display: none; }
+      #hero { grid-template-columns: 1fr; padding-top: 7rem; }
+      .hero-visual { display: none; }
       #intro { grid-template-columns: 1fr; gap: 2rem; }
       #reserva { grid-template-columns: 1fr; gap: 3rem; }
       .horario-inner { grid-template-columns: 1fr; gap: 2rem; }
@@ -1580,6 +1631,7 @@
 <!-- HERO -->
 <section id="hero">
   <div class="hero-bg"></div>
+  <div class="hero-stripes" aria-hidden="true"></div>
   <div class="leaves-container" id="leavesContainer"></div>
 
   <div class="hero-content">
@@ -1610,6 +1662,12 @@
       <a class="hero-location" href="https://maps.google.com/?q=C%2F+Calzada+Real+14%2C+Oropesa%2C+Toledo" target="_blank" rel="noopener">
         <span>📍</span> C/ Calzada Real 14 · Oropesa
       </a>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="hero-logo-ring">
+      <img src="assets/logo.png" alt="" class="hero-logo-img" />
     </div>
   </div>
 </section>
