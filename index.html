@@ -364,35 +364,6 @@
       50%       { opacity: 1;    transform: scale(1.04); }
     }
 
-    /* ── SECCIÓN INTRO ───────────────────────────────── */
-    #intro {
-      padding: 6rem 5vw;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
-    }
-    .intro-text h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2.2rem, 4.5vw, 3.5rem);
-      line-height: 1; letter-spacing: 0.04em; margin-bottom: 1.3rem;
-    }
-    .intro-text h2 em { font-style: normal; color: var(--verde-neon); }
-    .intro-text p { font-size: 1.1rem; line-height: 1.75; color: rgba(242,237,215,0.7); margin-bottom: 0.9rem; }
-    .intro-text p strong { color: var(--crema); }
-
-    /* Specialties pills */
-    .intro-card { background: var(--gris-oscuro); border: 1px solid rgba(124,181,24,0.15); padding: 2rem; }
-    .intro-card-title {
-      font-family: 'Space Mono', monospace; font-size: 0.65rem;
-      letter-spacing: 0.2em; text-transform: uppercase; color: var(--oro); margin-bottom: 1.3rem;
-    }
-    .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .tag {
-      font-family: 'Space Mono', monospace; font-size: 0.62rem;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      border: 1px solid rgba(200,136,42,0.35); color: var(--oro);
-      padding: 0.35rem 0.8rem; transition: background 0.2s, color 0.2s;
-    }
-    .tag:hover { background: rgba(200,136,42,0.1); }
-
     /* ── SERVICIOS ───────────────────────────────────── */
     #servicios { padding: 6rem 5vw; background: var(--bg-alt); }
 
@@ -552,23 +523,6 @@
     }
     .mapa-open-btn:hover { background: rgba(124,181,24,0.08); }
 
-    /* ── HORARIO ─────────────────────────────────────── */
-    #horario { padding: 5rem 5vw; }
-    .horario-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
-    .dia-row { display: flex; justify-content: space-between; align-items: center; padding: 0.65rem 0; border-bottom: 1px solid rgba(242,237,215,0.05); }
-    .dia-nombre { font-family: 'Space Mono', monospace; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242,237,215,0.45); }
-    .dia-hora { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--crema); }
-    .dia-hora.cerrado { color: rgba(242,237,215,0.2); }
-    .dia-row.today .dia-nombre { color: var(--verde-neon); }
-    .dia-row.today .dia-hora { color: var(--verde-neon); font-weight: 700; }
-    .today-badge { font-family: 'Space Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; background: var(--verde-neon); color: var(--negro); padding: 0.15rem 0.4rem; margin-left: 0.5rem; }
-
-    .horario-nota {
-      margin-top: 2rem; padding: 1.2rem; background: rgba(124,181,24,0.06);
-      border-left: 3px solid var(--verde-neon);
-    }
-    .horario-nota p { font-size: 0.88rem; color: rgba(242,237,215,0.6); line-height: 1.6; }
-    .horario-nota strong { color: var(--crema); }
 
     /* ── FOOTER ──────────────────────────────────────── */
     footer {
@@ -668,21 +622,7 @@
       color: rgba(242,237,215,0.4);
       animation: fadeInUp 0.5s 0.8s ease forwards; opacity: 0;
     }
-
-    /* ── PRECIOS ─────────────────────────────────────── */
-    #precios {
-      padding: 6rem 5vw;
-      background: var(--negro);
-      position: relative; overflow: hidden;
-    }
-    #precios::before {
-      content: 'MENU';
-      position: absolute; top: 2rem; right: 3vw;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(6rem, 18vw, 14rem);
-      color: rgba(124,181,24,0.03);
-      pointer-events: none; line-height: 1; letter-spacing: 0.1em;
-    }
+}
 
     .precios-intro {
       display: flex; justify-content: space-between; align-items: flex-end;
@@ -754,62 +694,6 @@
       padding: 0.12rem 0.4rem; margin-left: 0.4rem; vertical-align: middle;
     }
 
-    /* ── ANTES/DESPUÉS ───────────────────────────────── */
-    #antes-despues {
-      padding: 6rem 5vw;
-      background: var(--gris-oscuro);
-    }
-    .ad-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem; margin-top: 3rem;
-    }
-    .ad-card {
-      position: relative; overflow: hidden;
-      border: 1px solid rgba(124,181,24,0.1);
-      cursor: pointer;
-    }
-    .ad-card-inner {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 2px; background: rgba(124,181,24,0.08);
-    }
-    .ad-img {
-      aspect-ratio: 1; overflow: hidden; position: relative;
-    }
-    .ad-img img {
-      width: 100%; height: 100%; object-fit: cover; object-position: top;
-      filter: grayscale(0.2);
-    }
-    .ad-img.antes img { filter: grayscale(0.6) brightness(0.85); }
-    .ad-label {
-      position: absolute; bottom: 0; left: 0; right: 0;
-      font-family: 'Space Mono', monospace; font-size: 0.6rem;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      text-align: center; padding: 0.4rem;
-      background: rgba(10,10,10,0.8);
-    }
-    .ad-label.antes-label { color: rgba(242,237,215,0.4); }
-    .ad-label.despues-label { color: var(--oro); }
-    .ad-card-footer {
-      padding: 0.9rem 1rem;
-      display: flex; justify-content: space-between; align-items: center;
-      background: var(--gris-oscuro);
-    }
-    .ad-card-title {
-      font-family: 'Crimson Pro', serif; font-size: 0.95rem;
-      color: var(--crema); font-style: italic;
-    }
-    .ad-card-tipo {
-      font-family: 'Space Mono', monospace; font-size: 0.6rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--oro);
-    }
-
-
-    /* ══════════════════════════════════════════
-       FASE 4 — SISTEMA DE RESERVA + WA CHAT
-    ══════════════════════════════════════════ */
-
     /* ── WA CHAT MEJORADO ───────────────────── */
     .wa-float {
       width: auto !important;
@@ -880,251 +764,7 @@
     }
     .wa-bubble-close:hover { color: var(--crema); }
 
-    /* ── SISTEMA RESERVA ─────────────────────── */
-    #sistema-reserva {
-      padding: 6rem 5vw;
-      background: var(--negro);
-      position: relative; overflow: hidden;
-    }
-    #sistema-reserva::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: radial-gradient(ellipse at 50% 50%, rgba(30,58,15,0.3) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .reserva-sistema-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 4rem; align-items: start;
-      position: relative; z-index: 1;
-    }
-
-    /* Pasos de selección */
-    .reserva-steps {
-      display: flex; flex-direction: column; gap: 0;
-    }
-    .step-indicator {
-      display: flex; align-items: center; gap: 1rem;
-      margin-bottom: 2.5rem;
-    }
-    .step-dot {
-      width: 0.5rem; height: 0.5rem; border-radius: 50%;
-      background: rgba(124,181,24,0.2);
-      transition: background 0.3s;
-      flex-shrink: 0;
-    }
-    .step-dot.active { background: var(--verde-neon); box-shadow: 0 0 8px var(--verde-neon); }
-    .step-dot.done { background: rgba(124,181,24,0.5); }
-    .step-line {
-      flex: 1; height: 1px;
-      background: rgba(124,181,24,0.12);
-    }
-
-    /* Panel de pasos */
-    .step-panel { display: none; }
-    .step-panel.active { display: block; }
-
-    .step-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.6rem; letter-spacing: 0.08em; color: var(--crema);
-      margin-bottom: 0.4rem;
-    }
-    .step-subtitle {
-      font-family: 'Space Mono', monospace; font-size: 0.62rem;
-      letter-spacing: 0.12em; text-transform: uppercase;
-      color: rgba(242,237,215,0.35); margin-bottom: 1.5rem;
-    }
-
-    /* Selector de servicio */
-    .servicio-selector {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: 0.6rem; margin-bottom: 1.5rem;
-    }
-    .serv-opt {
-      border: 1px solid rgba(242,237,215,0.1);
-      padding: 0.9rem 1rem; cursor: pointer;
-      transition: all 0.2s; text-align: left;
-      background: transparent;
-    }
-    .serv-opt:hover { border-color: rgba(124,181,24,0.4); }
-    .serv-opt.selected { border-color: var(--verde-neon); background: rgba(124,181,24,0.08); }
-    .serv-opt-name {
-      font-family: 'Crimson Pro', serif; font-size: 0.95rem;
-      color: var(--crema); display: block; margin-bottom: 0.2rem;
-    }
-    .serv-opt-price {
-      font-family: 'Space Mono', monospace; font-size: 0.65rem;
-      color: var(--oro);
-    }
-    .serv-opt.selected .serv-opt-name { color: var(--verde-neon); }
-
-    /* Calendario */
-    .calendario {
-      background: var(--gris-oscuro);
-      border: 1px solid rgba(124,181,24,0.12);
-      padding: 1.2rem;
-      margin-bottom: 1.5rem;
-    }
-    .cal-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 1rem;
-    }
-    .cal-mes {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.1rem; letter-spacing: 0.1em; color: var(--crema);
-    }
-    .cal-nav {
-      background: none; border: 1px solid rgba(124,181,24,0.2);
-      color: var(--verde-neon); width: 2rem; height: 2rem;
-      cursor: pointer; font-size: 0.9rem; display: flex;
-      align-items: center; justify-content: center;
-      transition: background 0.15s;
-    }
-    .cal-nav:hover { background: rgba(124,181,24,0.1); }
-    .cal-dias-semana {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      gap: 2px; margin-bottom: 4px;
-    }
-    .cal-dia-sem {
-      font-family: 'Space Mono', monospace; font-size: 0.58rem;
-      letter-spacing: 0.08em; text-transform: uppercase;
-      color: rgba(242,237,215,0.3); text-align: center; padding: 0.3rem 0;
-    }
-    .cal-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr);
-      gap: 2px;
-    }
-    .cal-celda {
-      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-      font-family: 'Space Mono', monospace; font-size: 0.72rem;
-      cursor: pointer; transition: all 0.15s; position: relative;
-      color: rgba(242,237,215,0.6);
-    }
-    .cal-celda:hover:not(.disabled):not(.vacio) { background: rgba(124,181,24,0.12); color: var(--crema); }
-    .cal-celda.selected { background: var(--verde-neon); color: var(--negro); font-weight: 700; }
-    .cal-celda.hoy { color: var(--oro); }
-    .cal-celda.hoy::after { content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: var(--oro); }
-    .cal-celda.disabled { color: rgba(242,237,215,0.15); cursor: not-allowed; }
-    .cal-celda.vacio { cursor: default; }
-    .cal-celda.cerrado { color: rgba(242,237,215,0.1); cursor: not-allowed; text-decoration: line-through; }
-
-    /* Slots de hora */
-    .horas-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem; margin-bottom: 1.5rem;
-    }
-    .hora-slot {
-      font-family: 'Space Mono', monospace; font-size: 0.68rem;
-      letter-spacing: 0.06em; text-align: center;
-      border: 1px solid rgba(242,237,215,0.12);
-      padding: 0.6rem 0.4rem; cursor: pointer;
-      transition: all 0.15s; background: transparent; color: var(--crema);
-    }
-    .hora-slot:hover:not(.ocupado) { border-color: var(--verde-neon); color: var(--verde-neon); }
-    .hora-slot.selected { background: var(--verde-neon); color: var(--negro); border-color: var(--verde-neon); font-weight: 700; }
-    .hora-slot.ocupado { color: rgba(242,237,215,0.15); cursor: not-allowed; border-color: rgba(242,237,215,0.05); text-decoration: line-through; }
-
-    /* Resumen reserva */
-    .reserva-resumen {
-      background: var(--gris-oscuro);
-      border: 1px solid rgba(124,181,24,0.2);
-      padding: 1.5rem;
-    }
-    .resumen-title {
-      font-family: 'Space Mono', monospace; font-size: 0.65rem;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--oro); margin-bottom: 1.2rem;
-    }
-    .resumen-item {
-      display: flex; justify-content: space-between;
-      padding: 0.6rem 0; border-bottom: 1px solid rgba(242,237,215,0.06);
-      font-size: 0.92rem;
-    }
-    .resumen-item:last-child { border-bottom: none; }
-    .resumen-key { color: rgba(242,237,215,0.45); font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase; }
-    .resumen-val { color: var(--crema); font-family: 'Crimson Pro', serif; }
-    .resumen-val.highlight { color: var(--oro); font-weight: 600; }
-
-    .btn-reservar-wa {
-      display: flex; align-items: center; justify-content: center; gap: 0.8rem;
-      width: 100%; padding: 1.1rem;
-      background: linear-gradient(135deg, #2ddb6e 0%, #1aad50 100%);
-      color: #fff; border-radius: 12px;
-      font-family: 'Space Mono', monospace; font-size: 0.75rem;
-      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
-      text-decoration: none; border: none; cursor: pointer;
-      box-shadow: 0 4px 18px rgba(37,211,102,0.4);
-      transition: transform 0.2s, box-shadow 0.2s;
-      margin-top: 1.2rem;
-    }
-    .btn-reservar-wa:hover { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(37,211,102,0.6); }
-    .btn-reservar-wa:disabled { background: rgba(37,211,102,0.2); color: rgba(255,255,255,0.3); cursor: not-allowed; transform: none; }
-
-    .step-nav {
-      display: flex; gap: 0.6rem; margin-top: 1rem;
-    }
-    .btn-step {
-      font-family: 'Space Mono', monospace; font-size: 0.68rem;
-      letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700;
-      padding: 0.7rem 1.4rem; cursor: pointer; transition: all 0.2s; border: none;
-    }
-    .btn-step-next { background: var(--verde-neon); color: var(--negro); }
-    .btn-step-next:hover { background: #9ADB20; }
-    .btn-step-next:disabled { background: rgba(124,181,24,0.2); color: rgba(10,10,10,0.4); cursor: not-allowed; }
-    .btn-step-back { background: transparent; color: rgba(242,237,215,0.4); border: 1px solid rgba(242,237,215,0.15); }
-    .btn-step-back:hover { color: var(--crema); border-color: rgba(242,237,215,0.4); }
-
-    /* Panel derecho — visual */
-    .reserva-visual {
-      position: sticky; top: 7rem;
-    }
-    .reserva-visual-header {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      letter-spacing: 0.04em; line-height: 0.95; margin-bottom: 1.5rem;
-    }
-    .reserva-visual-header em { font-style: normal; color: var(--oro); }
-    .reserva-visual-sub {
-      font-family: 'Crimson Pro', serif; font-size: 1rem;
-      font-style: italic; color: rgba(242,237,215,0.5); line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-    .reserva-promesas {
-      display: flex; flex-direction: column; gap: 0.8rem;
-    }
-    .promesa-item {
-      display: flex; align-items: flex-start; gap: 0.8rem;
-      padding: 0.9rem 1rem;
-      border: 1px solid rgba(124,181,24,0.1);
-      transition: border-color 0.2s;
-    }
-    .promesa-item:hover { border-color: rgba(124,181,24,0.3); }
-    .promesa-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 0.1rem; }
-    .promesa-text { font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: rgba(242,237,215,0.7); line-height: 1.5; }
-    .promesa-text strong { color: var(--crema); display: block; margin-bottom: 0.15rem; }
-
-    /* Confirmación */
-    .confirmacion {
-      display: none; text-align: center; padding: 3rem 1rem;
-    }
-    .confirmacion.visible { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
-    .conf-check {
-      width: 4rem; height: 4rem; border-radius: 50%;
-      background: rgba(37,211,102,0.1); border: 2px solid var(--whatsapp);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.8rem;
-      animation: confPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
-    }
-    @keyframes confPop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
-    .conf-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.1em; color: var(--crema); }
-    .conf-sub { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(242,237,215,0.4); }
-
     @media (max-width: 768px) {
-      .reserva-sistema-grid { grid-template-columns: 1fr; }
-      .reserva-visual { position: static; }
-      .servicio-selector { grid-template-columns: 1fr; }
-      .horas-grid { grid-template-columns: repeat(4, 1fr); }
     }
 
 
@@ -1388,7 +1028,7 @@
     .reveal.visible { opacity: 1; transform: translateY(0); }
     @media (prefers-reduced-motion: reduce) {
       .reveal { opacity: 1; transform: none; transition: none; }
-      .leaf, .wa-float, .step-dot.active, .conf-check { animation: none !important; }
+      .leaf, .wa-float { animation: none !important; }
     }
 
     /* ═══════════════════════════════════════════════
@@ -1438,23 +1078,6 @@
       transform: scale(1.1) rotate(-8deg);
     }
 
-    /* ── Precios: atmósfera + watermark visible ──── */
-    #precios {
-      background:
-        radial-gradient(ellipse at 8% 75%, rgba(124,181,24,0.06) 0%, transparent 45%),
-        var(--negro) !important;
-    }
-    #precios::before { color: rgba(124,181,24,0.07) !important; }
-    .precio-categoria {
-      border-top: 2px solid rgba(124,181,24,0.12) !important;
-      transition: border-top-color 0.3s, background 0.3s;
-    }
-    .precio-categoria:hover { border-top-color: rgba(124,181,24,0.4) !important; background: rgba(124,181,24,0.03); }
-    .precio-cat-header {
-      border-bottom: 1px solid rgba(124,181,24,0.12) !important;
-    }
-    .precio-cat-name { color: var(--verde-neon) !important; letter-spacing: 0.15em !important; }
-
     /* ── Barbero: watermark visible + bio quote ──── */
     #barbero::after { color: rgba(124,181,24,0.08) !important; }
     .barbero-bio {
@@ -1467,15 +1090,6 @@
         var(--bg-alt) !important;
     }
 
-    /* ── Intro card atmosphere ───────────────────── */
-    .intro-card {
-      background: linear-gradient(145deg, rgba(124,181,24,0.05) 0%, rgba(17,17,17,0.9) 100%) !important;
-      transition: border-color 0.3s, box-shadow 0.3s;
-    }
-    .intro-card:hover {
-      border-color: rgba(124,181,24,0.35) !important;
-      box-shadow: 0 0 30px rgba(124,181,24,0.07);
-    }
 
     /* ── Galería: atmosfera ──────────────────────── */
     #galeria {
@@ -1484,12 +1098,6 @@
         var(--negro);
     }
 
-    /* ── Horario: atmósfera ──────────────────────── */
-    #horario {
-      background:
-        radial-gradient(ellipse at 80% 50%, rgba(124,181,24,0.05) 0%, transparent 45%),
-        var(--negro);
-    }
     .dia-row.today { background: rgba(124,181,24,0.07); border-radius: 2px; padding-left: 0.5rem; padding-right: 0.5rem; }
 
     /* ── RESPONSIVE ──────────────────────────────────── */
@@ -1600,12 +1208,9 @@
   </a>
   <ul class="nav-links">
     <li><a href="javascript:void(0)" data-scroll-to="servicios">Servicios</a></li>
-    <li><a href="javascript:void(0)" data-scroll-to="precios">Precios</a></li>
     <li><a href="javascript:void(0)" data-scroll-to="galeria">Galería</a></li>
-
     <li><a href="javascript:void(0)" data-scroll-to="barbero">El Barbero</a></li>
-    <li><a href="javascript:void(0)" data-scroll-to="reserva">Ubicación</a></li>
-    <li><a href="javascript:void(0)" data-scroll-to="horario">Horario</a></li>
+    <li><a href="javascript:void(0)" data-scroll-to="contacto">Contacto</a></li>
   </ul>
   <a class="nav-cta" href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita" target="_blank" rel="noopener">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="currentColor" aria-hidden="true" style="flex-shrink:0;vertical-align:middle"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Reservar
@@ -1621,11 +1226,9 @@
 <div class="mobile-menu" id="mobileMenu">
   <img class="mobile-menu-logo-img" src="assets/logo.png" alt="WTJ Logo" />
   <a href="javascript:void(0)" data-scroll-to="servicios" class="mobile-link">Servicios</a>
-  <a href="javascript:void(0)" data-scroll-to="precios" class="mobile-link">Precios</a>
   <a href="javascript:void(0)" data-scroll-to="galeria" class="mobile-link">Galería</a>
   <a href="javascript:void(0)" data-scroll-to="barbero" class="mobile-link">El Barbero</a>
-  <a href="javascript:void(0)" data-scroll-to="sistema-reserva" class="mobile-link">Reservar</a>
-  <a href="javascript:void(0)" data-scroll-to="horario" class="mobile-link">Horario</a>
+  <a href="javascript:void(0)" data-scroll-to="contacto" class="mobile-link">Contacto</a>
   <a href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita" target="_blank" class="mobile-wa mobile-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="currentColor" aria-hidden="true" style="flex-shrink:0;vertical-align:middle;margin-right:0.3em"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>WhatsApp</a>
 </div>
 
@@ -1676,40 +1279,6 @@
 <div class="blade-cut" aria-hidden="true"></div>
 
 <!-- INTRO -->
-<section id="intro">
-  <div class="intro-text reveal">
-    <h2>Más que cortar<br>pelo. <em>Crear<br>identidad.</em></h2>
-    <p>En <strong>WTJ Barber Shop</strong> cada corte es una declaración. Trabajamos con precisión, respetamos tu estilo y lo llevamos al siguiente nivel.</p>
-    <p>Degradados limpios, diseños personalizados, tintes con técnica y barba perfecta. Todo bajo el mismo techo, en Oropesa.</p>
-  </div>
-  <div class="intro-visual reveal">
-    <div class="intro-card">
-      <div class="intro-card-title">// Especialidades reales</div>
-      <div class="tag-list">
-        <span class="tag">Degradados</span>
-        <span class="tag">Diseños</span>
-        <span class="tag">Tintes</span>
-        <span class="tag">Fade</span>
-        <span class="tag">Rizos</span>
-        <span class="tag">Arreglo barba</span>
-        <span class="tag">Corte clásico</span>
-        <span class="tag">Decoloración</span>
-        <span class="tag">Cabello largo</span>
-        <span class="tag">Perfilado</span>
-        <span class="tag">Líneas</span>
-        <span class="tag">Texturas</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- MARQUEE 1 -->
-<div class="marquee-strip" aria-hidden="true">
-  <div class="marquee-track">
-    <span>FADE</span><span class="sep">✦</span><span>DEGRADADO</span><span class="sep">✦</span><span>DISEÑO</span><span class="sep">✦</span><span>BARBA</span><span class="sep">✦</span><span>OROPESA</span><span class="sep">✦</span><span>WELCOME TO THE JUNGLE</span><span class="sep">✦</span><span>TIJERAS</span><span class="sep">✦</span><span>ESTILO</span><span class="sep">✦</span><span>UNDERCUT</span><span class="sep">✦</span><span>POMPADOUR</span><span class="sep">✦</span><span>FADE</span><span class="sep">✦</span><span>DEGRADADO</span><span class="sep">✦</span><span>DISEÑO</span><span class="sep">✦</span><span>BARBA</span><span class="sep">✦</span><span>OROPESA</span><span class="sep">✦</span><span>WELCOME TO THE JUNGLE</span><span class="sep">✦</span><span>TIJERAS</span><span class="sep">✦</span><span>ESTILO</span><span class="sep">✦</span><span>UNDERCUT</span><span class="sep">✦</span><span>POMPADOUR</span><span class="sep">✦</span>
-  </div>
-</div>
-
 <!-- SERVICIOS -->
 <section id="servicios">
   <div class="section-header reveal">
@@ -1754,18 +1323,11 @@
       <div class="serv-price">Desde <span>20€</span></div>
     </div>
   </div>
-</section>
 
-
-<!-- PRECIOS -->
-<section id="precios">
-  <div class="section-header reveal">
+  <div class="section-header reveal" style="margin-top:4rem; margin-bottom:2rem;">
     <span class="section-label">// Tarifas</span>
-    <h2 class="section-title">Menú de precios</h2>
-  </div>
-  <div class="precios-intro">
-    <div></div>
-    <div class="precios-nota">Precios orientativos · Consulta tu caso concreto</div>
+    <h3 class="section-title" style="font-size:1.8rem;">Menú de precios</h3>
+    <div class="precios-nota" style="margin-top:0.5rem;">Precios orientativos · Consulta tu caso concreto</div>
   </div>
 
   <div class="precios-grid reveal">
@@ -1939,13 +1501,6 @@
 
 
 
-<!-- MARQUEE 2 -->
-<div class="marquee-strip" aria-hidden="true">
-  <div class="marquee-track" style="animation-direction: reverse;">
-    <span>BARBER SHOP</span><span class="sep">✦</span><span>WTJ</span><span class="sep">✦</span><span>ARTESANÍA</span><span class="sep">✦</span><span>PRECISIÓN</span><span class="sep">✦</span><span>CROP TOP</span><span class="sep">✦</span><span>RIZO NATURAL</span><span class="sep">✦</span><span>TINTE</span><span class="sep">✦</span><span>TEXTURA</span><span class="sep">✦</span><span>BARBER SHOP</span><span class="sep">✦</span><span>WTJ</span><span class="sep">✦</span><span>ARTESANÍA</span><span class="sep">✦</span><span>PRECISIÓN</span><span class="sep">✦</span><span>CROP TOP</span><span class="sep">✦</span><span>RIZO NATURAL</span><span class="sep">✦</span><span>TINTE</span><span class="sep">✦</span><span>TEXTURA</span><span class="sep">✦</span>
-  </div>
-</div>
-
 <!-- SOBRE EL BARBERO -->
 <section id="barbero">
   <div class="barbero-grid" style="grid-template-columns: 1fr;">
@@ -1990,170 +1545,10 @@
   </div>
 </section>
 
-<!-- SISTEMA DE RESERVA -->
-<section id="sistema-reserva">
-  <div class="section-header reveal">
-    <span class="section-label">// Reserva online</span>
-    <h2 class="section-title">Tu cita en 3 pasos</h2>
-  </div>
-
-  <div class="reserva-sistema-grid">
-
-    <!-- IZQUIERDA: Wizard de reserva -->
-    <div class="reserva-steps">
-
-      <!-- Indicador de pasos -->
-      <div class="step-indicator">
-        <div class="step-dot active" id="dot-1"></div>
-        <div class="step-line"></div>
-        <div class="step-dot" id="dot-2"></div>
-        <div class="step-line"></div>
-        <div class="step-dot" id="dot-3"></div>
-      </div>
-
-      <!-- PASO 1: Servicio -->
-      <div class="step-panel active" id="step-1">
-        <div class="step-title">Elige tu servicio</div>
-        <div class="step-subtitle">Paso 1 de 3 · Selecciona qué quieres hacerte</div>
-        <div class="servicio-selector">
-          <button class="serv-opt" data-servicio="Corte Clásico" data-precio="12€">
-            <span class="serv-opt-name">✂️ Corte Clásico</span>
-            <span class="serv-opt-price">12€</span>
-          </button>
-          <button class="serv-opt" data-servicio="Degradado / Fade" data-precio="15€">
-            <span class="serv-opt-name">🔥 Degradado / Fade</span>
-            <span class="serv-opt-price">15€</span>
-          </button>
-          <button class="serv-opt" data-servicio="Diseño" data-precio="18€+">
-            <span class="serv-opt-name">⚡ Diseño</span>
-            <span class="serv-opt-price">18€+</span>
-          </button>
-          <button class="serv-opt" data-servicio="Tinte / Color" data-precio="25€+">
-            <span class="serv-opt-name">🎨 Tinte / Color</span>
-            <span class="serv-opt-price">25€+</span>
-          </button>
-          <button class="serv-opt" data-servicio="Arreglo de Barba" data-precio="8€">
-            <span class="serv-opt-name">🧔 Barba</span>
-            <span class="serv-opt-price">8€</span>
-          </button>
-          <button class="serv-opt" data-servicio="Corte + Barba" data-precio="20€">
-            <span class="serv-opt-name">💈 Corte + Barba</span>
-            <span class="serv-opt-price">20€</span>
-          </button>
-        </div>
-        <div class="step-nav">
-          <button class="btn-step btn-step-next" id="next-1" disabled>Siguiente →</button>
-        </div>
-      </div>
-
-      <!-- PASO 2: Fecha y Hora -->
-      <div class="step-panel" id="step-2">
-        <div class="step-title">Elige día y hora</div>
-        <div class="step-subtitle">Paso 2 de 3 · Horario: Mar–Vie 10–13h / 16–20h · Sáb 10–16h · Lun cerrado</div>
-
-        <div class="calendario">
-          <div class="cal-header">
-            <button class="cal-nav" id="cal-prev">‹</button>
-            <span class="cal-mes" id="cal-mes-label"></span>
-            <button class="cal-nav" id="cal-next">›</button>
-          </div>
-          <div class="cal-dias-semana">
-            <span class="cal-dia-sem">L</span>
-            <span class="cal-dia-sem">M</span>
-            <span class="cal-dia-sem">X</span>
-            <span class="cal-dia-sem">J</span>
-            <span class="cal-dia-sem">V</span>
-            <span class="cal-dia-sem">S</span>
-            <span class="cal-dia-sem" style="color:rgba(242,237,215,0.1)">D</span>
-          </div>
-          <div class="cal-grid" id="cal-grid"></div>
-        </div>
-
-        <div id="horas-section" style="display:none;">
-          <div class="step-subtitle" style="margin-bottom:0.8rem;">Selecciona la hora</div>
-          <div class="horas-grid" id="horas-grid"></div>
-        </div>
-
-        <div class="step-nav">
-          <button class="btn-step btn-step-back" id="back-2">← Volver</button>
-          <button class="btn-step btn-step-next" id="next-2" disabled>Siguiente →</button>
-        </div>
-      </div>
-
-      <!-- PASO 3: Confirmación -->
-      <div class="step-panel" id="step-3">
-        <div class="step-title">Confirma tu cita</div>
-        <div class="step-subtitle">Paso 3 de 3 · Revisa los detalles y reserva por WhatsApp</div>
-
-        <div class="reserva-resumen" id="reserva-resumen">
-          <div class="resumen-title">// Resumen de tu reserva</div>
-          <div class="resumen-item">
-            <span class="resumen-key">Servicio</span>
-            <span class="resumen-val highlight" id="res-servicio">—</span>
-          </div>
-          <div class="resumen-item">
-            <span class="resumen-key">Fecha</span>
-            <span class="resumen-val" id="res-fecha">—</span>
-          </div>
-          <div class="resumen-item">
-            <span class="resumen-key">Hora</span>
-            <span class="resumen-val" id="res-hora">—</span>
-          </div>
-          <div class="resumen-item">
-            <span class="resumen-key">Precio estimado</span>
-            <span class="resumen-val highlight" id="res-precio">—</span>
-          </div>
-          <div class="resumen-item">
-            <span class="resumen-key">Lugar</span>
-            <span class="resumen-val">C/ Calzada Real 14, Oropesa</span>
-          </div>
-        </div>
-
-        <a class="btn-reservar-wa" id="btn-confirmar-wa" href="#" target="_blank" rel="noopener">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="currentColor" aria-hidden="true" style="flex-shrink:0;vertical-align:middle;margin-right:0.4em"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Confirmar cita por WhatsApp
-        </a>
-        <div style="margin-top:0.8rem;font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(242,237,215,0.25);text-align:center;">
-          Te redirigiremos a WhatsApp con todos los datos de tu reserva
-        </div>
-
-        <div class="step-nav" style="margin-top:1rem;">
-          <button class="btn-step btn-step-back" id="back-3">← Modificar</button>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- DERECHA: Info visual -->
-    <div class="reserva-visual reveal">
-      <div class="reserva-visual-header">RESERVA<br>TU LUGAR EN <em>LA JUNGLA</em></div>
-      <div class="reserva-visual-sub">Sin esperas, sin llamadas. Elige tu servicio, tu día y tu hora — y te mandamos el recordatorio.</div>
-      <div class="reserva-promesas">
-        <div class="promesa-item">
-          <span class="promesa-icon">⚡</span>
-          <div class="promesa-text"><strong>Confirmación en minutos</strong>Te confirmamos la cita por WhatsApp en menos de 15 minutos.</div>
-        </div>
-        <div class="promesa-item">
-          <span class="promesa-icon">🔄</span>
-          <div class="promesa-text"><strong>Cancelación flexible</strong>¿Algo surgió? Cancela o cambia tu cita sin coste hasta 2 horas antes.</div>
-        </div>
-        <div class="promesa-item">
-          <span class="promesa-icon">📍</span>
-          <div class="promesa-text"><strong>C/ Calzada Real 14, Oropesa</strong>Fácil acceso, parking cercano. Te esperamos.</div>
-        </div>
-        <div class="promesa-item">
-          <span class="promesa-icon">🌿</span>
-          <div class="promesa-text"><strong>La experiencia WTJ</strong>Cada cita es un ritual. Café, música y el mejor corte de la zona.</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<!-- RESERVA + MAPA -->
-<section id="reserva">
+<!-- CONTACTO -->
+<section id="contacto">
   <div class="reserva-left reveal">
-    <div class="section-label" style="margin-bottom:1rem;">// Reserva tu cita</div>
+    <div class="section-label" style="margin-bottom:1rem;">// Visítanos</div>
     <h2>ENTRA EN<br><em>LA JUNGLA</em></h2>
     <p>Escríbenos por WhatsApp o Instagram para reservar tu cita. Sin esperas, sin complicaciones — solo tú y el mejor corte de Oropesa.</p>
     <div class="reserva-buttons">
@@ -2167,6 +1562,15 @@
       </a>
     </div>
     <div class="contact-info">
+      <div style="margin-bottom:1.5rem;">
+        <div class="dia-row" id="d-lunes"><span class="dia-nombre">Lunes</span><span class="dia-hora cerrado">Cerrado</span></div>
+        <div class="dia-row" id="d-martes"><span class="dia-nombre">Martes</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
+        <div class="dia-row" id="d-miercoles"><span class="dia-nombre">Miércoles</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
+        <div class="dia-row" id="d-jueves"><span class="dia-nombre">Jueves</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
+        <div class="dia-row" id="d-viernes"><span class="dia-nombre">Viernes</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
+        <div class="dia-row" id="d-sabado"><span class="dia-nombre">Sábado</span><span class="dia-hora">10:00 – 16:00</span></div>
+        <div class="dia-row" id="d-domingo"><span class="dia-nombre">Domingo</span><span class="dia-hora cerrado">Cerrado</span></div>
+      </div>
       <div class="contact-row">
         <span class="contact-icon">📍</span>
         <div>
@@ -2179,13 +1583,6 @@
         <div>
           <div class="contact-label">Instagram</div>
           <div class="contact-val"><a href="https://www.instagram.com/barber_welcome_to_the_jungle" target="_blank">@barber_welcome_to_the_jungle</a></div>
-        </div>
-      </div>
-      <div class="contact-row">
-        <span class="contact-icon">🕐</span>
-        <div>
-          <div class="contact-label">Horario general</div>
-          <div class="contact-val">Mar – Sáb · Lun cerrado</div>
         </div>
       </div>
     </div>
@@ -2210,44 +1607,13 @@
   </div>
 </section>
 
-<div class="blade-cut" aria-hidden="true"></div>
-
-<!-- HORARIO -->
-<section id="horario">
-  <div class="section-header reveal">
-    <span class="section-label">// Horario</span>
-    <h2 class="section-title" style="font-size:2.2rem;">Cuándo estamos</h2>
-  </div>
-  <div class="horario-inner">
-    <div class="reveal">
-      <div class="dia-row" id="d-lunes"><span class="dia-nombre">Lunes</span><span class="dia-hora cerrado">Cerrado</span></div>
-      <div class="dia-row" id="d-martes"><span class="dia-nombre">Martes</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
-      <div class="dia-row" id="d-miercoles"><span class="dia-nombre">Miércoles</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
-      <div class="dia-row" id="d-jueves"><span class="dia-nombre">Jueves</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
-      <div class="dia-row" id="d-viernes"><span class="dia-nombre">Viernes</span><span class="dia-hora">10:00 – 13:00 / 16:00 – 20:00</span></div>
-      <div class="dia-row" id="d-sabado"><span class="dia-nombre">Sábado</span><span class="dia-hora">10:00 – 16:00</span></div>
-      <div class="dia-row" id="d-domingo"><span class="dia-nombre">Domingo</span><span class="dia-hora cerrado">Cerrado</span></div>
-    </div>
-    <div class="reveal">
-      <div class="horario-nota">
-        <p>⚡ <strong>Consejo:</strong> Para asegurar tu turno, reserva con antelación por WhatsApp o Instagram. Aceptamos sin cita previa según disponibilidad.</p>
-      </div>
-      <div style="margin-top:2rem;">
-        <a class="btn-wa" href="https://wa.me/34637847114?text=Hola!%20Quiero%20saber%20el%20horario%20y%20reservar%20cita" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.5rem;font-family:'Space Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:700;background:var(--whatsapp);color:#fff;padding:0.95rem 2rem;text-decoration:none;">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="currentColor" aria-hidden="true" style="flex-shrink:0;vertical-align:middle;margin-right:0.4em"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>Confirmar horario por WhatsApp
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- FOOTER -->
 <footer>
   <div class="footer-logo">WTJ<span>.</span><br><span style="font-size:0.9rem;letter-spacing:0.2em;color:rgba(242,237,215,0.4);">BARBER SHOP</span></div>
   <div class="footer-social">
     <a class="social-link" href="https://www.instagram.com/barber_welcome_to_the_jungle" target="_blank" rel="noopener">Instagram</a>
     <a class="social-link" href="https://wa.me/34637847114" target="_blank" rel="noopener">WhatsApp</a>
-    <a class="social-link" href="javascript:void(0)" data-scroll-to="reserva">Ubicación</a>
+    <a class="social-link" href="javascript:void(0)" data-scroll-to="contacto">Contacto</a>
   </div>
   <div class="footer-copy">© 2025 WTJ Barber Shop · Oropesa · Todos los derechos reservados</div>
 </footer>
@@ -2447,145 +1813,6 @@
   document.getElementById('waBubbleClose').addEventListener('click', () => {
     document.getElementById('waBubble').classList.add('hidden');
   });
-
-  /* ── SISTEMA RESERVA ────────────────────── */
-  let estado = { servicio: null, precio: null, fecha: null, hora: null };
-  let calFecha = new Date();
-  calFecha.setDate(1);
-
-  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-
-  function horasDisponibles(diaSemana) {
-    if (diaSemana === 0 || diaSemana === 1) return [];
-    if (diaSemana === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
-    return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
-  }
-
-  const ocupados = ['11:00','17:30','12:30'];
-
-  function renderCalendario() {
-    const grid = document.getElementById('cal-grid');
-    const label = document.getElementById('cal-mes-label');
-    const hoy = new Date();
-
-    label.textContent = MESES[calFecha.getMonth()] + ' ' + calFecha.getFullYear();
-    grid.innerHTML = '';
-
-    const primerDia = new Date(calFecha.getFullYear(), calFecha.getMonth(), 1);
-    let offset = (primerDia.getDay() + 6) % 7;
-    for (let i = 0; i < offset; i++) {
-      const v = document.createElement('div');
-      v.className = 'cal-celda vacio'; grid.appendChild(v);
-    }
-
-    const diasMes = new Date(calFecha.getFullYear(), calFecha.getMonth() + 1, 0).getDate();
-    for (let d = 1; d <= diasMes; d++) {
-      const fecha = new Date(calFecha.getFullYear(), calFecha.getMonth(), d);
-      const diaSem = fecha.getDay();
-      const celda = document.createElement('div');
-      celda.textContent = d;
-      const esHoy = fecha.toDateString() === hoy.toDateString();
-      const esPasado = fecha < new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-      const esCerrado = diaSem === 0 || diaSem === 1;
-      const esSeleccionado = estado.fecha && fecha.toDateString() === estado.fecha.toDateString();
-
-      celda.className = 'cal-celda';
-      if (esHoy) celda.classList.add('hoy');
-      if (esPasado || esCerrado) celda.classList.add('disabled');
-      else {
-        celda.addEventListener('click', () => seleccionarFecha(fecha));
-      }
-      if (esSeleccionado) celda.classList.add('selected');
-      grid.appendChild(celda);
-    }
-  }
-
-  function seleccionarFecha(fecha) {
-    estado.fecha = fecha;
-    estado.hora = null;
-    renderCalendario();
-    renderHoras(fecha.getDay());
-    document.getElementById('next-2').disabled = true;
-  }
-
-  function renderHoras(diaSemana) {
-    const sec = document.getElementById('horas-section');
-    const grid = document.getElementById('horas-grid');
-    const horas = horasDisponibles(diaSemana);
-    if (!horas.length) { sec.style.display = 'none'; return; }
-    sec.style.display = 'block';
-    grid.innerHTML = '';
-    horas.forEach(h => {
-      const btn = document.createElement('button');
-      btn.className = 'hora-slot' + (ocupados.includes(h) ? ' ocupado' : '');
-      btn.textContent = h;
-      if (!ocupados.includes(h)) {
-        btn.addEventListener('click', () => {
-          document.querySelectorAll('.hora-slot').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-          estado.hora = h;
-          document.getElementById('next-2').disabled = false;
-        });
-      }
-      grid.appendChild(btn);
-    });
-  }
-
-  document.getElementById('cal-prev').addEventListener('click', () => {
-    calFecha.setMonth(calFecha.getMonth() - 1);
-    renderCalendario();
-  });
-  document.getElementById('cal-next').addEventListener('click', () => {
-    calFecha.setMonth(calFecha.getMonth() + 1);
-    renderCalendario();
-  });
-
-  document.querySelectorAll('.serv-opt').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.serv-opt').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      estado.servicio = btn.dataset.servicio;
-      estado.precio = btn.dataset.precio;
-      document.getElementById('next-1').disabled = false;
-    });
-  });
-
-  function irAPaso(n) {
-    document.querySelectorAll('.step-panel').forEach((p, i) => {
-      p.classList.toggle('active', i + 1 === n);
-    });
-    document.querySelectorAll('.step-dot').forEach((d, i) => {
-      d.classList.toggle('active', i + 1 === n);
-      d.classList.toggle('done', i + 1 < n);
-    });
-    if (n === 2) renderCalendario();
-    if (n === 3) renderResumen();
-  }
-
-  document.getElementById('next-1').addEventListener('click', () => irAPaso(2));
-  document.getElementById('next-2').addEventListener('click', () => irAPaso(3));
-  document.getElementById('back-2').addEventListener('click', () => irAPaso(1));
-  document.getElementById('back-3').addEventListener('click', () => irAPaso(2));
-
-  function renderResumen() {
-    const ds = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const ms = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-    document.getElementById('res-servicio').textContent = estado.servicio || '—';
-    document.getElementById('res-precio').textContent = estado.precio || '—';
-    document.getElementById('res-hora').textContent = estado.hora || '—';
-    if (estado.fecha) {
-      const f = estado.fecha;
-      document.getElementById('res-fecha').textContent =
-        ds[f.getDay()] + ', ' + f.getDate() + ' ' + ms[f.getMonth()] + ' ' + f.getFullYear();
-    }
-    const msg = encodeURIComponent(
-      '¡Hola WTJ Barber Shop! 🌿\n\nQuiero reservar una cita:\n' +
-      '• Servicio: ' + (estado.servicio||'') + '\n' +
-      '• Fecha: ' + (estado.fecha ? estado.fecha.toLocaleDateString('es-ES') : '') + '\n' +
-      '• Hora: ' + (estado.hora||'') + '\n\n¿Está disponible? 💈'
-    );
-    document.getElementById('btn-confirmar-wa').href = 'https://wa.me/34637847114?text=' + msg;
-  }
 
   /* ── Hoy en horario ─────────────────── */
   const dayMap = {0:'domingo',1:'lunes',2:'martes',3:'miercoles',4:'jueves',5:'viernes',6:'sabado'};
