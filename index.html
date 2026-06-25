@@ -2423,19 +2423,25 @@
       const btn4 = document.getElementById('btn4');
       btn4.disabled = true;
       btn4.textContent = 'Enviando...';
-      // Upsert cliente
-      const { data: cliData, error: cliErr } = await db.from('clientes')
-        .upsert({ telefono, nombre }, { onConflict: 'telefono' })
-        .select('id').single();
-      if (cliErr) {
-        errDiv.textContent = 'Error al guardar datos. Inténtalo de nuevo.';
-        errDiv.style.display = 'block';
-        btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
-        return;
+      // Buscar cliente existente por teléfono, o crear uno nuevo
+      let clienteId;
+      const { data: cliExist } = await db.from('clientes').select('id').eq('telefono', telefono).maybeSingle();
+      if (cliExist) {
+        clienteId = cliExist.id;
+      } else {
+        const { data: cliNew, error: cliErr } = await db.from('clientes')
+          .insert({ telefono, nombre }).select('id').single();
+        if (cliErr) {
+          errDiv.textContent = 'Error al guardar datos. Inténtalo de nuevo.';
+          errDiv.style.display = 'block';
+          btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
+          return;
+        }
+        clienteId = cliNew.id;
       }
       // Insert reserva
       const { error: resErr } = await db.from('reservas').insert({
-        cliente_id: cliData.id,
+        cliente_id: clienteId,
         servicio_id: est.servicio.id,
         fecha: est.fecha,
         hora: est.hora + ':00',
