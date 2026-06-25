@@ -1918,6 +1918,9 @@
           <div class="exito-titulo">¡RESERVA CONFIRMADA!</div>
           <p class="exito-sub">Te esperamos. Si necesitas cancelar, escríbenos por WhatsApp.</p>
           <div class="resumen-box" id="resumenFinal"></div>
+          <a id="btnWaConfirm" href="#" target="_blank" rel="noopener" style="display:block;background:#25D366;color:#fff;font-family:'Space Mono',monospace;font-size:0.75rem;font-weight:700;padding:0.8rem 1.5rem;border-radius:8px;text-decoration:none;margin-bottom:0.75rem;letter-spacing:0.05em;">
+            Guardar en WhatsApp
+          </a>
           <button class="btn-nueva-reserva" onclick="reiniciarReserva()">Hacer otra reserva</button>
         </div>
       </div>
@@ -2478,6 +2481,16 @@
         '<div class="resumen-fila"><span class="resumen-key">Fecha</span><span class="resumen-val">' + fechaLegible.charAt(0).toUpperCase() + fechaLegible.slice(1) + '</span></div>' +
         '<div class="resumen-fila"><span class="resumen-key">Hora</span><span class="resumen-val">' + est.hora + '</span></div>' +
         '<div class="resumen-fila"><span class="resumen-key">Nombre</span><span class="resumen-val">' + est.nombre + '</span></div>';
+      // Botón WhatsApp con resumen de la reserva
+      const waMsg = encodeURIComponent(
+        'Hola! Acabo de reservar en WTJ Barber Shop:\n' +
+        '✂ Servicio: ' + est.servicio.nombre + '\n' +
+        '📅 Fecha: ' + fechaLegible.charAt(0).toUpperCase() + fechaLegible.slice(1) + '\n' +
+        '🕐 Hora: ' + est.hora + '\n' +
+        '👤 Nombre: ' + est.nombre + '\n\n' +
+        'Quedo pendiente de confirmación. ¡Gracias!'
+      );
+      document.getElementById('btnWaConfirm').href = 'https://wa.me/34637847114?text=' + waMsg;
       document.getElementById('paso4').classList.remove('activo');
       est.paso = 5;
       document.getElementById('paso5').classList.add('activo');
