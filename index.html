@@ -2423,20 +2423,29 @@
       const btn4 = document.getElementById('btn4');
       btn4.disabled = true;
       btn4.textContent = 'Enviando...';
-      // Buscar cliente existente por teléfono, o crear uno nuevo
+      // Insertar cliente (si ya existe por teléfono, recuperar el existente)
       let clienteId;
-      const { data: cliExist } = await db.from('clientes').select('id').eq('telefono', telefono).maybeSingle();
-      if (cliExist) {
-        clienteId = cliExist.id;
-      } else {
-        const { data: cliNew, error: cliErr } = await db.from('clientes')
-          .insert({ telefono, nombre }).select('id').single();
-        if (cliErr) {
-          errDiv.textContent = 'Error al guardar datos. Inténtalo de nuevo.';
+      const { data: cliNew, error: cliErr } = await db.from('clientes')
+        .insert({ telefono, nombre }).select('id').single();
+      if (cliErr) {
+        if (cliErr.code === '23505') {
+          // Teléfono ya registrado — recuperar ID existente
+          const { data: cliExist, error: cliSelErr } = await db.from('clientes')
+            .select('id').eq('telefono', telefono).single();
+          if (cliSelErr || !cliExist) {
+            errDiv.textContent = 'Error: ' + (cliSelErr ? cliSelErr.message : 'cliente no encontrado');
+            errDiv.style.display = 'block';
+            btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
+            return;
+          }
+          clienteId = cliExist.id;
+        } else {
+          errDiv.textContent = 'Error al guardar datos: ' + cliErr.message;
           errDiv.style.display = 'block';
           btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
           return;
         }
+      } else {
         clienteId = cliNew.id;
       }
       // Insert reserva
@@ -2448,7 +2457,7 @@
         estado: 'pendiente'
       });
       if (resErr) {
-        errDiv.textContent = 'Error al crear la reserva. Inténtalo de nuevo.';
+        errDiv.textContent = 'Error al crear la reserva: ' + resErr.message;
         errDiv.style.display = 'block';
         btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
         return;
