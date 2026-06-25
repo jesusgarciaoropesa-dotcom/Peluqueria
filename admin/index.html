@@ -317,6 +317,11 @@
 
     <div class="modal-error" id="modalError"></div>
 
+    <div id="mHistorialWrap" style="display:none;margin-top:1.4rem;border-top:1px solid rgba(124,181,24,0.15);padding-top:1.2rem;">
+      <div style="font-family:'Space Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;color:var(--verde-neon);text-transform:uppercase;margin-bottom:0.8rem;">Historial del cliente</div>
+      <div id="mHistorialLista"></div>
+    </div>
+
     <div class="modal-footer">
       <button class="btn-cancelar-modal" onclick="cerrarModal()">Cancelar</button>
       <button class="btn-guardar" id="btnGuardar" onclick="guardarReserva()">Guardar</button>
@@ -745,6 +750,11 @@
     document.getElementById('mFecha').value = hoy();
     actualizarHorasModal(hoy());
 
+    const histWrap  = document.getElementById('mHistorialWrap');
+    const histLista = document.getElementById('mHistorialLista');
+    histWrap.style.display = 'none';
+    histLista.innerHTML = '';
+
     if (id) {
       // Rellenar con datos existentes
       const r = todasReservas.find(x => x.id === id);
@@ -756,6 +766,38 @@
         document.getElementById('mFecha').value    = r.fecha;
         actualizarHorasModal(r.fecha, r.hora ? r.hora.slice(0,5) : null);
         if (r.servicio_id) document.getElementById('mServicio').value = r.servicio_id;
+
+        // Cargar historial del cliente en segundo plano
+        if (r.cliente_id) {
+          histWrap.style.display = 'block';
+          histLista.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:0.72rem;color:var(--gris);">Cargando...</div>';
+          db.from('reservas')
+            .select('id,fecha,hora,estado,servicios(nombre)')
+            .eq('cliente_id', r.cliente_id)
+            .neq('id', id)
+            .order('fecha', { ascending: false })
+            .limit(10)
+            .then(({ data }) => {
+              if (!data || data.length === 0) {
+                histLista.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:0.72rem;color:var(--gris);">Sin citas anteriores.</div>';
+                return;
+              }
+              const badgeColors = { pendiente:'#C8882A', confirmada:'#7CB518', cancelada:'#c0392b', completada:'#2980b9' };
+              histLista.innerHTML = data.map(h => {
+                const d = new Date(h.fecha + 'T00:00:00');
+                const fechaLabel = d.toLocaleDateString('es', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+                const horaLabel  = h.hora ? h.hora.slice(0,5) : '';
+                const srvLabel   = h.servicios ? h.servicios.nombre : '—';
+                const color      = badgeColors[h.estado] || '#888';
+                return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0;border-bottom:1px solid rgba(124,181,24,0.06);font-size:0.8rem;">' +
+                  '<span style="font-family:Space Mono,monospace;color:var(--gris);min-width:5.5rem;font-size:0.7rem;">' + fechaLabel + '</span>' +
+                  '<span style="font-family:Space Mono,monospace;color:var(--crema);min-width:2.5rem;">' + horaLabel + '</span>' +
+                  '<span style="flex:1;color:var(--crema);">' + srvLabel + '</span>' +
+                  '<span style="font-size:0.68rem;font-family:Space Mono,monospace;padding:0.15rem 0.5rem;border-radius:3px;background:' + color + '22;color:' + color + ';border:1px solid ' + color + '55;text-transform:uppercase;letter-spacing:0.05em;">' + h.estado + '</span>' +
+                  '</div>';
+              }).join('');
+            });
+        }
       }
     } else {
       document.getElementById('mNombre').value   = '';
