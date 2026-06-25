@@ -144,6 +144,20 @@
     .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--bg3); border: 1px solid rgba(124,181,24,0.3); border-radius: 8px; padding: 0.7rem 1.4rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--verde); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 999; white-space: nowrap; }
     .toast.show { opacity: 1; }
 
+    /* Notificación nueva reserva */
+    .notif-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: var(--verde); color: var(--negro);
+      font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700;
+      padding: 0.9rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      transform: translateY(-100%); transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .notif-banner.show { transform: translateY(0); }
+    .notif-banner button { background: rgba(0,0,0,0.15); border: none; border-radius: 5px; padding: 0.35rem 0.8rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700; color: var(--negro); cursor: pointer; }
+    .notif-banner button:hover { background: rgba(0,0,0,0.25); }
+
     @media (max-width: 500px) {
       .reserva-card { grid-template-columns: auto 1fr; }
       .card-right { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; grid-column: 1/-1; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(124,181,24,0.08); }
@@ -203,6 +217,12 @@
   </div>
 
   <div id="reservasList"></div>
+</div>
+
+<!-- BANNER NUEVA RESERVA -->
+<div class="notif-banner" id="notifBanner">
+  <span id="notifTexto">🔔 Nueva reserva recibida</span>
+  <button onclick="cerrarNotif()">Ver · Cerrar</button>
 </div>
 
 <!-- MODAL CREAR / EDITAR -->
@@ -318,8 +338,54 @@
       cargarServicios();
       cargarEstadisticas();
       setVista('hoy', document.querySelector('.tab[data-vista="hoy"]'));
+      iniciarRealtime();
     }
   });
+
+  // ── REALTIME: nueva reserva ──
+  let realtimeChannel = null;
+  function iniciarRealtime() {
+    if (realtimeChannel) return;
+    realtimeChannel = db.channel('reservas-nuevas')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reservas' }, payload => {
+        cargarReservas();
+        cargarEstadisticas();
+        mostrarNotif(payload.new);
+        sonarNotif();
+      })
+      .subscribe();
+  }
+
+  function mostrarNotif(r) {
+    const banner = document.getElementById('notifBanner');
+    const texto  = document.getElementById('notifTexto');
+    const fecha  = r.fecha || '';
+    const hora   = r.hora ? r.hora.slice(0,5) : '';
+    texto.textContent = '🔔 Nueva reserva — ' + fecha + ' a las ' + hora;
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 8000);
+  }
+
+  window.cerrarNotif = function() {
+    document.getElementById('notifBanner').classList.remove('show');
+  };
+
+  function sonarNotif() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 150, 300].forEach((delay, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = [880, 1100, 1320][i];
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.18, ctx.currentTime + delay / 1000);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay / 1000 + 0.3);
+        osc.start(ctx.currentTime + delay / 1000);
+        osc.stop(ctx.currentTime + delay / 1000 + 0.3);
+      });
+    } catch(e) {}
+  }
 
   // ── SERVICIOS ──
   async function cargarServicios() {
