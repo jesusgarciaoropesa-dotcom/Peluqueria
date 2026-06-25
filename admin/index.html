@@ -158,6 +158,33 @@
     .notif-banner button { background: rgba(0,0,0,0.15); border: none; border-radius: 5px; padding: 0.35rem 0.8rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700; color: var(--negro); cursor: pointer; }
     .notif-banner button:hover { background: rgba(0,0,0,0.25); }
 
+    /* Agenda semanal */
+    .agenda-nav { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; background: var(--bg2); border-bottom: 1px solid rgba(124,181,24,0.08); }
+    .agenda-rango { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--crema); }
+    .agenda-btn { background: none; border: 1px solid rgba(124,181,24,0.25); color: var(--gris); border-radius: 6px; padding: 0.35rem 0.8rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
+    .agenda-btn:hover { border-color: var(--verde); color: var(--verde); }
+    .agenda-wrap { overflow-x: auto; padding: 0 1rem 4rem; }
+    .agenda-grid { display: grid; min-width: 520px; border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; overflow: hidden; }
+    .agenda-head { display: grid; grid-template-columns: 3.5rem repeat(5,1fr) 0.85fr; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); }
+    .agenda-hcell { padding: 0.55rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: center; text-transform: uppercase; letter-spacing: 0.08em; }
+    .agenda-hcell.hoy-col { color: var(--verde); }
+    .agenda-row { display: grid; grid-template-columns: 3.5rem repeat(5,1fr) 0.85fr; border-bottom: 1px solid rgba(124,181,24,0.06); }
+    .agenda-row:last-child { border-bottom: none; }
+    .agenda-time { padding: 0.4rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: right; padding-right: 0.6rem; display: flex; align-items: center; justify-content: flex-end; background: var(--negro); }
+    .agenda-cell { border-left: 1px solid rgba(124,181,24,0.06); min-height: 2.4rem; padding: 0.25rem; position: relative; }
+    .agenda-cell.hoy-col { background: rgba(124,181,24,0.04); }
+    .agenda-chip {
+      background: rgba(124,181,24,0.15); border: 1px solid rgba(124,181,24,0.3);
+      border-radius: 5px; padding: 0.2rem 0.35rem;
+      font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--verde);
+      cursor: pointer; line-height: 1.4; transition: background 0.15s;
+    }
+    .agenda-chip:hover { background: rgba(124,181,24,0.25); }
+    .agenda-chip.pendiente  { background: rgba(200,136,42,0.15); border-color: rgba(200,136,42,0.35); color: #f5a623; }
+    .agenda-chip.confirmada { background: rgba(124,181,24,0.15); border-color: rgba(124,181,24,0.35); color: #9ad420; }
+    .agenda-chip.cancelada  { background: rgba(180,60,60,0.12);  border-color: rgba(180,60,60,0.3);  color: #e06060; }
+    .agenda-chip.completada { background: rgba(74,143,212,0.15); border-color: rgba(74,143,212,0.35); color: #6eb5f0; }
+
     @media (max-width: 500px) {
       .reserva-card { grid-template-columns: auto 1fr; }
       .card-right { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; grid-column: 1/-1; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(124,181,24,0.08); }
@@ -206,7 +233,19 @@
 
   <div class="week-tabs" id="weekTabs"></div>
 
-  <div class="list-header">
+  <!-- Agenda semanal (solo visible en vista semana) -->
+  <div id="agendaWrap" style="display:none;">
+    <div class="agenda-nav">
+      <button class="agenda-btn" id="agendaPrev">← Semana anterior</button>
+      <div class="agenda-rango" id="agendaRango"></div>
+      <button class="agenda-btn" id="agendaNext">Semana siguiente →</button>
+    </div>
+    <div class="agenda-wrap">
+      <div class="agenda-grid" id="agendaGrid"></div>
+    </div>
+  </div>
+
+  <div class="list-header" id="listHeader" style="display:none;">
     <div class="list-title" id="listTitle">Reservas de hoy</div>
     <select class="filter-sel" id="filterEstado" onchange="aplicarFiltro()">
       <option value="">Todos</option>
@@ -419,19 +458,138 @@
   }
 
   // ── VISTA ──
+  let agendaLunes = null;
+
   window.setVista = function(v, btn) {
     vista = v;
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     if (btn) btn.classList.add('active');
-    const weekTabs = document.getElementById('weekTabs');
+    document.getElementById('weekTabs').classList.remove('visible');
+    const agendaWrap  = document.getElementById('agendaWrap');
+    const listHeader  = document.getElementById('listHeader');
+    const reservasList = document.getElementById('reservasList');
     if (v === 'semana') {
-      weekTabs.classList.add('visible');
-      renderWeekTabs();
+      agendaWrap.style.display = 'block';
+      listHeader.style.display = 'none';
+      reservasList.innerHTML = '';
+      iniciarAgenda();
     } else {
-      weekTabs.classList.remove('visible');
+      agendaWrap.style.display = 'none';
+      listHeader.style.display = '';
+      cargarReservas();
     }
-    cargarReservas();
   };
+
+  function lunesToSemana(ref) {
+    const d = new Date(ref);
+    const dow = d.getDay();
+    d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  function iniciarAgenda() {
+    if (!agendaLunes) agendaLunes = lunesToSemana(new Date());
+    renderAgenda();
+  }
+
+  document.getElementById('agendaPrev').addEventListener('click', () => {
+    agendaLunes.setDate(agendaLunes.getDate() - 7);
+    renderAgenda();
+  });
+  document.getElementById('agendaNext').addEventListener('click', () => {
+    agendaLunes.setDate(agendaLunes.getDate() + 7);
+    renderAgenda();
+  });
+
+  async function renderAgenda() {
+    const grid = document.getElementById('agendaGrid');
+    grid.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;"><div class="spinner"></div><br>Cargando...</div>';
+    const dias = ['Mar','Mié','Jue','Vie','Sáb'];
+    const fechas = []; // Mar-Sáb (índices 1-5 desde lunes)
+    for (let i = 1; i <= 5; i++) {
+      const d = new Date(agendaLunes);
+      d.setDate(agendaLunes.getDate() + i);
+      fechas.push(d.toISOString().slice(0,10));
+    }
+    const sabado = new Date(agendaLunes); sabado.setDate(agendaLunes.getDate() + 6);
+    fechas.push(sabado.toISOString().slice(0,10));
+    const todosSlots = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+    const fechaInicio = fechas[0]; const fechaFin = fechas[fechas.length-1];
+    const lunes  = new Date(agendaLunes); lunes.setDate(agendaLunes.getDate() + 1);
+    const viernes = new Date(agendaLunes); viernes.setDate(agendaLunes.getDate() + 5);
+    document.getElementById('agendaRango').textContent =
+      lunes.toLocaleDateString('es', { day:'numeric', month:'short' }) + ' — ' +
+      sabado.toLocaleDateString('es', { day:'numeric', month:'short', year:'numeric' });
+
+    const { data } = await db.from('reservas')
+      .select('*, servicios(nombre), clientes(nombre)')
+      .gte('fecha', fechaInicio).lte('fecha', fechaFin)
+      .neq('estado','cancelada').order('hora');
+
+    const mapaReservas = {};
+    (data || []).forEach(r => {
+      const key = r.fecha + '_' + r.hora.slice(0,5);
+      if (!mapaReservas[key]) mapaReservas[key] = [];
+      mapaReservas[key].push(r);
+    });
+
+    const hoyStr = hoy();
+    const diasHead = ['Mar','Mié','Jue','Vie','Vie','Sáb'];
+    const diasNombres = ['Martes','Miércoles','Jueves','Viernes','Viernes','Sábado'];
+    // 6 columnas: mar,mie,jue,vie,vie... wait, actually it should be Mar,Mié,Jue,Vie,Sáb — 5 días laborables + sábado = 6 cols
+    // Let me redo: fechas[0]=mar, [1]=mie, [2]=jue, [3]=vie, [4]=sab  -- wait no
+    // agendaLunes is Monday. +1=Tue,+2=Wed,+3=Thu,+4=Fri,+5=Sat
+    // Actually I set fechas as [mar,mie,jue,vie,sab] (5 days), then pushed sabado again — let me fix
+    // fechas = [mar, mie, jue, vie, ???, sab] — I had i from 1-5 (+sab separately)
+    // i=1 = Tue, i=2=Wed, i=3=Thu, i=4=Fri, i=5=Sat, then pushed sab again => 6 items, wrong
+    // Fix: just do i=1 to 5 for Tue-Sat (5 workdays+sat=correct since sat is +5)
+    // Actually: lunes+1=mar, +2=mie, +3=jue, +4=vie, +5=sab — perfect, 5 items
+
+    // Rebuild correct fechas
+    const fechasOk = [];
+    for (let i = 1; i <= 5; i++) {
+      const d = new Date(agendaLunes);
+      d.setDate(agendaLunes.getDate() + i);
+      fechasOk.push({ iso: d.toISOString().slice(0,10), d });
+    }
+    const dNombres = ['MAR','MIÉ','JUE','VIE','SÁB'];
+    // Slot filter per column (Sáb only morning)
+    const slotsCol = (colIdx) => colIdx < 4
+      ? ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30']
+      : ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+    const allSlots = [...new Set([...slotsCol(0), ...slotsCol(4)])].sort();
+
+    let html = '<div class="agenda-head"><div class="agenda-hcell">Hora</div>';
+    fechasOk.forEach((f, i) => {
+      const d = f.d;
+      const esHoy = f.iso === hoyStr;
+      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + '">' + dNombres[i] + '<br><span style="font-size:0.75rem;color:' + (esHoy ? 'var(--verde)' : 'var(--crema)') + ';">' + d.getDate() + '</span></div>';
+    });
+    html += '</div>';
+
+    allSlots.forEach(slot => {
+      html += '<div class="agenda-row"><div class="agenda-time">' + slot + '</div>';
+      fechasOk.forEach((f, colIdx) => {
+        const esHoy = f.iso === hoyStr;
+        const available = slotsCol(colIdx).includes(slot);
+        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + '">';
+        if (available) {
+          const key = f.iso + '_' + slot;
+          (mapaReservas[key] || []).forEach(r => {
+            const nombre = r.clientes ? (r.clientes.nombre || '—') : '—';
+            const srv = r.servicios ? r.servicios.nombre : '';
+            html += '<div class="agenda-chip ' + r.estado + '" onclick="abrirModal(\'' + r.id + '\')" title="' + nombre + ' · ' + srv + '">' +
+              nombre.split(' ')[0] + '<br><span style="opacity:0.7">' + srv.split(' ')[0] + '</span></div>';
+          });
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+    grid.innerHTML = html;
+  }
 
   function renderWeekTabs() {
     const cont = document.getElementById('weekTabs');
@@ -469,6 +627,7 @@
 
   // ── CARGAR RESERVAS ──
   async function cargarReservas() {
+    if (vista === 'semana') return;
     const list = document.getElementById('reservasList');
     list.innerHTML = '<div class="empty-msg"><div class="spinner"></div><br>Cargando...</div>';
     let query = db.from('reservas')
@@ -477,9 +636,6 @@
     if (vista === 'hoy') {
       query = query.eq('fecha', hoy()).order('hora');
       titulo.textContent = 'Reservas de hoy';
-    } else if (vista === 'semana') {
-      query = query.eq('fecha', diaSeleccionado).order('hora');
-      titulo.textContent = 'Reservas del día';
     } else {
       query = query.gte('fecha', hoy()).order('fecha').order('hora');
       titulo.textContent = 'Próximas reservas';
