@@ -9,7 +9,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --negro: #0A0A0A; --bg: #0E0E0E; --bg2: #141414; --bg3: #1A1A1A;
+      --negro: #0A0A0A; --bg: #0E0E0E; --bg2: #141414; --bg3: #1A1A1A; --bg4: #202020;
       --verde: #7CB518; --verde2: rgba(124,181,24,0.12); --oro: #C8882A;
       --crema: #F2EDD7; --gris: rgba(242,237,215,0.45);
       --pend: #C8882A; --conf: #7CB518; --canc: #666; --comp: #4a8fd4;
@@ -17,350 +17,132 @@
     html, body { height: 100%; background: var(--bg); color: var(--crema); font-family: 'Crimson Pro', serif; }
 
     /* ── LOGIN ── */
-    #loginScreen {
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--negro);
-    }
-    .login-box {
-      background: var(--bg2);
-      border: 1px solid rgba(124,181,24,0.2);
-      border-radius: 14px;
-      padding: 2.5rem 2rem;
-      width: 100%;
-      max-width: 360px;
-      text-align: center;
-    }
-    .login-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 3rem;
-      letter-spacing: 0.1em;
-      color: var(--crema);
-      line-height: 1;
-    }
+    #loginScreen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--negro); }
+    .login-box { background: var(--bg2); border: 1px solid rgba(124,181,24,0.2); border-radius: 14px; padding: 2.5rem 2rem; width: 100%; max-width: 360px; text-align: center; }
+    .login-logo { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 0.1em; color: var(--crema); line-height: 1; }
     .login-logo span { color: var(--verde); }
-    .login-sub {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.18em;
-      color: var(--gris);
-      text-transform: uppercase;
-      margin: 0.4rem 0 2rem;
-    }
-    .login-input {
-      width: 100%;
-      background: var(--bg3);
-      border: 1.5px solid rgba(124,181,24,0.2);
-      border-radius: 8px;
-      padding: 0.8rem 1rem;
-      color: var(--crema);
-      font-family: 'Crimson Pro', serif;
-      font-size: 1rem;
-      outline: none;
-      margin-bottom: 0.9rem;
-      transition: border-color 0.2s;
-    }
+    .login-sub { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.18em; color: var(--gris); text-transform: uppercase; margin: 0.4rem 0 2rem; }
+    .login-input { width: 100%; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.2); border-radius: 8px; padding: 0.8rem 1rem; color: var(--crema); font-family: 'Crimson Pro', serif; font-size: 1rem; outline: none; margin-bottom: 0.9rem; transition: border-color 0.2s; }
     .login-input:focus { border-color: var(--verde); }
-    .login-btn {
-      width: 100%;
-      background: var(--verde);
-      border: none;
-      border-radius: 8px;
-      padding: 0.85rem;
-      color: var(--negro);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 0.3rem;
-    }
+    .login-btn { width: 100%; background: var(--verde); border: none; border-radius: 8px; padding: 0.85rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; margin-top: 0.3rem; }
     .login-btn:hover { background: #8fd11e; }
     .login-btn:disabled { opacity: 0.5; cursor: default; }
-    .login-err {
-      color: #ff6b6b;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      margin-top: 0.8rem;
-    }
+    .login-err { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.65rem; margin-top: 0.8rem; }
 
     /* ── DASHBOARD ── */
     #dashboard { display: none; min-height: 100vh; }
-
-    /* Header */
-    .adm-header {
-      background: var(--negro);
-      border-bottom: 1px solid rgba(124,181,24,0.12);
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky; top: 0; z-index: 50;
-    }
-    .adm-logo {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.6rem;
-      letter-spacing: 0.08em;
-    }
+    .adm-header { background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); padding: 0.9rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; gap: 1rem; }
+    .adm-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; flex-shrink: 0; }
     .adm-logo span { color: var(--verde); }
     .adm-logo em { font-style: normal; font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--gris); letter-spacing: 0.15em; margin-left: 0.5rem; vertical-align: middle; }
-    .adm-user {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--gris);
-      display: flex; align-items: center; gap: 1rem;
-    }
-    .btn-logout {
-      background: none;
-      border: 1px solid rgba(124,181,24,0.25);
-      color: var(--gris);
-      padding: 0.35rem 0.85rem;
-      border-radius: 6px;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+    .header-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .btn-nueva { background: var(--verde); border: none; border-radius: 7px; padding: 0.5rem 1.1rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .btn-nueva:hover { background: #8fd11e; }
+    .btn-logout { background: none; border: 1px solid rgba(124,181,24,0.25); color: var(--gris); padding: 0.4rem 0.85rem; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.6rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
     .btn-logout:hover { border-color: var(--verde); color: var(--verde); }
 
     /* Stats */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 1px;
-      background: rgba(124,181,24,0.08);
-      border-bottom: 1px solid rgba(124,181,24,0.08);
-    }
-    .stat-card {
-      background: var(--negro);
-      padding: 1.2rem;
-      text-align: center;
-    }
-    .stat-n {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 2.2rem;
-      color: var(--verde);
-      line-height: 1;
-    }
-    .stat-label {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.55rem;
-      letter-spacing: 0.12em;
-      color: var(--gris);
-      text-transform: uppercase;
-      margin-top: 0.25rem;
-    }
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: rgba(124,181,24,0.08); border-bottom: 1px solid rgba(124,181,24,0.08); }
+    .stat-card { background: var(--negro); padding: 1rem; text-align: center; }
+    .stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--verde); line-height: 1; }
+    .stat-label { font-family: 'Space Mono', monospace; font-size: 0.5rem; letter-spacing: 0.12em; color: var(--gris); text-transform: uppercase; margin-top: 0.2rem; }
 
     /* Tabs */
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid rgba(124,181,24,0.1);
-      background: var(--negro);
-    }
-    .tab {
-      flex: 1;
-      background: none;
-      border: none;
-      padding: 0.9rem 0.5rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      color: var(--gris);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.2s;
-      text-transform: uppercase;
-    }
+    .tabs { display: flex; border-bottom: 1px solid rgba(124,181,24,0.1); background: var(--negro); }
+    .tab { flex: 1; background: none; border: none; padding: 0.85rem 0.5rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gris); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; text-transform: uppercase; }
     .tab.active { color: var(--verde); border-bottom-color: var(--verde); }
     .tab:hover:not(.active) { color: var(--crema); }
 
-    /* Week day tabs */
-    .week-tabs {
-      display: none;
-      gap: 0.4rem;
-      padding: 0.75rem 1rem;
-      background: var(--bg2);
-      border-bottom: 1px solid rgba(124,181,24,0.08);
-      overflow-x: auto;
-    }
+    /* Week tabs */
+    .week-tabs { display: none; gap: 0.4rem; padding: 0.75rem 1rem; background: var(--bg2); border-bottom: 1px solid rgba(124,181,24,0.08); overflow-x: auto; }
     .week-tabs.visible { display: flex; }
-    .day-tab {
-      flex-shrink: 0;
-      background: var(--bg3);
-      border: 1.5px solid rgba(124,181,24,0.15);
-      border-radius: 8px;
-      padding: 0.5rem 0.9rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--gris);
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: center;
-      line-height: 1.6;
-    }
+    .day-tab { flex-shrink: 0; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.15); border-radius: 8px; padding: 0.5rem 0.9rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.6; }
     .day-tab .dt-dia { font-size: 0.75rem; color: var(--crema); display: block; }
     .day-tab:hover:not(.active) { border-color: rgba(124,181,24,0.4); }
     .day-tab.active { border-color: var(--verde); background: var(--verde2); color: var(--verde); }
     .day-tab.active .dt-dia { color: var(--verde); }
 
-    /* Filter */
-    .list-header {
-      padding: 1rem 1.5rem 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .list-title {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.2rem;
-      letter-spacing: 0.05em;
-      color: var(--crema);
-    }
-    .filter-sel {
-      background: var(--bg3);
-      border: 1px solid rgba(124,181,24,0.2);
-      border-radius: 6px;
-      padding: 0.4rem 0.7rem;
-      color: var(--crema);
-      font-family: 'Space Mono', monospace;
-      font-size: 0.6rem;
-      outline: none;
-      cursor: pointer;
-    }
+    /* List */
+    .list-header { padding: 0.9rem 1.5rem 0.4rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .list-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.05em; color: var(--crema); }
+    .filter-sel { background: var(--bg3); border: 1px solid rgba(124,181,24,0.2); border-radius: 6px; padding: 0.4rem 0.7rem; color: var(--crema); font-family: 'Space Mono', monospace; font-size: 0.6rem; outline: none; cursor: pointer; }
 
-    /* Reservations */
-    #reservasList { padding: 0.5rem 1rem 3rem; }
+    /* Cards */
+    #reservasList { padding: 0.5rem 1rem 5rem; }
     .fecha-grupo { margin-bottom: 1.5rem; }
-    .fecha-header {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      color: var(--verde);
-      text-transform: uppercase;
-      padding: 0.75rem 0.5rem 0.4rem;
-      border-bottom: 1px solid rgba(124,181,24,0.12);
-      margin-bottom: 0.6rem;
-    }
-    .reserva-card {
-      background: var(--bg2);
-      border: 1px solid rgba(124,181,24,0.1);
-      border-radius: 10px;
-      padding: 1rem 1.2rem;
-      margin-bottom: 0.6rem;
-      display: grid;
-      grid-template-columns: auto 1fr auto;
-      gap: 0 1rem;
-      align-items: start;
-      transition: border-color 0.2s;
-    }
-    .reserva-card:hover { border-color: rgba(124,181,24,0.25); }
-    .card-hora {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1.5rem;
-      color: var(--crema);
-      letter-spacing: 0.05em;
-      line-height: 1;
-      padding-top: 0.15rem;
-      min-width: 3.8rem;
-    }
+    .fecha-header { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--verde); text-transform: uppercase; padding: 0.75rem 0.5rem 0.4rem; border-bottom: 1px solid rgba(124,181,24,0.12); margin-bottom: 0.6rem; }
+    .reserva-card { background: var(--bg2); border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 0.6rem; display: grid; grid-template-columns: auto 1fr auto; gap: 0 1rem; align-items: start; transition: border-color 0.2s; }
+    .reserva-card:hover { border-color: rgba(124,181,24,0.22); }
+    .card-hora { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: var(--crema); letter-spacing: 0.05em; line-height: 1; padding-top: 0.15rem; min-width: 3.8rem; }
     .card-body { min-width: 0; }
-    .card-servicio {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--verde);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 0.3rem;
-    }
-    .card-cliente {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--crema);
-      margin-bottom: 0.15rem;
-    }
-    .card-tel {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--gris);
-    }
+    .card-servicio { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--verde); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .card-cliente { font-size: 1.1rem; font-weight: 600; color: var(--crema); margin-bottom: 0.15rem; }
+    .card-tel { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--gris); }
     .card-tel a { color: inherit; text-decoration: none; }
     .card-tel a:hover { color: var(--verde); }
-    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
-    .status-badge {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.55rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 0.25rem 0.6rem;
-      border-radius: 20px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .badge-pendiente { background: rgba(200,136,42,0.15); color: var(--pend); border: 1px solid rgba(200,136,42,0.3); }
+    .card-notas { font-size: 0.88rem; color: rgba(242,237,215,0.5); margin-top: 0.2rem; font-style: italic; }
+    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
+    .status-badge { font-family: 'Space Mono', monospace; font-size: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 20px; font-weight: 700; white-space: nowrap; }
+    .badge-pendiente  { background: rgba(200,136,42,0.15); color: var(--pend); border: 1px solid rgba(200,136,42,0.3); }
     .badge-confirmada { background: rgba(124,181,24,0.12); color: var(--conf); border: 1px solid rgba(124,181,24,0.3); }
     .badge-cancelada  { background: rgba(100,100,100,0.12); color: var(--canc); border: 1px solid rgba(100,100,100,0.3); }
     .badge-completada { background: rgba(74,143,212,0.12); color: var(--comp); border: 1px solid rgba(74,143,212,0.3); }
     .card-actions { display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end; }
-    .act-btn {
-      background: none;
-      border: 1px solid;
-      border-radius: 5px;
-      padding: 0.25rem 0.6rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.55rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.15s;
-    }
+    .act-btn { background: none; border: 1px solid; border-radius: 5px; padding: 0.22rem 0.55rem; font-family: 'Space Mono', monospace; font-size: 0.5rem; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
     .act-confirmar { border-color: rgba(124,181,24,0.4); color: var(--conf); }
     .act-confirmar:hover { background: rgba(124,181,24,0.1); }
-    .act-cancelar { border-color: rgba(100,100,100,0.4); color: #999; }
-    .act-cancelar:hover { background: rgba(100,100,100,0.1); }
-    .act-completar { border-color: rgba(74,143,212,0.4); color: var(--comp); }
+    .act-cancelar   { border-color: rgba(200,100,100,0.4); color: #cc6666; }
+    .act-cancelar:hover { background: rgba(200,100,100,0.1); }
+    .act-completar  { border-color: rgba(74,143,212,0.4); color: var(--comp); }
     .act-completar:hover { background: rgba(74,143,212,0.1); }
+    .act-editar     { border-color: rgba(200,136,42,0.4); color: var(--oro); }
+    .act-editar:hover { background: rgba(200,136,42,0.1); }
+    .act-reactivar  { border-color: rgba(124,181,24,0.3); color: rgba(124,181,24,0.7); }
+    .act-reactivar:hover { background: rgba(124,181,24,0.08); }
 
     /* Empty / loading */
-    .empty-msg {
-      text-align: center;
-      padding: 3rem 1rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--gris);
-    }
-    .spinner {
-      display: inline-block;
-      width: 1.2rem; height: 1.2rem;
-      border: 2px solid rgba(124,181,24,0.2);
-      border-top-color: var(--verde);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-bottom: 0.5rem;
-    }
+    .empty-msg { text-align: center; padding: 3rem 1rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--gris); }
+    .spinner { display: inline-block; width: 1.2rem; height: 1.2rem; border: 2px solid rgba(124,181,24,0.2); border-top-color: var(--verde); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 0.5rem; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Toast */
-    .toast {
-      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-      background: var(--bg3);
-      border: 1px solid rgba(124,181,24,0.3);
-      border-radius: 8px;
-      padding: 0.7rem 1.4rem;
-      font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--verde);
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.25s;
-      z-index: 999;
-      white-space: nowrap;
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--bg2); border: 1px solid rgba(124,181,24,0.2); border-radius: 16px 16px 0 0; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; padding: 1.5rem 1.5rem 2rem; transform: translateY(40px); transition: transform 0.28s; }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; color: var(--crema); }
+    .modal-close { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); width: 2rem; height: 2rem; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { border-color: var(--verde); color: var(--verde); }
+    .campo-grupo { margin-bottom: 1rem; }
+    .campo-label { display: block; font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gris); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .campo-input, .campo-select, .campo-textarea {
+      width: 100%; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.18);
+      border-radius: 7px; padding: 0.7rem 0.9rem; color: var(--crema);
+      font-family: 'Crimson Pro', serif; font-size: 1rem; outline: none; transition: border-color 0.2s;
     }
+    .campo-input:focus, .campo-select:focus, .campo-textarea:focus { border-color: var(--verde); }
+    .campo-select option { background: var(--bg3); }
+    .campo-textarea { resize: vertical; min-height: 70px; }
+    .campos-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-footer { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+    .btn-guardar { flex: 1; background: var(--verde); border: none; border-radius: 7px; padding: 0.8rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
+    .btn-guardar:hover { background: #8fd11e; }
+    .btn-guardar:disabled { opacity: 0.4; cursor: default; }
+    .btn-cancelar-modal { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); padding: 0.8rem 1.2rem; border-radius: 7px; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
+    .btn-cancelar-modal:hover { border-color: rgba(242,237,215,0.3); color: var(--crema); }
+    .modal-error { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.62rem; margin-top: 0.6rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--bg3); border: 1px solid rgba(124,181,24,0.3); border-radius: 8px; padding: 0.7rem 1.4rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--verde); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 999; white-space: nowrap; }
     .toast.show { opacity: 1; }
 
     @media (max-width: 500px) {
       .reserva-card { grid-template-columns: auto 1fr; }
-      .card-right { flex-direction: row; flex-wrap: wrap; justify-content: flex-end; grid-column: 1/-1; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(124,181,24,0.08); }
-      .card-actions { flex-direction: row; }
+      .card-right { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; grid-column: 1/-1; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(124,181,24,0.08); }
+      .card-actions { flex-direction: row; flex-wrap: wrap; }
+      .campos-2col { grid-template-columns: 1fr; }
+      .modal { border-radius: 14px 14px 0 0; }
     }
   </style>
 </head>
@@ -382,31 +164,22 @@
 <div id="dashboard">
   <header class="adm-header">
     <div class="adm-logo">WTJ<span>.</span><em>ADMIN</em></div>
-    <div class="adm-user">
-      <span id="headerUser"></span>
-      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    <div class="header-right">
+      <button class="btn-nueva" onclick="abrirModal()">+ Nueva reserva</button>
+      <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
   </header>
 
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-n" id="statTotal">—</div>
-      <div class="stat-label">Hoy</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-n" id="statPend">—</div>
-      <div class="stat-label">Pendientes</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-n" id="statConf">—</div>
-      <div class="stat-label">Confirmadas</div>
-    </div>
+    <div class="stat-card"><div class="stat-n" id="statTotal">—</div><div class="stat-label">Hoy</div></div>
+    <div class="stat-card"><div class="stat-n" id="statPend">—</div><div class="stat-label">Pendientes</div></div>
+    <div class="stat-card"><div class="stat-n" id="statConf">—</div><div class="stat-label">Confirmadas</div></div>
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-vista="hoy" onclick="setVista('hoy',this)">Hoy</button>
-    <button class="tab" data-vista="semana" onclick="setVista('semana',this)">Semana</button>
-    <button class="tab" data-vista="proximas" onclick="setVista('proximas',this)">Próximas</button>
+    <button class="tab active" data-vista="hoy"     onclick="setVista('hoy',this)">Hoy</button>
+    <button class="tab"        data-vista="semana"  onclick="setVista('semana',this)">Semana</button>
+    <button class="tab"        data-vista="proximas" onclick="setVista('proximas',this)">Próximas</button>
   </div>
 
   <div class="week-tabs" id="weekTabs"></div>
@@ -414,7 +187,7 @@
   <div class="list-header">
     <div class="list-title" id="listTitle">Reservas de hoy</div>
     <select class="filter-sel" id="filterEstado" onchange="aplicarFiltro()">
-      <option value="">Todos los estados</option>
+      <option value="">Todos</option>
       <option value="pendiente">Pendiente</option>
       <option value="confirmada">Confirmada</option>
       <option value="cancelada">Cancelada</option>
@@ -423,6 +196,65 @@
   </div>
 
   <div id="reservasList"></div>
+</div>
+
+<!-- MODAL CREAR / EDITAR -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-titulo" id="modalTitulo">Nueva reserva</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+
+    <div class="campos-2col">
+      <div class="campo-grupo">
+        <label class="campo-label">Nombre cliente</label>
+        <input class="campo-input" id="mNombre" type="text" placeholder="Nombre" autocomplete="off" />
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label">Teléfono</label>
+        <input class="campo-input" id="mTelefono" type="tel" placeholder="+34 600 000 000" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Servicio</label>
+      <select class="campo-select" id="mServicio"></select>
+    </div>
+
+    <div class="campos-2col">
+      <div class="campo-grupo">
+        <label class="campo-label">Fecha</label>
+        <input class="campo-input" id="mFecha" type="date" />
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label">Hora</label>
+        <select class="campo-select" id="mHora"></select>
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Estado</label>
+      <select class="campo-select" id="mEstado">
+        <option value="pendiente">Pendiente</option>
+        <option value="confirmada">Confirmada</option>
+        <option value="cancelada">Cancelada</option>
+        <option value="completada">Completada</option>
+      </select>
+    </div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Notas (opcional)</label>
+      <textarea class="campo-textarea" id="mNotas" placeholder="Observaciones..."></textarea>
+    </div>
+
+    <div class="modal-error" id="modalError"></div>
+
+    <div class="modal-footer">
+      <button class="btn-cancelar-modal" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-guardar" id="btnGuardar" onclick="guardarReserva()">Guardar</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -436,12 +268,21 @@
   let vista = 'hoy';
   let diaSeleccionado = hoy();
   let todasReservas = [];
+  let serviciosData = [];
+  let editandoId = null;
 
-  function hoy() {
-    return new Date().toISOString().slice(0, 10);
+  function hoy() { return new Date().toISOString().slice(0, 10); }
+
+  // ── Slots por día ──
+  function slotsDelDia(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    const ds = d.getDay();
+    if (ds === 0 || ds === 1) return [];
+    if (ds === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+    return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
   }
 
-  /* ── AUTH ── */
+  // ── AUTH ──
   window.login = async function() {
     const email = document.getElementById('loginEmail').value.trim();
     const pass  = document.getElementById('loginPass').value;
@@ -467,14 +308,19 @@
     if (session) {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
-      const email = session.user.email;
-      document.getElementById('headerUser').textContent = email;
+      cargarServicios();
       cargarEstadisticas();
       setVista('hoy', document.querySelector('.tab[data-vista="hoy"]'));
     }
   });
 
-  /* ── VISTA ── */
+  // ── SERVICIOS ──
+  async function cargarServicios() {
+    const { data } = await db.from('servicios').select('*').order('precio_desde');
+    if (data) serviciosData = data;
+  }
+
+  // ── VISTA ──
   window.setVista = function(v, btn) {
     vista = v;
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -497,41 +343,38 @@
     const lunes = new Date(ref);
     lunes.setDate(ref.getDate() - (dow === 0 ? 6 : dow - 1));
     const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb'];
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 0; i < 6; i++) {
       const d = new Date(lunes);
-      d.setDate(lunes.getDate() + (i - 1));
+      d.setDate(lunes.getDate() + i);
       const iso = d.toISOString().slice(0,10);
       const btn = document.createElement('button');
       btn.className = 'day-tab' + (iso === diaSeleccionado ? ' active' : '');
-      btn.innerHTML = '<span class="dt-dia">' + dias[i-1] + '</span>' + d.getDate();
+      btn.innerHTML = '<span class="dt-dia">' + dias[i] + '</span>' + d.getDate();
       btn.onclick = () => {
         diaSeleccionado = iso;
         document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         cargarReservas();
       };
-      if (d.getDay() === 0 || d.getDay() === 1) btn.style.opacity = '0.35';
       cont.appendChild(btn);
     }
   }
 
-  /* ── ESTADÍSTICAS DE HOY ── */
+  // ── ESTADÍSTICAS ──
   async function cargarEstadisticas() {
     const { data } = await db.from('reservas').select('estado').eq('fecha', hoy());
     if (!data) return;
     document.getElementById('statTotal').textContent = data.length || '0';
-    document.getElementById('statPend').textContent = data.filter(r => r.estado === 'pendiente').length || '0';
-    document.getElementById('statConf').textContent = data.filter(r => r.estado === 'confirmada').length || '0';
+    document.getElementById('statPend').textContent  = data.filter(r => r.estado === 'pendiente').length  || '0';
+    document.getElementById('statConf').textContent  = data.filter(r => r.estado === 'confirmada').length || '0';
   }
 
-  /* ── CARGAR RESERVAS ── */
+  // ── CARGAR RESERVAS ──
   async function cargarReservas() {
     const list = document.getElementById('reservasList');
     list.innerHTML = '<div class="empty-msg"><div class="spinner"></div><br>Cargando...</div>';
     let query = db.from('reservas')
-      .select('*, servicios(nombre, duracion_minutos), clientes(nombre, telefono)')
-      .neq('estado', 'deleted');
-
+      .select('*, servicios(nombre, duracion_minutos), clientes(nombre, telefono)');
     const titulo = document.getElementById('listTitle');
     if (vista === 'hoy') {
       query = query.eq('fecha', hoy()).order('hora');
@@ -543,9 +386,8 @@
       query = query.gte('fecha', hoy()).order('fecha').order('hora');
       titulo.textContent = 'Próximas reservas';
     }
-
     const { data, error } = await query;
-    if (error) { list.innerHTML = '<div class="empty-msg">Error cargando reservas.</div>'; return; }
+    if (error) { list.innerHTML = '<div class="empty-msg">Error: ' + error.message + '</div>'; return; }
     todasReservas = data || [];
     renderLista();
   }
@@ -564,10 +406,7 @@
     if (vista === 'proximas') {
       list.innerHTML = '';
       const grupos = {};
-      datos.forEach(r => {
-        if (!grupos[r.fecha]) grupos[r.fecha] = [];
-        grupos[r.fecha].push(r);
-      });
+      datos.forEach(r => { if (!grupos[r.fecha]) grupos[r.fecha] = []; grupos[r.fecha].push(r); });
       Object.keys(grupos).sort().forEach(fecha => {
         const d = new Date(fecha + 'T00:00:00');
         const label = d.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
@@ -589,29 +428,29 @@
     card.id = 'card-' + r.id;
     const hora = r.hora ? r.hora.slice(0,5) : '—';
     const servicio = r.servicios ? r.servicios.nombre : '—';
-    const duracion = r.servicios ? r.servicios.duracion_minutos + 'min' : '';
+    const duracion = r.servicios ? ' · ' + r.servicios.duracion_minutos + 'min' : '';
     const clienteNombre = r.clientes ? (r.clientes.nombre || 'Sin nombre') : 'Sin nombre';
     const clienteTel = r.clientes ? r.clientes.telefono : '';
-    const telHref = clienteTel ? 'tel:' + clienteTel.replace(/\s/g,'') : '#';
     const badgeClass = 'badge-' + r.estado;
 
-    let acciones = '';
+    let acciones = '<button class="act-btn act-editar" onclick="abrirModal(\'' + r.id + '\')">Editar</button>';
     if (r.estado === 'pendiente') {
-      acciones = '<button class="act-btn act-confirmar" onclick="cambiarEstado(\'' + r.id + '\',\'confirmada\')">Confirmar</button>' +
-                 '<button class="act-btn act-cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">Cancelar</button>';
+      acciones += '<button class="act-btn act-confirmar" onclick="cambiarEstado(\'' + r.id + '\',\'confirmada\')">Confirmar</button>';
+      acciones += '<button class="act-btn act-cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">Cancelar</button>';
     } else if (r.estado === 'confirmada') {
-      acciones = '<button class="act-btn act-completar" onclick="cambiarEstado(\'' + r.id + '\',\'completada\')">Completada</button>' +
-                 '<button class="act-btn act-cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">Cancelar</button>';
+      acciones += '<button class="act-btn act-completar" onclick="cambiarEstado(\'' + r.id + '\',\'completada\')">Completada</button>';
+      acciones += '<button class="act-btn act-cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">Cancelar</button>';
     } else if (r.estado === 'cancelada') {
-      acciones = '<button class="act-btn act-confirmar" onclick="cambiarEstado(\'' + r.id + '\',\'pendiente\')">Reactivar</button>';
+      acciones += '<button class="act-btn act-reactivar" onclick="cambiarEstado(\'' + r.id + '\',\'pendiente\')">Reactivar</button>';
     }
 
     card.innerHTML =
       '<div class="card-hora">' + hora + '</div>' +
       '<div class="card-body">' +
-        '<div class="card-servicio">' + servicio + (duracion ? ' · ' + duracion : '') + '</div>' +
+        '<div class="card-servicio">' + servicio + duracion + '</div>' +
         '<div class="card-cliente">' + clienteNombre + '</div>' +
-        (clienteTel ? '<div class="card-tel"><a href="' + telHref + '">' + clienteTel + '</a></div>' : '') +
+        (clienteTel ? '<div class="card-tel"><a href="tel:' + clienteTel.replace(/\s/g,'') + '">' + clienteTel + '</a></div>' : '') +
+        (r.notas ? '<div class="card-notas">' + r.notas + '</div>' : '') +
       '</div>' +
       '<div class="card-right">' +
         '<span class="status-badge ' + badgeClass + '">' + r.estado + '</span>' +
@@ -620,30 +459,163 @@
     return card;
   }
 
-  /* ── CAMBIAR ESTADO ── */
+  // ── CAMBIAR ESTADO RÁPIDO ──
   window.cambiarEstado = async function(id, nuevoEstado) {
     const { error } = await db.from('reservas').update({ estado: nuevoEstado }).eq('id', id);
-    if (error) { mostrarToast('Error al actualizar.'); return; }
+    if (error) { mostrarToast('Error: ' + error.message); return; }
     todasReservas = todasReservas.map(r => r.id === id ? { ...r, estado: nuevoEstado } : r);
     renderLista();
     cargarEstadisticas();
-    const labels = { confirmada: '✓ Confirmada', cancelada: '✗ Cancelada', completada: '✓ Completada', pendiente: 'Reactivada' };
+    const labels = { confirmada: '✓ Confirmada', cancelada: '✗ Cancelada', completada: '✓ Completada', pendiente: '↺ Reactivada' };
     mostrarToast(labels[nuevoEstado] || nuevoEstado);
   };
 
-  /* ── TOAST ── */
+  // ── MODAL ──
+  window.abrirModal = function(id) {
+    editandoId = id || null;
+    const overlay = document.getElementById('modalOverlay');
+    document.getElementById('modalTitulo').textContent = id ? 'Editar reserva' : 'Nueva reserva';
+    document.getElementById('modalError').textContent = '';
+
+    // Rellenar select de servicios
+    const sel = document.getElementById('mServicio');
+    sel.innerHTML = '';
+    serviciosData.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.id;
+      o.textContent = s.nombre + ' — ' + s.precio_desde + '€';
+      sel.appendChild(o);
+    });
+
+    // Fecha por defecto: hoy
+    document.getElementById('mFecha').value = hoy();
+    actualizarHorasModal(hoy());
+
+    if (id) {
+      // Rellenar con datos existentes
+      const r = todasReservas.find(x => x.id === id);
+      if (r) {
+        document.getElementById('mNombre').value   = r.clientes ? (r.clientes.nombre || '') : '';
+        document.getElementById('mTelefono').value = r.clientes ? (r.clientes.telefono || '') : '';
+        document.getElementById('mEstado').value   = r.estado;
+        document.getElementById('mNotas').value    = r.notas || '';
+        document.getElementById('mFecha').value    = r.fecha;
+        actualizarHorasModal(r.fecha, r.hora ? r.hora.slice(0,5) : null);
+        if (r.servicio_id) document.getElementById('mServicio').value = r.servicio_id;
+      }
+    } else {
+      document.getElementById('mNombre').value   = '';
+      document.getElementById('mTelefono').value = '';
+      document.getElementById('mEstado').value   = 'pendiente';
+      document.getElementById('mNotas').value    = '';
+    }
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.cerrarModal = function(e) {
+    if (e && e.target !== document.getElementById('modalOverlay')) return;
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    editandoId = null;
+  };
+
+  function actualizarHorasModal(fecha, horaActual) {
+    const slots = slotsDelDia(fecha);
+    const sel = document.getElementById('mHora');
+    sel.innerHTML = '';
+    if (slots.length === 0) {
+      const o = document.createElement('option');
+      o.textContent = 'Día cerrado'; sel.appendChild(o); return;
+    }
+    slots.forEach(h => {
+      const o = document.createElement('option');
+      o.value = h; o.textContent = h;
+      if (h === horaActual) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+
+  document.getElementById('mFecha').addEventListener('change', function() {
+    actualizarHorasModal(this.value);
+  });
+
+  // ── GUARDAR RESERVA (crear o editar) ──
+  window.guardarReserva = async function() {
+    const nombre   = document.getElementById('mNombre').value.trim();
+    const telefono = document.getElementById('mTelefono').value.trim();
+    const servicioId = document.getElementById('mServicio').value;
+    const fecha    = document.getElementById('mFecha').value;
+    const hora     = document.getElementById('mHora').value;
+    const estado   = document.getElementById('mEstado').value;
+    const notas    = document.getElementById('mNotas').value.trim();
+    const errDiv   = document.getElementById('modalError');
+    const btn      = document.getElementById('btnGuardar');
+
+    errDiv.textContent = '';
+    if (!nombre || !telefono || !fecha || !hora) {
+      errDiv.textContent = 'Nombre, teléfono, fecha y hora son obligatorios.'; return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Guardando...';
+
+    // Obtener o crear cliente
+    let clienteId;
+    const { data: cliNew, error: cliInsErr } = await db.from('clientes')
+      .insert({ telefono, nombre }).select('id').single();
+    if (cliInsErr) {
+      if (cliInsErr.code === '23505') {
+        const { data: cliEx } = await db.from('clientes').select('id').eq('telefono', telefono).single();
+        if (cliEx) {
+          clienteId = cliEx.id;
+          // Actualizar nombre si cambió
+          await db.from('clientes').update({ nombre }).eq('id', clienteId);
+        } else {
+          errDiv.textContent = 'Error buscando cliente.';
+          btn.disabled = false; btn.textContent = 'Guardar'; return;
+        }
+      } else {
+        errDiv.textContent = 'Error cliente: ' + cliInsErr.message;
+        btn.disabled = false; btn.textContent = 'Guardar'; return;
+      }
+    } else {
+      clienteId = cliNew.id;
+    }
+
+    if (editandoId) {
+      // EDITAR
+      const { error } = await db.from('reservas').update({
+        cliente_id: clienteId, servicio_id: servicioId,
+        fecha, hora: hora + ':00', estado, notas: notas || null
+      }).eq('id', editandoId);
+      if (error) { errDiv.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Guardar'; return; }
+      mostrarToast('✓ Reserva actualizada');
+    } else {
+      // CREAR
+      const { error } = await db.from('reservas').insert({
+        cliente_id: clienteId, servicio_id: servicioId,
+        fecha, hora: hora + ':00', estado, notas: notas || null
+      });
+      if (error) { errDiv.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Guardar'; return; }
+      mostrarToast('✓ Reserva creada');
+    }
+
+    btn.disabled = false; btn.textContent = 'Guardar';
+    cerrarModal();
+    cargarReservas();
+    cargarEstadisticas();
+  };
+
+  // ── TOAST ──
   function mostrarToast(msg) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   }
 
-  /* ── AUTO-REFRESH ── */
-  setInterval(() => {
-    cargarEstadisticas();
-    cargarReservas();
-  }, 60000);
+  // ── AUTO-REFRESH ──
+  setInterval(() => { cargarEstadisticas(); cargarReservas(); }, 60000);
 })();
 </script>
 </body>
