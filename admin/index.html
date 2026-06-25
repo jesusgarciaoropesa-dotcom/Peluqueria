@@ -226,9 +226,10 @@
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-vista="hoy"     onclick="setVista('hoy',this)">Hoy</button>
-    <button class="tab"        data-vista="semana"  onclick="setVista('semana',this)">Semana</button>
-    <button class="tab"        data-vista="proximas" onclick="setVista('proximas',this)">Próximas</button>
+    <button class="tab active" data-vista="hoy"        onclick="setVista('hoy',this)">Hoy</button>
+    <button class="tab"        data-vista="semana"     onclick="setVista('semana',this)">Semana</button>
+    <button class="tab"        data-vista="proximas"   onclick="setVista('proximas',this)">Próximas</button>
+    <button class="tab"        data-vista="stats"      onclick="setVista('stats',this)">Estadísticas</button>
   </div>
 
   <div class="week-tabs" id="weekTabs"></div>
@@ -257,6 +258,9 @@
   </div>
 
   <div id="reservasList"></div>
+
+  <!-- Vista estadísticas de ingresos -->
+  <div id="statsWrap" style="display:none;"></div>
 </div>
 
 <!-- BANNER NUEVA RESERVA -->
@@ -318,7 +322,7 @@
     <div class="modal-error" id="modalError"></div>
 
     <div id="mHistorialWrap" style="display:none;margin-top:1.4rem;border-top:1px solid rgba(124,181,24,0.15);padding-top:1.2rem;">
-      <div style="font-family:'Space Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;color:var(--verde-neon);text-transform:uppercase;margin-bottom:0.8rem;">Historial del cliente</div>
+      <div style="font-family:'Space Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;color:var(--verde);text-transform:uppercase;margin-bottom:0.8rem;">Historial del cliente</div>
       <div id="mHistorialLista"></div>
     </div>
 
@@ -470,16 +474,23 @@
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     if (btn) btn.classList.add('active');
     document.getElementById('weekTabs').classList.remove('visible');
-    const agendaWrap  = document.getElementById('agendaWrap');
-    const listHeader  = document.getElementById('listHeader');
+    const agendaWrap   = document.getElementById('agendaWrap');
+    const listHeader   = document.getElementById('listHeader');
     const reservasList = document.getElementById('reservasList');
+    const statsWrap    = document.getElementById('statsWrap');
+    agendaWrap.style.display   = 'none';
+    statsWrap.style.display    = 'none';
+    listHeader.style.display   = 'none';
+    reservasList.style.display = '';
     if (v === 'semana') {
       agendaWrap.style.display = 'block';
-      listHeader.style.display = 'none';
       reservasList.innerHTML = '';
       iniciarAgenda();
+    } else if (v === 'stats') {
+      statsWrap.style.display = 'block';
+      reservasList.style.display = 'none';
+      cargarStatsIngresos();
     } else {
-      agendaWrap.style.display = 'none';
       listHeader.style.display = '';
       cargarReservas();
     }
@@ -621,13 +632,150 @@
     }
   }
 
-  // ── ESTADÍSTICAS ──
+  // ── ESTADÍSTICAS CABECERA ──
   async function cargarEstadisticas() {
     const { data } = await db.from('reservas').select('estado').eq('fecha', hoy());
     if (!data) return;
     document.getElementById('statTotal').textContent = data.length || '0';
     document.getElementById('statPend').textContent  = data.filter(r => r.estado === 'pendiente').length  || '0';
     document.getElementById('statConf').textContent  = data.filter(r => r.estado === 'confirmada').length || '0';
+  }
+
+  // ── ESTADÍSTICAS DE INGRESOS ──
+  async function cargarStatsIngresos() {
+    const wrap = document.getElementById('statsWrap');
+    wrap.innerHTML = '<div class="empty-msg"><div class="spinner"></div><br>Cargando estadísticas...</div>';
+
+    const ahora = new Date();
+    const y = ahora.getFullYear(), m = ahora.getMonth();
+    const fmtMes = (yr, mo) => yr + '-' + String(mo+1).padStart(2,'0');
+    const mesActual = fmtMes(y, m);
+    const mesPrev   = fmtMes(m === 0 ? y-1 : y, m === 0 ? 11 : m-1);
+    const inicio6m  = fmtMes(m < 5 ? y-1 : y, (m-5+12)%12) + '-01';
+
+    const { data: raw, error } = await db.from('reservas')
+      .select('id, estado, fecha, cliente_id, clientes(nombre), servicios(nombre, precio_desde)')
+      .gte('fecha', inicio6m)
+      .neq('estado', 'cancelada');
+
+    if (error) { wrap.innerHTML = '<div class="empty-msg">Error al cargar estadísticas.</div>'; return; }
+    const todo = raw || [];
+
+    const getMes = d => d.slice(0,7);
+    const precio = r => (r.servicios && r.servicios.precio_desde) ? Number(r.servicios.precio_desde) : 0;
+
+    const rMes    = todo.filter(r => getMes(r.fecha) === mesActual);
+    const rPrev   = todo.filter(r => getMes(r.fecha) === mesPrev);
+
+    const ingresosReales   = rMes.filter(r => r.estado === 'completada').reduce((s,r) => s + precio(r), 0);
+    const ingresosPrevistos = rMes.reduce((s,r) => s + precio(r), 0);
+    const ingresosPrev     = rPrev.filter(r => r.estado === 'completada').reduce((s,r) => s + precio(r), 0);
+    const completadasMes   = rMes.filter(r => r.estado === 'completada').length;
+    const ticketMedio      = completadasMes > 0 ? Math.round(ingresosReales / completadasMes) : 0;
+
+    let cambio = null;
+    if (ingresosPrev > 0) cambio = Math.round(((ingresosReales - ingresosPrev) / ingresosPrev) * 100);
+
+    // Por servicio
+    const porSrv = {};
+    rMes.forEach(r => {
+      const n = r.servicios ? r.servicios.nombre : 'Sin servicio';
+      if (!porSrv[n]) porSrv[n] = { count:0, total:0 };
+      porSrv[n].count++;
+      porSrv[n].total += precio(r);
+    });
+    const srvList = Object.entries(porSrv).sort((a,b) => b[1].total - a[1].total);
+    const maxSrv  = srvList[0]?.[1]?.total || 1;
+
+    // Tendencia 6 meses
+    const meses6 = [];
+    for (let i = 5; i >= 0; i--) {
+      const mo = (m - i + 12) % 12, yr = m - i < 0 ? y - 1 : y;
+      const key = fmtMes(yr, mo);
+      const lbl = new Date(yr, mo, 1).toLocaleDateString('es', { month: 'short' });
+      const ing = todo.filter(r => getMes(r.fecha) === key && r.estado === 'completada').reduce((s,r) => s + precio(r), 0);
+      meses6.push({ key, lbl, ing });
+    }
+    const maxMes = Math.max(...meses6.map(x => x.ing), 1);
+
+    // Top clientes
+    const porCli = {};
+    rMes.forEach(r => {
+      const n = r.clientes ? r.clientes.nombre : 'Desconocido';
+      if (!porCli[n]) porCli[n] = { citas:0, total:0 };
+      porCli[n].citas++;
+      porCli[n].total += precio(r);
+    });
+    const topCli = Object.entries(porCli).sort((a,b) => b[1].citas - a[1].citas).slice(0,5);
+
+    const nomMes     = ahora.toLocaleDateString('es', { month: 'long', year: 'numeric' });
+    const nomMesPrev = new Date(y, m-1, 1).toLocaleDateString('es', { month: 'long' });
+    const camHtml    = cambio !== null
+      ? `<div style="font-family:'Space Mono',monospace;font-size:0.63rem;margin-top:0.45rem;color:${cambio>=0?'#9ad420':'#e06060'};">
+           ${cambio>=0?'▲':'▼'} ${Math.abs(cambio)}% vs ${nomMesPrev}
+         </div>`
+      : '';
+
+    const kpi = (val, lbl, color) => `
+      <div style="background:var(--bg2);border:1px solid rgba(124,181,24,0.13);border-radius:12px;padding:1.1rem;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:${color};">${val}</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:var(--gris);text-transform:uppercase;margin-top:0.3rem;">${lbl}</div>
+      </div>`;
+
+    const secTitulo = t => `<div style="font-family:'Space Mono',monospace;font-size:0.63rem;letter-spacing:0.12em;color:var(--verde);text-transform:uppercase;margin:1.6rem 0 0.8rem;padding-bottom:0.35rem;border-bottom:1px solid rgba(124,181,24,0.12);">${t}</div>`;
+
+    wrap.innerHTML = `<div style="padding:1rem 1rem 5rem;">
+      ${secTitulo(nomMes)}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:0.2rem;">
+        <div style="background:var(--bg2);border:1px solid rgba(124,181,24,0.2);border-radius:12px;padding:1.1rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--crema);">${ingresosReales}€</div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:var(--gris);text-transform:uppercase;margin-top:0.3rem;">Ingresos reales</div>
+          ${camHtml}
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(200,136,42,0.2);border-radius:12px;padding:1.1rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--oro);">${ingresosPrevistos}€</div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:var(--gris);text-transform:uppercase;margin-top:0.3rem;">Previsto total</div>
+        </div>
+        ${kpi(completadasMes, 'Completadas', 'var(--crema)')}
+        ${kpi(ticketMedio + '€', 'Ticket medio', 'var(--crema)')}
+      </div>
+
+      ${secTitulo('Por servicio — este mes')}
+      ${srvList.length === 0
+        ? '<div style="font-family:\'Space Mono\',monospace;font-size:0.7rem;color:var(--gris);">Sin datos este mes.</div>'
+        : srvList.map(([n, d]) => `
+          <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.6rem;">
+            <div style="font-family:'Crimson Pro',serif;font-size:0.9rem;color:var(--crema);min-width:9rem;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${n}">${n}</div>
+            <div style="flex:1;height:7px;background:rgba(124,181,24,0.08);border-radius:4px;overflow:hidden;">
+              <div style="height:100%;background:var(--verde);border-radius:4px;width:${Math.round((d.total/maxSrv)*100)}%;"></div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--gris);min-width:4.5rem;text-align:right;">${d.count} · ${d.total}€</div>
+          </div>`).join('')}
+
+      ${secTitulo('Tendencia (6 meses)')}
+      <div style="display:flex;align-items:flex-end;gap:5px;height:72px;margin-bottom:4px;">
+        ${meses6.map(mes => `
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;">
+            <div title="${mes.ing}€" style="width:100%;background:${mes.key===mesActual?'var(--verde)':'rgba(124,181,24,0.28)'};border-radius:3px 3px 0 0;height:${mes.ing>0?Math.max(4,Math.round((mes.ing/maxMes)*68)):2}px;"></div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:5px;margin-bottom:0.2rem;">
+        ${meses6.map(mes => `
+          <div style="flex:1;text-align:center;font-family:'Space Mono',monospace;font-size:0.5rem;color:${mes.key===mesActual?'var(--verde)':'var(--gris)'};text-transform:uppercase;">${mes.lbl}</div>`).join('')}
+      </div>
+
+      ${secTitulo('Top clientes — este mes')}
+      ${topCli.length === 0
+        ? '<div style="font-family:\'Space Mono\',monospace;font-size:0.7rem;color:var(--gris);">Sin datos este mes.</div>'
+        : topCli.map(([n, d], i) => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0;border-bottom:1px solid rgba(124,181,24,0.06);">
+            <div style="display:flex;align-items:center;gap:0.7rem;">
+              <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--verde);min-width:1.2rem;">${i+1}</div>
+              <div style="font-family:'Crimson Pro',serif;font-size:1rem;color:var(--crema);">${n}</div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--gris);">${d.citas} cita${d.citas>1?'s':''} · ${d.total}€</div>
+          </div>`).join('')}
+    </div>`;
   }
 
   // ── CARGAR RESERVAS ──
