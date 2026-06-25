@@ -1164,7 +1164,305 @@
     .lb-prev:hover, .lb-next:hover { border-color: var(--verde-neon); color: var(--verde-neon); }
     @media (max-width: 600px) { .lb-prev { left: 0.4rem; } .lb-next { right: 0.4rem; } }
 
+    /* ── RESERVAR ────────────────────────────────── */
+    #reservar {
+      background: var(--bg-alt);
+      padding: 6rem 1.5rem;
+    }
+    .reservar-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .reservar-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .reservar-header .section-label { margin-bottom: 0.75rem; }
+    .reservar-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.2rem,5vw,3.5rem); color: var(--crema); }
+    .reservar-header h2 em { color: var(--verde-neon); font-style: normal; }
+    /* Steps indicator */
+    .steps-bar {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+    .steps-bar::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: 60%;
+      height: 2px;
+      background: rgba(124,181,24,0.15);
+      z-index: 0;
+    }
+    .step-dot {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      background: var(--gris-oscuro);
+      border: 2px solid rgba(124,181,24,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: rgba(242,237,215,0.4);
+      z-index: 1;
+      margin: 0 1rem;
+      transition: all 0.3s;
+    }
+    .step-dot.active {
+      background: var(--verde-neon);
+      border-color: var(--verde-neon);
+      color: var(--negro);
+      font-weight: 700;
+    }
+    .step-dot.done {
+      background: rgba(124,181,24,0.2);
+      border-color: var(--verde-neon);
+      color: var(--verde-neon);
+    }
+    /* Cards / Form container */
+    .reservar-card {
+      background: var(--negro);
+      border: 1px solid rgba(124,181,24,0.15);
+      border-radius: 12px;
+      padding: 2.5rem;
+    }
+    .paso { display: none; }
+    .paso.activo { display: block; }
+    .paso-titulo {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      color: var(--verde-neon);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    /* Servicios grid */
+    .servicios-grid-r {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    .servicio-btn {
+      background: var(--gris-oscuro);
+      border: 1.5px solid rgba(124,181,24,0.2);
+      border-radius: 8px;
+      padding: 1.2rem 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s;
+      color: var(--crema);
+    }
+    .servicio-btn:hover { border-color: var(--verde-neon); background: rgba(124,181,24,0.06); }
+    .servicio-btn.sel { border-color: var(--verde-neon); background: rgba(124,181,24,0.12); }
+    .sb-nombre { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 0.05em; display: block; }
+    .sb-info { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: rgba(242,237,215,0.5); margin-top: 0.3rem; }
+    /* Calendar */
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .cal-mes {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--crema);
+    }
+    .cal-nav {
+      background: none;
+      border: 1.5px solid rgba(124,181,24,0.3);
+      color: var(--crema);
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .cal-nav:hover { border-color: var(--verde-neon); color: var(--verde-neon); }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7,1fr);
+      gap: 4px;
+    }
+    .cal-dh {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: rgba(242,237,215,0.35);
+      text-align: center;
+      padding-bottom: 0.4rem;
+    }
+    .cal-d {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--crema);
+      cursor: pointer;
+      border: 1.5px solid transparent;
+      transition: all 0.18s;
+    }
+    .cal-d:hover:not(.disabled):not(.empty) { border-color: var(--verde-neon); background: rgba(124,181,24,0.08); }
+    .cal-d.sel { background: var(--verde-neon); color: var(--negro); font-weight: 700; }
+    .cal-d.disabled, .cal-d.empty { opacity: 0.2; cursor: default; pointer-events: none; }
+    .cal-d.hoy { border-color: rgba(200,136,42,0.6); }
+    /* Time slots */
+    .horas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .hora-btn {
+      padding: 0.55rem 0.3rem;
+      background: var(--gris-oscuro);
+      border: 1.5px solid rgba(124,181,24,0.2);
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--crema);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.18s;
+    }
+    .hora-btn:hover:not(.ocupada) { border-color: var(--verde-neon); background: rgba(124,181,24,0.08); }
+    .hora-btn.sel { background: var(--verde-neon); border-color: var(--verde-neon); color: var(--negro); font-weight: 700; }
+    .hora-btn.ocupada { opacity: 0.25; cursor: default; pointer-events: none; text-decoration: line-through; }
+    /* Form fields */
+    .campo-grupo { margin-bottom: 1.2rem; }
+    .campo-label {
+      display: block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: rgba(242,237,215,0.5);
+      text-transform: uppercase;
+      margin-bottom: 0.45rem;
+    }
+    .campo-input {
+      width: 100%;
+      background: var(--gris-oscuro);
+      border: 1.5px solid rgba(124,181,24,0.2);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      color: var(--crema);
+      font-family: 'Crimson Pro', serif;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .campo-input:focus { border-color: var(--verde-neon); }
+    /* Navigation buttons */
+    .paso-nav {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      justify-content: flex-end;
+    }
+    .btn-anterior {
+      background: none;
+      border: 1.5px solid rgba(124,181,24,0.3);
+      color: var(--crema);
+      padding: 0.7rem 1.5rem;
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-anterior:hover { border-color: var(--verde-neon); color: var(--verde-neon); }
+    .btn-siguiente {
+      background: var(--verde-neon);
+      border: none;
+      color: var(--negro);
+      padding: 0.7rem 1.8rem;
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.05em;
+    }
+    .btn-siguiente:hover { background: #8fd11e; transform: translateY(-1px); }
+    .btn-siguiente:disabled { opacity: 0.35; cursor: default; transform: none; }
+    /* Resumen (confirmation) */
+    .resumen-box {
+      background: rgba(124,181,24,0.07);
+      border: 1px solid rgba(124,181,24,0.2);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .resumen-fila {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(124,181,24,0.1);
+      font-family: 'Crimson Pro', serif;
+      font-size: 1.05rem;
+    }
+    .resumen-fila:last-child { border-bottom: none; }
+    .resumen-key { color: rgba(242,237,215,0.5); font-size: 0.85rem; }
+    .resumen-val { color: var(--crema); font-weight: 600; }
+    /* Success screen */
+    .exito-screen {
+      text-align: center;
+      padding: 2rem 0;
+    }
+    .exito-icon {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .exito-titulo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--verde-neon);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .exito-sub {
+      font-family: 'Crimson Pro', serif;
+      color: rgba(242,237,215,0.7);
+      font-size: 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .btn-nueva-reserva {
+      background: none;
+      border: 1.5px solid var(--verde-neon);
+      color: var(--verde-neon);
+      padding: 0.7rem 1.8rem;
+      border-radius: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-nueva-reserva:hover { background: rgba(124,181,24,0.1); }
+    .r-error { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.7rem; margin-top: 0.5rem; }
+    @media (max-width: 600px) {
+      .reservar-card { padding: 1.5rem 1rem; }
+      .servicios-grid-r { grid-template-columns: 1fr 1fr; }
+      .steps-bar::before { display: none; }
+    }
+
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -1211,9 +1509,10 @@
     <li><a href="javascript:void(0)" data-scroll-to="galeria">Galería</a></li>
     <li><a href="javascript:void(0)" data-scroll-to="barbero">El Barbero</a></li>
     <li><a href="javascript:void(0)" data-scroll-to="contacto">Contacto</a></li>
+    <li><a href="javascript:void(0)" data-scroll-to="reservar">Reservar</a></li>
   </ul>
-  <a class="nav-cta" href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita" target="_blank" rel="noopener">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="currentColor" aria-hidden="true" style="flex-shrink:0;vertical-align:middle"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg> Reservar
+  <a class="nav-cta" href="javascript:void(0)" data-scroll-to="reservar">
+    ✂ Reservar cita
   </a>
   <button class="hamburger" id="hamburger" aria-label="Menú">
     <span></span><span></span><span></span>
@@ -1229,6 +1528,7 @@
   <a href="javascript:void(0)" data-scroll-to="galeria" class="mobile-link">Galería</a>
   <a href="javascript:void(0)" data-scroll-to="barbero" class="mobile-link">El Barbero</a>
   <a href="javascript:void(0)" data-scroll-to="contacto" class="mobile-link">Contacto</a>
+  <a href="javascript:void(0)" data-scroll-to="reservar" class="mobile-link">Reservar</a>
   <a href="https://wa.me/34637847114?text=Hola!%20Quiero%20reservar%20cita" target="_blank" class="mobile-wa mobile-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.1em" height="1.1em" fill="currentColor" aria-hidden="true" style="flex-shrink:0;vertical-align:middle;margin-right:0.3em"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>WhatsApp</a>
 </div>
 
@@ -1542,6 +1842,86 @@
       </div>
     </div>
 
+  </div>
+</section>
+
+<!-- RESERVAR -->
+<section id="reservar">
+  <div class="reservar-inner">
+    <div class="reservar-header reveal">
+      <div class="section-label">// Haz tu cita</div>
+      <h2>RESERVA TU<br><em>PRÓXIMO CORTE</em></h2>
+    </div>
+    <div class="steps-bar" id="stepsBar">
+      <div class="step-dot active" id="sd1">1</div>
+      <div class="step-dot" id="sd2">2</div>
+      <div class="step-dot" id="sd3">3</div>
+      <div class="step-dot" id="sd4">4</div>
+    </div>
+    <div class="reservar-card">
+      <!-- PASO 1: Servicio -->
+      <div class="paso activo" id="paso1">
+        <div class="paso-titulo">// Elige tu servicio</div>
+        <div class="servicios-grid-r" id="serviciosGrid">
+          <div style="color:rgba(242,237,215,0.4);font-family:'Space Mono',monospace;font-size:0.75rem;">Cargando servicios...</div>
+        </div>
+        <div class="paso-nav">
+          <button class="btn-siguiente" id="btn1" disabled onclick="irPaso(2)">Siguiente →</button>
+        </div>
+      </div>
+      <!-- PASO 2: Fecha -->
+      <div class="paso" id="paso2">
+        <div class="paso-titulo">// Elige la fecha</div>
+        <div class="cal-header">
+          <button class="cal-nav" id="calPrev">&#8249;</button>
+          <span class="cal-mes" id="calMes"></span>
+          <button class="cal-nav" id="calNext">&#8250;</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="paso-nav">
+          <button class="btn-anterior" onclick="irPaso(1)">← Volver</button>
+          <button class="btn-siguiente" id="btn2" disabled onclick="irPaso(3)">Siguiente →</button>
+        </div>
+      </div>
+      <!-- PASO 3: Hora -->
+      <div class="paso" id="paso3">
+        <div class="paso-titulo">// Elige la hora</div>
+        <div id="horasWrap">
+          <div class="horas-grid" id="horasGrid"></div>
+        </div>
+        <div class="paso-nav">
+          <button class="btn-anterior" onclick="irPaso(2)">← Volver</button>
+          <button class="btn-siguiente" id="btn3" disabled onclick="irPaso(4)">Siguiente →</button>
+        </div>
+      </div>
+      <!-- PASO 4: Datos cliente -->
+      <div class="paso" id="paso4">
+        <div class="paso-titulo">// Tus datos</div>
+        <div class="campo-grupo">
+          <label class="campo-label" for="r-nombre">Nombre</label>
+          <input class="campo-input" id="r-nombre" type="text" placeholder="Tu nombre" autocomplete="given-name" />
+        </div>
+        <div class="campo-grupo">
+          <label class="campo-label" for="r-telefono">Teléfono</label>
+          <input class="campo-input" id="r-telefono" type="tel" placeholder="+34 600 000 000" autocomplete="tel" />
+        </div>
+        <div id="r-error" class="r-error" style="display:none;"></div>
+        <div class="paso-nav">
+          <button class="btn-anterior" onclick="irPaso(3)">← Volver</button>
+          <button class="btn-siguiente" id="btn4" onclick="confirmarReserva()">Confirmar reserva</button>
+        </div>
+      </div>
+      <!-- PASO 5: Éxito -->
+      <div class="paso" id="paso5">
+        <div class="exito-screen">
+          <span class="exito-icon">✅</span>
+          <div class="exito-titulo">¡RESERVA CONFIRMADA!</div>
+          <p class="exito-sub">Te esperamos. Si necesitas cancelar, escríbenos por WhatsApp.</p>
+          <div class="resumen-box" id="resumenFinal"></div>
+          <button class="btn-nueva-reserva" onclick="reiniciarReserva()">Hacer otra reserva</button>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1872,6 +2252,235 @@
       if (e.key === 'ArrowRight') nav(1);
     });
   })();
+
+  /* ── BOOKING (Supabase) ─────────────────── */
+  (function() {
+    const SUPA_URL = 'https://gimoqpusrdltlkrwsykr.supabase.co';
+    const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbW9xcHVzcmRsdGxrcndzeWtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDA0NDIsImV4cCI6MjA5Nzk3NjQ0Mn0.xmxP3TGAkXNPsrIKSYj1A-NXrIN1JIyzl9Fv6_FP8Dw';
+    const db = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+    let est = { paso: 1, servicio: null, fecha: null, hora: null, nombre: '', telefono: '' };
+    let calFecha = new Date();
+    calFecha.setDate(1);
+    let serviciosData = [];
+
+    // ── Slots por día ──
+    function slotsDelDia(diaSem) {
+      if (diaSem === 0 || diaSem === 1) return [];
+      if (diaSem === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+      return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+    }
+
+    // ── Pasos ──
+    window.irPaso = function(n) {
+      document.getElementById('paso' + est.paso).classList.remove('activo');
+      est.paso = n;
+      document.getElementById('paso' + n).classList.add('activo');
+      actualizarSteps();
+      if (n === 2) renderCalendario();
+      if (n === 3) cargarHoras();
+      window.scrollTo({ top: document.getElementById('reservar').offsetTop - 80, behavior: 'smooth' });
+    };
+
+    function actualizarSteps() {
+      for (let i = 1; i <= 4; i++) {
+        const d = document.getElementById('sd' + i);
+        if (!d) continue;
+        d.classList.remove('active', 'done');
+        if (i < est.paso) d.classList.add('done');
+        else if (i === est.paso) d.classList.add('active');
+      }
+    }
+
+    // ── Cargar servicios ──
+    async function cargarServicios() {
+      const { data, error } = await db.from('servicios').select('*').order('precio_desde');
+      const grid = document.getElementById('serviciosGrid');
+      if (error || !data) {
+        grid.innerHTML = '<div class="r-error">Error cargando servicios. Recarga la página.</div>';
+        return;
+      }
+      serviciosData = data;
+      grid.innerHTML = '';
+      data.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'servicio-btn';
+        btn.dataset.id = s.id;
+        btn.innerHTML = '<span class="sb-nombre">' + s.nombre + '</span>' +
+          '<span class="sb-info">Desde ' + s.precio_desde + '€ · ' + s.duracion_minutos + 'min</span>';
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.servicio-btn').forEach(b => b.classList.remove('sel'));
+          btn.classList.add('sel');
+          est.servicio = s;
+          document.getElementById('btn1').disabled = false;
+        });
+        grid.appendChild(btn);
+      });
+    }
+
+    // ── Calendario ──
+    function renderCalendario() {
+      const hoy = new Date();
+      hoy.setHours(0,0,0,0);
+      const mes = calFecha.getMonth();
+      const anio = calFecha.getFullYear();
+      const dias = ['L','M','X','J','V','S','D'];
+      document.getElementById('calMes').textContent =
+        calFecha.toLocaleString('es', { month: 'long', year: 'numeric' }).toUpperCase();
+      const grid = document.getElementById('calGrid');
+      grid.innerHTML = '';
+      dias.forEach(d => { const h = document.createElement('div'); h.className = 'cal-dh'; h.textContent = d; grid.appendChild(h); });
+      const primerDia = new Date(anio, mes, 1);
+      let inicio = primerDia.getDay(); // 0=dom
+      inicio = inicio === 0 ? 6 : inicio - 1; // Mon=0
+      for (let i = 0; i < inicio; i++) {
+        const e = document.createElement('div'); e.className = 'cal-d empty'; e.textContent = ''; grid.appendChild(e);
+      }
+      const totalDias = new Date(anio, mes + 1, 0).getDate();
+      for (let d = 1; d <= totalDias; d++) {
+        const fecha = new Date(anio, mes, d);
+        const diaSem = fecha.getDay(); // 0=dom,1=lun...6=sab
+        const celda = document.createElement('div');
+        celda.className = 'cal-d';
+        celda.textContent = d;
+        const esPasado = fecha < hoy;
+        const esCerrado = diaSem === 0 || diaSem === 1;
+        if (esPasado || esCerrado) {
+          celda.classList.add('disabled');
+        } else {
+          if (fecha.toDateString() === hoy.toDateString()) celda.classList.add('hoy');
+          const fechaStr = fecha.toISOString().slice(0,10);
+          if (est.fecha === fechaStr) celda.classList.add('sel');
+          celda.addEventListener('click', () => {
+            document.querySelectorAll('.cal-d').forEach(c => c.classList.remove('sel'));
+            celda.classList.add('sel');
+            est.fecha = fechaStr;
+            est.hora = null;
+            document.getElementById('btn2').disabled = false;
+          });
+        }
+        grid.appendChild(celda);
+      }
+    }
+
+    document.getElementById('calPrev').addEventListener('click', () => {
+      calFecha.setMonth(calFecha.getMonth() - 1);
+      renderCalendario();
+    });
+    document.getElementById('calNext').addEventListener('click', () => {
+      calFecha.setMonth(calFecha.getMonth() + 1);
+      renderCalendario();
+    });
+
+    // ── Cargar horas disponibles ──
+    async function cargarHoras() {
+      const grid = document.getElementById('horasGrid');
+      grid.innerHTML = '<div style="color:rgba(242,237,215,0.4);font-family:Space Mono,monospace;font-size:0.75rem;">Cargando...</div>';
+      document.getElementById('btn3').disabled = true;
+      est.hora = null;
+      const fecha = new Date(est.fecha + 'T00:00:00');
+      const diaSem = fecha.getDay();
+      const todos = slotsDelDia(diaSem);
+      // Fetch ocupadas
+      const { data: ocupadas } = await db.from('reservas')
+        .select('hora')
+        .eq('fecha', est.fecha)
+        .neq('estado', 'cancelada');
+      const ocupadasSet = new Set((ocupadas || []).map(r => r.hora.slice(0,5)));
+      grid.innerHTML = '';
+      if (todos.length === 0) {
+        grid.innerHTML = '<div style="color:rgba(242,237,215,0.4);font-family:Space Mono,monospace;font-size:0.75rem;">Sin horario disponible</div>';
+        return;
+      }
+      todos.forEach(h => {
+        const btn = document.createElement('button');
+        btn.className = 'hora-btn';
+        btn.textContent = h;
+        if (ocupadasSet.has(h)) {
+          btn.classList.add('ocupada');
+        } else {
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('.hora-btn').forEach(b => b.classList.remove('sel'));
+            btn.classList.add('sel');
+            est.hora = h;
+            document.getElementById('btn3').disabled = false;
+          });
+        }
+        grid.appendChild(btn);
+      });
+    }
+
+    // ── Confirmar reserva ──
+    window.confirmarReserva = async function() {
+      const nombre = document.getElementById('r-nombre').value.trim();
+      const telefono = document.getElementById('r-telefono').value.trim();
+      const errDiv = document.getElementById('r-error');
+      errDiv.style.display = 'none';
+      if (!nombre || !telefono) { errDiv.textContent = 'Por favor rellena nombre y teléfono.'; errDiv.style.display = 'block'; return; }
+      if (telefono.replace(/\D/g,'').length < 9) { errDiv.textContent = 'Teléfono no válido.'; errDiv.style.display = 'block'; return; }
+      est.nombre = nombre;
+      est.telefono = telefono;
+      const btn4 = document.getElementById('btn4');
+      btn4.disabled = true;
+      btn4.textContent = 'Enviando...';
+      // Upsert cliente
+      const { data: cliData, error: cliErr } = await db.from('clientes')
+        .upsert({ telefono, nombre }, { onConflict: 'telefono' })
+        .select('id').single();
+      if (cliErr) {
+        errDiv.textContent = 'Error al guardar datos. Inténtalo de nuevo.';
+        errDiv.style.display = 'block';
+        btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
+        return;
+      }
+      // Insert reserva
+      const { error: resErr } = await db.from('reservas').insert({
+        cliente_id: cliData.id,
+        servicio_id: est.servicio.id,
+        fecha: est.fecha,
+        hora: est.hora + ':00',
+        estado: 'pendiente'
+      });
+      if (resErr) {
+        errDiv.textContent = 'Error al crear la reserva. Inténtalo de nuevo.';
+        errDiv.style.display = 'block';
+        btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
+        return;
+      }
+      // Mostrar éxito
+      const fechaObj = new Date(est.fecha + 'T00:00:00');
+      const fechaLegible = fechaObj.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+      document.getElementById('resumenFinal').innerHTML =
+        '<div class="resumen-fila"><span class="resumen-key">Servicio</span><span class="resumen-val">' + est.servicio.nombre + '</span></div>' +
+        '<div class="resumen-fila"><span class="resumen-key">Fecha</span><span class="resumen-val">' + fechaLegible.charAt(0).toUpperCase() + fechaLegible.slice(1) + '</span></div>' +
+        '<div class="resumen-fila"><span class="resumen-key">Hora</span><span class="resumen-val">' + est.hora + '</span></div>' +
+        '<div class="resumen-fila"><span class="resumen-key">Nombre</span><span class="resumen-val">' + est.nombre + '</span></div>';
+      document.getElementById('paso4').classList.remove('activo');
+      est.paso = 5;
+      document.getElementById('paso5').classList.add('activo');
+      document.getElementById('stepsBar').style.display = 'none';
+      window.scrollTo({ top: document.getElementById('reservar').offsetTop - 80, behavior: 'smooth' });
+    };
+
+    // ── Reiniciar ──
+    window.reiniciarReserva = function() {
+      est = { paso: 1, servicio: null, fecha: null, hora: null, nombre: '', telefono: '' };
+      document.getElementById('r-nombre').value = '';
+      document.getElementById('r-telefono').value = '';
+      document.getElementById('btn1').disabled = true;
+      document.getElementById('btn2').disabled = true;
+      document.getElementById('btn3').disabled = true;
+      document.getElementById('stepsBar').style.display = 'flex';
+      document.querySelectorAll('.servicio-btn').forEach(b => b.classList.remove('sel'));
+      document.getElementById('paso5').classList.remove('activo');
+      document.getElementById('paso1').classList.add('activo');
+      actualizarSteps();
+    };
+
+    // ── Init ──
+    cargarServicios();
+  })();
+
 
 </script>
 </body>
