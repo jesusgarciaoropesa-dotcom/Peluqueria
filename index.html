@@ -2263,6 +2263,7 @@
     let calFecha = new Date();
     calFecha.setDate(1);
     let serviciosData = [];
+    let diasBloqueados = new Set();
 
     // ── Slots por día ──
     function slotsDelDia(diaSem) {
@@ -2277,7 +2278,7 @@
       est.paso = n;
       document.getElementById('paso' + n).classList.add('activo');
       actualizarSteps();
-      if (n === 2) renderCalendario();
+      if (n === 2) { cargarDiasBloqueados().then(renderCalendario); }
       if (n === 3) cargarHoras();
       window.scrollTo({ top: document.getElementById('reservar').offsetTop - 80, behavior: 'smooth' });
     };
@@ -2318,6 +2319,12 @@
       });
     }
 
+    // ── Días bloqueados ──
+    async function cargarDiasBloqueados() {
+      const { data } = await db.from('dias_bloqueados').select('fecha');
+      diasBloqueados = new Set((data || []).map(r => r.fecha));
+    }
+
     // ── Calendario ──
     function renderCalendario() {
       const hoy = new Date();
@@ -2345,7 +2352,8 @@
         celda.textContent = d;
         const esPasado = fecha < hoy;
         const esCerrado = diaSem === 0 || diaSem === 1;
-        if (esPasado || esCerrado) {
+        const esBloqueado = diasBloqueados.has(fecha.toISOString().slice(0,10));
+        if (esPasado || esCerrado || esBloqueado) {
           celda.classList.add('disabled');
         } else {
           if (fecha.toDateString() === hoy.toDateString()) celda.classList.add('hoy');

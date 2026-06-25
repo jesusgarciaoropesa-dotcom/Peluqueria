@@ -187,6 +187,7 @@
     <div class="adm-logo">WTJ<span>.</span><em>ADMIN</em></div>
     <div class="header-right">
       <button class="btn-nueva" onclick="abrirModal()">+ Nueva reserva</button>
+      <button class="btn-nueva" style="background:var(--oro);color:var(--negro);" onclick="abrirBloqueos()">✕ Días bloqueados</button>
       <button class="btn-logout" onclick="logout()">Salir</button>
     </div>
   </header>
@@ -285,6 +286,30 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- MODAL DÍAS BLOQUEADOS -->
+<div class="modal-overlay" id="bloqueosOverlay" onclick="cerrarBloqueos(event)">
+  <div class="modal" id="bloqueosModal">
+    <div class="modal-header">
+      <div class="modal-titulo">Días bloqueados</div>
+      <button class="modal-close" onclick="cerrarBloqueos()">✕</button>
+    </div>
+    <p style="font-size:0.95rem;color:var(--gris);margin-bottom:1.2rem;">Bloquea días de vacaciones o festivos para que los clientes no puedan reservar.</p>
+    <div class="campos-2col" style="margin-bottom:1rem;">
+      <div class="campo-grupo" style="margin-bottom:0;">
+        <label class="campo-label">Fecha a bloquear</label>
+        <input class="campo-input" id="bFecha" type="date" />
+      </div>
+      <div class="campo-grupo" style="margin-bottom:0;">
+        <label class="campo-label">Motivo (opcional)</label>
+        <input class="campo-input" id="bMotivo" type="text" placeholder="Vacaciones, festivo..." />
+      </div>
+    </div>
+    <button class="btn-guardar" style="width:100%;margin-bottom:1.5rem;" onclick="agregarBloqueo()">Bloquear este día</button>
+    <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--verde);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem;">Días actualmente bloqueados</div>
+    <div id="bloqueosList"></div>
+  </div>
+</div>
 
 <script>
 (function() {
@@ -686,6 +711,63 @@
     t.textContent = msg; t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2500);
   }
+
+  // ── DÍAS BLOQUEADOS ──
+  window.abrirBloqueos = function() {
+    document.getElementById('bloqueosOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('bFecha').value = '';
+    document.getElementById('bMotivo').value = '';
+    cargarBloqueos();
+  };
+
+  window.cerrarBloqueos = function(e) {
+    if (e && e.target !== document.getElementById('bloqueosOverlay')) return;
+    document.getElementById('bloqueosOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  async function cargarBloqueos() {
+    const cont = document.getElementById('bloqueosList');
+    cont.innerHTML = '<div style="color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;">Cargando...</div>';
+    const { data } = await db.from('dias_bloqueados').select('*').order('fecha');
+    if (!data || data.length === 0) {
+      cont.innerHTML = '<div style="color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;">Sin días bloqueados.</div>';
+      return;
+    }
+    cont.innerHTML = '';
+    data.forEach(b => {
+      const d = new Date(b.fecha + 'T00:00:00');
+      const label = d.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(124,181,24,0.08);gap:0.5rem;';
+      row.innerHTML =
+        '<div><div style="font-size:1rem;color:var(--crema);">' + label.charAt(0).toUpperCase() + label.slice(1) + '</div>' +
+        (b.motivo ? '<div style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--gris);">' + b.motivo + '</div>' : '') +
+        '</div>' +
+        '<button onclick="eliminarBloqueo(\'' + b.id + '\')" style="background:rgba(200,80,80,0.15);border:1px solid rgba(200,80,80,0.3);color:#e06060;border-radius:5px;padding:0.3rem 0.7rem;font-family:Space Mono,monospace;font-size:0.6rem;cursor:pointer;">Quitar</button>';
+      cont.appendChild(row);
+    });
+  }
+
+  window.agregarBloqueo = async function() {
+    const fecha  = document.getElementById('bFecha').value;
+    const motivo = document.getElementById('bMotivo').value.trim();
+    if (!fecha) { mostrarToast('Elige una fecha'); return; }
+    const { error } = await db.from('dias_bloqueados').insert({ fecha, motivo: motivo || null });
+    if (error) { mostrarToast('Error: ' + (error.code === '23505' ? 'ese día ya está bloqueado' : error.message)); return; }
+    mostrarToast('✓ Día bloqueado');
+    document.getElementById('bFecha').value = '';
+    document.getElementById('bMotivo').value = '';
+    cargarBloqueos();
+  };
+
+  window.eliminarBloqueo = async function(id) {
+    const { error } = await db.from('dias_bloqueados').delete().eq('id', id);
+    if (error) { mostrarToast('Error: ' + error.message); return; }
+    mostrarToast('✓ Día desbloqueado');
+    cargarBloqueos();
+  };
 
   // ── AUTO-REFRESH ──
   setInterval(() => { cargarEstadisticas(); cargarReservas(); }, 60000);
