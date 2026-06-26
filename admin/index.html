@@ -48,8 +48,9 @@
     .stat-label { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--gris); text-transform: uppercase; margin-top: 0.3rem; }
 
     /* Tabs */
-    .tabs { display: flex; border-bottom: 1px solid rgba(124,181,24,0.1); background: var(--negro); }
-    .tab { flex: 1; background: none; border: none; padding: 1rem 0.5rem; font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--gris); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; text-transform: uppercase; }
+    .tabs { display: flex; border-bottom: 1px solid rgba(124,181,24,0.1); background: var(--negro); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex-shrink: 0; background: none; border: none; padding: 1rem 1rem; font-family: 'Space Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; color: var(--gris); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; text-transform: uppercase; white-space: nowrap; }
     .tab.active { color: var(--verde); border-bottom-color: var(--verde); }
     .tab:hover:not(.active) { color: var(--crema); }
 
@@ -390,7 +391,7 @@
     <button class="tab active" data-vista="hoy"        onclick="setVista('hoy',this)">Hoy</button>
     <button class="tab"        data-vista="semana"     onclick="setVista('semana',this)">Semana</button>
     <button class="tab"        data-vista="proximas"   onclick="setVista('proximas',this)">Próximas</button>
-    <button class="tab"        data-vista="stats"      onclick="setVista('stats',this)">Estadísticas</button>
+    <button class="tab"        data-vista="stats"      onclick="setVista('stats',this)">Stats</button>
     <button class="tab"        data-vista="libreta"    onclick="setVista('libreta',this)">📓 Libreta</button>
   </div>
 
