@@ -572,6 +572,18 @@
       border-radius: 50%;
       display: block;
     }
+    /* Fallback si la imagen no carga */
+    .splash-logo.no-img {
+      background: linear-gradient(135deg, #0d1f0d, #1a2e1a);
+      border: 2px solid rgba(124,181,24,0.25);
+    }
+    .splash-logo.no-img::after {
+      content: 'WTJ';
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 4.5rem; letter-spacing: 0.1em;
+      color: var(--verde-neon);
+      position: absolute;
+    }
     @keyframes splashPop {
       0%   { opacity: 0; transform: scale(0.4) rotate(-15deg); }
       100% { opacity: 1; transform: scale(1) rotate(0deg); }
@@ -1654,8 +1666,8 @@
 <!-- SPLASH SCREEN -->
 <div id="splash">
   <div class="splash-logo-wrap">
-    <div class="splash-logo">
-      <img src="assets/logo.png" alt="Welcome to the Jungle Barber Shop Logo" />
+    <div class="splash-logo" id="splashLogoDiv">
+      <img src="assets/logo.png" alt="WTJ Barber Shop" onerror="document.getElementById('splashLogoDiv').classList.add('no-img');this.style.display='none'" />
     </div>
     <svg class="splash-ring" viewBox="0 0 244 244" xmlns="http://www.w3.org/2000/svg">
       <circle class="splash-ring-track" cx="122" cy="122" r="116"/>
@@ -2297,11 +2309,20 @@
   })();
 
   /* ── Splash screen ──────────────────── */
-  window.addEventListener('load', () => {
-    setTimeout(() => {
+  // El timer corre desde el primer render (no desde 'load') para que
+  // la duración del splash no dependa de la velocidad de conexión.
+  // 3800ms = anillo CSS completa su animación (0.6s delay + 3s) + margen.
+  (function() {
+    var done = false;
+    function hideSplash() {
+      if (done) return;
+      done = true;
       document.getElementById('splash').classList.add('hidden');
-    }, 3700);
-  });
+    }
+    setTimeout(hideSplash, 3800);
+    // Seguridad: si algo tarda mucho, forzar cierre a los 6s
+    setTimeout(hideSplash, 6000);
+  })();
 
   /* ── Scroll interno (sin abrir enlaces) ─ */
   /* ── Booking modal (móvil) ─────────── */
