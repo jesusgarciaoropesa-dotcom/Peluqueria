@@ -1513,6 +1513,8 @@
         font-family: 'Space Mono', monospace; font-size: 0.62rem;
         letter-spacing: 0.05em; cursor: pointer;
       }
+      /* En modal: ocultar botón WA flotante */
+      body.booking-open #waFloat { display: none !important; }
       /* En modal: ocultar el gran encabezado y desactivar sticky de botones */
       #reservar.modal-open .reservar-header { display: none; }
       #reservar.modal-open .steps-bar { margin-bottom: 0.8rem; }
