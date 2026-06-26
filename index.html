@@ -2622,7 +2622,7 @@
         partes.push({ text: '📅 ' + fStr });
       }
       if (est.hora) partes.push({ text: '🕐 ' + est.hora });
-      if (partes.length === 0 || est.paso === 1) {
+      if (partes.length === 0 || est.paso === 1 || est.paso === 4) {
         bar.classList.remove('visible');
         bar.innerHTML = '';
         return;
