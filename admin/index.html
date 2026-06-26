@@ -1565,6 +1565,49 @@
       libretaDiaActivo = null;
       renderLibreta();
     };
+
+    // ── Swipe táctil ──────────────────────────────────────
+    function addSwipe(el, onLeft, onRight) {
+      if (!el) return;
+      let sx = 0, sy = 0;
+      el.addEventListener('touchstart', e => {
+        sx = e.touches[0].clientX;
+        sy = e.touches[0].clientY;
+      }, { passive: true });
+      el.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - sx;
+        const dy = e.changedTouches[0].clientY - sy;
+        // Solo activar si el gesto es más horizontal que vertical
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          dx < 0 ? onLeft() : onRight();
+        }
+      }, { passive: true });
+    }
+
+    const diasIso = diasSemana.map(d => d.toISOString().slice(0, 10));
+    const curIdx  = diasIso.indexOf(libretaDiaActivo);
+
+    // Swipe en la página de citas → cambiar de día
+    addSwipe(wrap.querySelector('.lib-page'),
+      () => { if (curIdx < diasIso.length - 1) libretaSelDia(diasIso[curIdx + 1]); },
+      () => { if (curIdx > 0) libretaSelDia(diasIso[curIdx - 1]); }
+    );
+
+    // Swipe en la barra de semana y en las pestañas de días → cambiar de semana
+    function semanaAnterior() {
+      libretaLunes = new Date(libretaLunes);
+      libretaLunes.setDate(libretaLunes.getDate() - 7);
+      libretaDiaActivo = null;
+      renderLibreta();
+    }
+    function semanaSiguiente() {
+      libretaLunes = new Date(libretaLunes);
+      libretaLunes.setDate(libretaLunes.getDate() + 7);
+      libretaDiaActivo = null;
+      renderLibreta();
+    }
+    addSwipe(wrap.querySelector('.lib-nav'),  semanaSiguiente, semanaAnterior);
+    addSwipe(wrap.querySelector('.lib-dias'), semanaSiguiente, semanaAnterior);
   }
 
   window.libretaSelDia = function(iso) {
