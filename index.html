@@ -1318,8 +1318,13 @@
     }
     .cal-d:hover:not(.disabled):not(.empty) { border-color: var(--verde-neon); background: rgba(124,181,24,0.08); }
     .cal-d.sel { background: var(--verde-neon); color: var(--negro); font-weight: 700; }
+    .cal-d.sel .cal-dot { filter: brightness(0); }
     .cal-d.disabled, .cal-d.empty { opacity: 0.2; cursor: default; pointer-events: none; }
     .cal-d.hoy { border-color: rgba(200,136,42,0.6); }
+    /* Mejora 9: dot de disponibilidad */
+    .cal-num { display: block; line-height: 1; }
+    .cal-dot { display: block; width: 5px; height: 5px; border-radius: 50%; margin: 3px auto 0; flex-shrink: 0; }
+    .cal-d { flex-direction: column; }
     /* Time slots */
     .horas-grid {
       display: grid;
@@ -1459,9 +1464,106 @@
       .reservar-card { padding: 1.5rem 1rem; }
       .servicios-grid-r { grid-template-columns: 1fr 1fr; }
       .steps-bar::before { display: none; }
+      /* Mejora 8: botones más accesibles en móvil */
+      .paso-nav { flex-direction: column-reverse; gap: 0.6rem; position: sticky; bottom: 0; background: linear-gradient(to top, var(--negro) 80%, transparent); padding: 1rem 0 0.5rem; margin-top: 1.5rem; z-index: 10; }
+      .btn-siguiente { width: 100%; min-height: 52px; font-size: 0.85rem; }
+      .btn-anterior  { width: 100%; min-height: 44px; }
+      .horas-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .hora-btn { min-height: 44px; font-size: 0.8rem; }
+      .cal-d { font-size: 0.85rem; }
     }
 
   </style>
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="WTJ Barber Shop — Welcome to the Jungle · Oropesa" />
+  <meta property="og:description" content="Barbería artesanal en Oropesa. Degradados, diseños, tintes, barba. Reserva tu cita online." />
+  <meta property="og:url" content="https://jesusgarciaoropesa-dotcom.github.io/Peluqueria/" />
+  <meta property="og:locale" content="es_ES" />
+  <meta property="og:site_name" content="WTJ Barber Shop" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="WTJ Barber Shop · Oropesa" />
+  <meta name="twitter:description" content="Barbería artesanal en Oropesa. Degradados, diseños, tintes, barba. Reserva online." />
+  <meta name="theme-color" content="#0A0A0A" />
+
+  <!-- Schema.org Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BarberShop",
+        "name": "Welcome to the Jungle Barber Shop",
+        "alternateName": "WTJ Barber Shop",
+        "url": "https://jesusgarciaoropesa-dotcom.github.io/Peluqueria/",
+        "telephone": "+34637847114",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Calle Calzada Real 14",
+          "addressLocality": "Oropesa",
+          "addressRegion": "Castilla-La Mancha",
+          "postalCode": "45560",
+          "addressCountry": "ES"
+        },
+        "geo": { "@type": "GeoCoordinates", "latitude": 39.9217, "longitude": -5.1766 },
+        "openingHoursSpecification": [
+          {"@type":"OpeningHoursSpecification","dayOfWeek":["Tuesday","Wednesday","Thursday","Friday"],"opens":"10:00","closes":"13:00"},
+          {"@type":"OpeningHoursSpecification","dayOfWeek":["Tuesday","Wednesday","Thursday","Friday"],"opens":"16:00","closes":"20:00"},
+          {"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday"],"opens":"10:00","closes":"16:00"}
+        ],
+        "priceRange": "€€",
+        "currenciesAccepted": "EUR",
+        "paymentAccepted": "Efectivo, Tarjeta",
+        "hasMap": "https://maps.google.com/?q=Calle+Calzada+Real+14,+Oropesa,+Toledo,+Spain",
+        "sameAs": ["https://www.instagram.com/barber_welcome_to_the_jungle"],
+        "makesOffer": [
+          {"@type":"Offer","name":"Corte Clásico","price":"12.00","priceCurrency":"EUR"},
+          {"@type":"Offer","name":"Degradado / Fade","price":"15.00","priceCurrency":"EUR"},
+          {"@type":"Offer","name":"Diseños","price":"18.00","priceCurrency":"EUR"},
+          {"@type":"Offer","name":"Tintes","price":"20.00","priceCurrency":"EUR"},
+          {"@type":"Offer","name":"Arreglo de Barba","price":"10.00","priceCurrency":"EUR"},
+          {"@type":"Offer","name":"Corte + Barba","price":"22.00","priceCurrency":"EUR"}
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "¿Aceptáis walk-ins sin cita previa?",
+            "acceptedAnswer": {"@type":"Answer","text":"Recomendamos reservar cita con antelación para garantizar disponibilidad. Si vienes sin cita, te atendemos si hay hueco disponible."}
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuánto tarda un corte de pelo?",
+            "acceptedAnswer": {"@type":"Answer","text":"Un corte clásico tarda entre 30-45 minutos. Los degradados y diseños pueden tardar 45-60 minutos. Los tintes requieren más tiempo."}
+          },
+          {
+            "@type": "Question",
+            "name": "¿Hacéis cortes a niños?",
+            "acceptedAnswer": {"@type":"Answer","text":"Sí, realizamos cortes a niños. Puedes reservar online o contactarnos por WhatsApp al +34 637 847 114."}
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cómo cancelo mi reserva?",
+            "acceptedAnswer": {"@type":"Answer","text":"Puedes cancelar tu reserva directamente en nuestra web introduciendo tu número de teléfono, o contactándonos por WhatsApp al +34 637 847 114."}
+          },
+          {
+            "@type": "Question",
+            "name": "¿Cuál es el horario de WTJ Barber Shop?",
+            "acceptedAnswer": {"@type":"Answer","text":"Abrimos de martes a viernes de 10:00 a 13:00 y de 16:00 a 20:00. Los sábados de 10:00 a 16:00. Cerramos los lunes y domingos."}
+          },
+          {
+            "@type": "Question",
+            "name": "¿Dónde está la barbería WTJ en Oropesa?",
+            "acceptedAnswer": {"@type":"Answer","text":"Estamos en C/ Calzada Real 14, Oropesa, Castilla-La Mancha. Encuéntranos en Google Maps buscando 'WTJ Barber Shop Oropesa'."}
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
@@ -1560,8 +1662,8 @@
         <div class="stat-label">Lunes cerrado</div>
       </div>
       <div class="stat">
-        <div class="stat-number">637 847 114</div>
-        <div class="stat-label">Reservas por WhatsApp</div>
+        <div class="stat-number"><a href="tel:+34637847114" style="color:inherit;text-decoration:none;touch-action:manipulation;">637 847 114</a></div>
+        <div class="stat-label">Llama o WhatsApp</div>
       </div>
       <a class="hero-location" href="https://maps.google.com/?q=C%2F+Calzada+Real+14%2C+Oropesa%2C+Toledo" target="_blank" rel="noopener">
         <span>📍</span> C/ Calzada Real 14 · Oropesa
@@ -1922,11 +2024,46 @@
             Guardar en WhatsApp
           </a>
           <button class="btn-nueva-reserva" onclick="reiniciarReserva()">Hacer otra reserva</button>
+          <button onclick="abrirCancelar()" style="margin-top:0.5rem;background:none;border:1px solid rgba(255,100,100,0.3);color:rgba(255,150,150,0.7);font-family:'Space Mono',monospace;font-size:0.6rem;padding:0.5rem 1rem;border-radius:6px;cursor:pointer;letter-spacing:0.06em;">Cancelar esta u otra reserva</button>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<!-- MODAL CANCELAR RESERVA -->
+<div id="cancelOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:500;align-items:flex-end;justify-content:center;">
+  <div id="cancelModal" style="background:#141414;border:1px solid rgba(124,181,24,0.2);border-radius:16px 16px 0 0;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding:1.8rem 1.5rem 2.5rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.4rem;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.06em;color:var(--crema);">Cancelar mi reserva</div>
+      <button onclick="cerrarCancelar()" style="background:none;border:1px solid rgba(124,181,24,0.2);color:rgba(242,237,215,0.5);width:2rem;height:2rem;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <!-- Paso A: buscar por teléfono -->
+    <div id="cancelPasoA">
+      <p style="font-family:'Crimson Pro',serif;font-size:1rem;color:rgba(242,237,215,0.6);margin-bottom:1.2rem;">Introduce el teléfono con el que hiciste la reserva.</p>
+      <label style="display:block;font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:rgba(242,237,215,0.45);text-transform:uppercase;margin-bottom:0.4rem;">Teléfono</label>
+      <input id="cancelTel" type="tel" placeholder="+34 600 000 000" autocomplete="tel"
+        style="width:100%;background:#1a1a1a;border:1.5px solid rgba(124,181,24,0.2);border-radius:8px;padding:0.8rem 1rem;color:var(--crema);font-family:'Crimson Pro',serif;font-size:1rem;outline:none;margin-bottom:0.9rem;" />
+      <div id="cancelErr" style="color:#ff6b6b;font-family:'Space Mono',monospace;font-size:0.62rem;margin-bottom:0.6rem;display:none;"></div>
+      <button onclick="buscarReservasCancelar()"
+        style="width:100%;background:var(--verde-neon);border:none;border-radius:8px;padding:0.85rem;color:var(--negro);font-family:'Space Mono',monospace;font-size:0.72rem;font-weight:700;letter-spacing:0.06em;cursor:pointer;min-height:48px;"
+        id="cancelBuscarBtn">Buscar mis reservas</button>
+    </div>
+    <!-- Paso B: lista de reservas -->
+    <div id="cancelPasoB" style="display:none;">
+      <p style="font-family:'Space Mono',monospace;font-size:0.62rem;color:rgba(242,237,215,0.45);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.9rem;">Tus próximas citas</p>
+      <div id="cancelLista"></div>
+      <button onclick="volverCancelarA()" style="margin-top:1.2rem;background:none;border:1px solid rgba(124,181,24,0.2);color:rgba(242,237,215,0.5);border-radius:8px;padding:0.6rem 1.2rem;font-family:'Space Mono',monospace;font-size:0.62rem;cursor:pointer;">← Cambiar teléfono</button>
+    </div>
+    <!-- Paso C: confirmación cancelada -->
+    <div id="cancelPasoC" style="display:none;text-align:center;padding:1rem 0;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">✅</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.06em;color:var(--crema);margin-bottom:0.5rem;">Reserva cancelada</div>
+      <p style="font-family:'Crimson Pro',serif;font-size:0.95rem;color:rgba(242,237,215,0.6);">Tu cita ha sido cancelada. Si necesitas nueva cita, resérvala cuando quieras.</p>
+      <button onclick="cerrarCancelar()" style="margin-top:1.2rem;background:var(--verde-neon);border:none;border-radius:8px;padding:0.75rem 1.8rem;color:var(--negro);font-family:'Space Mono',monospace;font-size:0.72rem;font-weight:700;cursor:pointer;min-height:48px;">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- CONTACTO -->
 <section id="contacto">
@@ -1997,6 +2134,7 @@
     <a class="social-link" href="https://www.instagram.com/barber_welcome_to_the_jungle" target="_blank" rel="noopener">Instagram</a>
     <a class="social-link" href="https://wa.me/34637847114" target="_blank" rel="noopener">WhatsApp</a>
     <a class="social-link" href="javascript:void(0)" data-scroll-to="contacto">Contacto</a>
+    <a class="social-link" href="javascript:void(0)" onclick="abrirCancelar()" style="color:rgba(255,150,150,0.6);">Cancelar reserva</a>
   </div>
   <div class="footer-copy">© 2025 WTJ Barber Shop · Oropesa · Todos los derechos reservados</div>
 </footer>
@@ -2281,7 +2419,7 @@
       est.paso = n;
       document.getElementById('paso' + n).classList.add('activo');
       actualizarSteps();
-      if (n === 2) { cargarDiasBloqueados().then(renderCalendario); }
+      if (n === 2) { cargarDiasBloqueados().then(() => renderCalendario()); }
       if (n === 3) cargarHoras();
       window.scrollTo({ top: document.getElementById('reservar').offsetTop - 80, behavior: 'smooth' });
     };
@@ -2328,8 +2466,8 @@
       diasBloqueados = new Set((data || []).map(r => r.fecha));
     }
 
-    // ── Calendario ──
-    function renderCalendario() {
+    // ── Calendario (Mejora 9: muestra huecos disponibles por día) ──
+    async function renderCalendario() {
       const hoy = new Date();
       hoy.setHours(0,0,0,0);
       const mes = calFecha.getMonth();
@@ -2340,35 +2478,60 @@
       const grid = document.getElementById('calGrid');
       grid.innerHTML = '';
       dias.forEach(d => { const h = document.createElement('div'); h.className = 'cal-dh'; h.textContent = d; grid.appendChild(h); });
+
+      // Obtener reservas ocupadas del mes
+      const primerStr = new Date(anio, mes, 1).toISOString().slice(0,10);
+      const ultimoStr = new Date(anio, mes+1, 0).toISOString().slice(0,10);
+      const { data: ocupMes } = await db.from('reservas')
+        .select('fecha')
+        .gte('fecha', primerStr)
+        .lte('fecha', ultimoStr)
+        .neq('estado', 'cancelada');
+      const ocupPorFecha = {};
+      (ocupMes || []).forEach(r => { ocupPorFecha[r.fecha] = (ocupPorFecha[r.fecha] || 0) + 1; });
+
       const primerDia = new Date(anio, mes, 1);
-      let inicio = primerDia.getDay(); // 0=dom
-      inicio = inicio === 0 ? 6 : inicio - 1; // Mon=0
+      let inicio = primerDia.getDay();
+      inicio = inicio === 0 ? 6 : inicio - 1;
       for (let i = 0; i < inicio; i++) {
-        const e = document.createElement('div'); e.className = 'cal-d empty'; e.textContent = ''; grid.appendChild(e);
+        const e = document.createElement('div'); e.className = 'cal-d empty'; grid.appendChild(e);
       }
       const totalDias = new Date(anio, mes + 1, 0).getDate();
       for (let d = 1; d <= totalDias; d++) {
         const fecha = new Date(anio, mes, d);
-        const diaSem = fecha.getDay(); // 0=dom,1=lun...6=sab
+        const diaSem = fecha.getDay();
+        const fechaStr = fecha.toISOString().slice(0,10);
         const celda = document.createElement('div');
         celda.className = 'cal-d';
-        celda.textContent = d;
         const esPasado = fecha < hoy;
         const esCerrado = diaSem === 0 || diaSem === 1;
-        const esBloqueado = diasBloqueados.has(fecha.toISOString().slice(0,10));
+        const esBloqueado = diasBloqueados.has(fechaStr);
         if (esPasado || esCerrado || esBloqueado) {
+          celda.innerHTML = '<span class="cal-num">' + d + '</span>';
           celda.classList.add('disabled');
         } else {
-          if (fecha.toDateString() === hoy.toDateString()) celda.classList.add('hoy');
-          const fechaStr = fecha.toISOString().slice(0,10);
-          if (est.fecha === fechaStr) celda.classList.add('sel');
-          celda.addEventListener('click', () => {
-            document.querySelectorAll('.cal-d').forEach(c => c.classList.remove('sel'));
-            celda.classList.add('sel');
-            est.fecha = fechaStr;
-            est.hora = null;
-            document.getElementById('btn2').disabled = false;
-          });
+          const totalSlots = slotsDelDia(diaSem).length;
+          const ocupados = ocupPorFecha[fechaStr] || 0;
+          const libres = totalSlots - ocupados;
+          let dotColor = libres <= 0 ? '#e06060' : libres <= 3 ? '#f5a623' : '#7CB518';
+          let dotTitle = libres <= 0 ? 'Completo' : libres + ' libre' + (libres === 1 ? '' : 's');
+          celda.innerHTML =
+            '<span class="cal-num">' + d + '</span>' +
+            '<span class="cal-dot" style="background:' + dotColor + ';" title="' + dotTitle + '"></span>';
+          if (libres <= 0) {
+            celda.classList.add('disabled');
+            celda.title = 'Sin disponibilidad';
+          } else {
+            if (fecha.toDateString() === hoy.toDateString()) celda.classList.add('hoy');
+            if (est.fecha === fechaStr) celda.classList.add('sel');
+            celda.addEventListener('click', () => {
+              document.querySelectorAll('.cal-d').forEach(c => c.classList.remove('sel'));
+              celda.classList.add('sel');
+              est.fecha = fechaStr;
+              est.hora = null;
+              document.getElementById('btn2').disabled = false;
+            });
+          }
         }
         grid.appendChild(celda);
       }
@@ -2517,6 +2680,119 @@
     cargarServicios();
   })();
 
+  /* ── CANCELAR RESERVA PROPIA (Mejora 7) ───────────── */
+  (function() {
+    const SUPA_URL = 'https://gimoqpusrdltlkrwsykr.supabase.co';
+    const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbW9xcHVzcmRsdGxrcndzeWtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDA0NDIsImV4cCI6MjA5Nzk3NjQ0Mn0.xmxP3TGAkXNPsrIKSYj1A-NXrIN1JIyzl9Fv6_FP8Dw';
+    const db2 = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+    window.abrirCancelar = function() {
+      const ov = document.getElementById('cancelOverlay');
+      ov.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      document.getElementById('cancelPasoA').style.display = 'block';
+      document.getElementById('cancelPasoB').style.display = 'none';
+      document.getElementById('cancelPasoC').style.display = 'none';
+      document.getElementById('cancelTel').value = '';
+      document.getElementById('cancelErr').style.display = 'none';
+    };
+
+    window.cerrarCancelar = function() {
+      document.getElementById('cancelOverlay').style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    window.volverCancelarA = function() {
+      document.getElementById('cancelPasoA').style.display = 'block';
+      document.getElementById('cancelPasoB').style.display = 'none';
+    };
+
+    document.getElementById('cancelOverlay').addEventListener('click', function(e) {
+      if (e.target === this) cerrarCancelar();
+    });
+
+    window.buscarReservasCancelar = async function() {
+      const tel = document.getElementById('cancelTel').value.trim();
+      const errDiv = document.getElementById('cancelErr');
+      errDiv.style.display = 'none';
+      if (tel.replace(/\D/g,'').length < 9) {
+        errDiv.textContent = 'Introduce un teléfono válido.';
+        errDiv.style.display = 'block'; return;
+      }
+      const btn = document.getElementById('cancelBuscarBtn');
+      btn.disabled = true; btn.textContent = 'Buscando...';
+
+      const { data: cli } = await db2.from('clientes').select('id').eq('telefono', tel).single();
+      if (!cli) {
+        errDiv.textContent = 'No encontramos reservas con ese número.';
+        errDiv.style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Buscar mis reservas'; return;
+      }
+
+      const hoyStr = new Date().toISOString().slice(0,10);
+      const { data: reservas } = await db2.from('reservas')
+        .select('id, fecha, hora, estado, servicios(nombre)')
+        .eq('cliente_id', cli.id)
+        .gte('fecha', hoyStr)
+        .in('estado', ['pendiente', 'confirmada'])
+        .order('fecha').order('hora');
+
+      btn.disabled = false; btn.textContent = 'Buscar mis reservas';
+
+      if (!reservas || reservas.length === 0) {
+        errDiv.textContent = 'No tienes reservas próximas activas con ese número.';
+        errDiv.style.display = 'block'; return;
+      }
+
+      const badgeColors = { pendiente:'#f5a623', confirmada:'#9ad420' };
+      const lista = document.getElementById('cancelLista');
+      lista.innerHTML = '';
+      reservas.forEach(r => {
+        const fObj = new Date(r.fecha + 'T00:00:00');
+        const fLabel = fObj.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+        const hora = r.hora ? r.hora.slice(0,5) : '';
+        const srv = r.servicios ? r.servicios.nombre : '—';
+        const bc = badgeColors[r.estado] || '#888';
+        const item = document.createElement('div');
+        item.style.cssText = 'background:#1a1a1a;border:1px solid rgba(124,181,24,0.12);border-radius:10px;padding:1rem;margin-bottom:0.75rem;';
+        item.innerHTML =
+          '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;margin-bottom:0.6rem;">' +
+            '<div>' +
+              '<div style="font-family:\'Space Mono\',monospace;font-size:0.62rem;color:rgba(242,237,215,0.5);text-transform:uppercase;letter-spacing:0.06em;">' + fLabel + ' · ' + hora + '</div>' +
+              '<div style="font-family:\'Crimson Pro\',serif;font-size:1.05rem;color:var(--crema);margin-top:0.2rem;">' + srv + '</div>' +
+            '</div>' +
+            '<span style="font-family:\'Space Mono\',monospace;font-size:0.6rem;padding:0.2rem 0.5rem;border-radius:4px;background:' + bc + '22;color:' + bc + ';border:1px solid ' + bc + '44;white-space:nowrap;">' + r.estado + '</span>' +
+          '</div>' +
+          '<button data-id="' + r.id + '" onclick="cancelarReservaId(this)" ' +
+            'style="width:100%;background:rgba(200,50,50,0.1);border:1px solid rgba(200,80,80,0.35);color:#e06060;border-radius:7px;padding:0.55rem;font-family:\'Space Mono\',monospace;font-size:0.65rem;font-weight:700;cursor:pointer;min-height:44px;letter-spacing:0.05em;">' +
+            'Cancelar esta cita' +
+          '</button>';
+        lista.appendChild(item);
+      });
+
+      document.getElementById('cancelPasoA').style.display = 'none';
+      document.getElementById('cancelPasoB').style.display = 'block';
+    };
+
+    window.cancelarReservaId = async function(btn) {
+      const id = btn.dataset.id;
+      btn.disabled = true; btn.textContent = 'Cancelando...';
+      const { error } = await db2.from('reservas').update({ estado: 'cancelada' }).eq('id', id);
+      if (error) {
+        // Fallback: abrir WhatsApp si no hay permiso de UPDATE
+        const waUrl = 'https://wa.me/34637847114?text=' + encodeURIComponent('Hola, quiero cancelar mi reserva (ID: ' + id.slice(0,8) + '...). Gracias.');
+        btn.disabled = false;
+        btn.textContent = 'Solicitar por WhatsApp';
+        btn.style.background = 'rgba(37,211,102,0.12)';
+        btn.style.borderColor = 'rgba(37,211,102,0.4)';
+        btn.style.color = '#25D366';
+        btn.onclick = function() { window.open(waUrl, '_blank'); };
+        return;
+      }
+      document.getElementById('cancelPasoB').style.display = 'none';
+      document.getElementById('cancelPasoC').style.display = 'block';
+    };
+  })();
 
 </script>
 </body>
