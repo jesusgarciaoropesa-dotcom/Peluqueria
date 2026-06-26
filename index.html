@@ -1489,16 +1489,26 @@
     .rb-item { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--verde-neon); letter-spacing: 0.05em; }
     .rb-sep { color: rgba(124,181,24,0.3); font-size: 0.7rem; }
     @media (max-width: 600px) {
-      .reservar-card { padding: 1.5rem 1rem; }
-      .servicios-grid-r { grid-template-columns: 1fr 1fr; }
+      #reservar { padding: 2.5rem 1rem 3rem; }
+      .reservar-header { margin-bottom: 1.2rem; }
+      .reservar-header h2 { font-size: 1.6rem; }
+      .steps-bar { margin-bottom: 1.2rem; }
       .steps-bar::before { display: none; }
-      /* Mejora 8: botones más accesibles en móvil */
-      .paso-nav { flex-direction: column-reverse; gap: 0.6rem; position: sticky; bottom: 0; background: linear-gradient(to top, var(--negro) 80%, transparent); padding: 1rem 0 0.5rem; margin-top: 1.5rem; z-index: 10; }
-      .btn-siguiente { width: 100%; min-height: 52px; font-size: 0.85rem; }
-      .btn-anterior  { width: 100%; min-height: 44px; }
+      .reservar-card { padding: 1.1rem 1rem; }
+      .paso-titulo { margin-bottom: 0.9rem; }
+      .servicios-grid-r { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+      .servicio-btn { padding: 0.9rem 0.7rem; }
+      .sb-nombre { font-size: 1.05rem; }
+      .sb-info { font-size: 0.6rem; }
+      .campo-grupo { margin-bottom: 0.9rem; }
+      .campo-input { padding: 0.65rem 0.9rem; }
       .horas-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
       .hora-btn { min-height: 44px; font-size: 0.8rem; }
       .cal-d { font-size: 0.85rem; }
+      /* Botones de navegación: fijos al fondo para no perder espacio */
+      .paso-nav { flex-direction: column-reverse; gap: 0.5rem; position: sticky; bottom: 0; background: linear-gradient(to top, var(--negro) 82%, transparent); padding: 0.9rem 0 0.5rem; margin-top: 1.2rem; z-index: 10; }
+      .btn-siguiente { width: 100%; min-height: 50px; font-size: 0.85rem; }
+      .btn-anterior  { width: 100%; min-height: 42px; }
     }
 
   </style>
