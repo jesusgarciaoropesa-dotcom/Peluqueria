@@ -1488,7 +1488,32 @@
     #resumenBar.visible { display: flex; }
     .rb-item { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--verde-neon); letter-spacing: 0.05em; }
     .rb-sep { color: rgba(124,181,24,0.3); font-size: 0.7rem; }
+    /* Botón cerrar overlay — oculto en desktop */
+    .booking-close-btn { display: none; }
+
     @media (max-width: 600px) {
+      /* Modo overlay fullscreen en móvil */
+      body.booking-open { overflow: hidden; }
+      #reservar.modal-open {
+        position: fixed !important;
+        inset: 0;
+        z-index: 200;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 !important;
+      }
+      #reservar.modal-open .reservar-inner { padding: 0.75rem 1rem 5rem; }
+      #reservar.modal-open .booking-close-btn {
+        display: flex; align-items: center; gap: 0.35rem;
+        margin-left: auto; margin-bottom: 0.9rem;
+        background: rgba(124,181,24,0.07);
+        border: 1px solid rgba(124,181,24,0.25);
+        color: rgba(242,237,215,0.65);
+        padding: 0.4rem 0.8rem; border-radius: 6px;
+        font-family: 'Space Mono', monospace; font-size: 0.65rem;
+        letter-spacing: 0.05em; cursor: pointer;
+      }
+      /* En modo normal en móvil: compactar */
       #reservar { padding: 2.5rem 1rem 3rem; }
       .reservar-header { margin-bottom: 1.2rem; }
       .reservar-header h2 { font-size: 1.6rem; }
@@ -1505,7 +1530,7 @@
       .horas-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
       .hora-btn { min-height: 44px; font-size: 0.8rem; }
       .cal-d { font-size: 0.85rem; }
-      /* Botones de navegación: fijos al fondo para no perder espacio */
+      /* Botones de navegación: pegados al fondo */
       .paso-nav { flex-direction: column-reverse; gap: 0.5rem; position: sticky; bottom: 0; background: linear-gradient(to top, var(--negro) 82%, transparent); padding: 0.9rem 0 0.5rem; margin-top: 1.2rem; z-index: 10; }
       .btn-siguiente { width: 100%; min-height: 50px; font-size: 0.85rem; }
       .btn-anterior  { width: 100%; min-height: 42px; }
@@ -1999,6 +2024,7 @@
 <!-- RESERVAR -->
 <section id="reservar">
   <div class="reservar-inner">
+    <button class="booking-close-btn" onclick="cerrarBookingModal()" aria-label="Cerrar">✕ Cerrar</button>
     <div class="reservar-header reveal">
       <div class="section-label">// Haz tu cita</div>
       <h2>RESERVA TU<br><em>PRÓXIMO CORTE</em></h2>
@@ -2267,10 +2293,30 @@
   });
 
   /* ── Scroll interno (sin abrir enlaces) ─ */
+  /* ── Booking modal (móvil) ─────────── */
+  window.abrirBookingModal = function() {
+    const el = document.getElementById('reservar');
+    if (window.innerWidth <= 600) {
+      el.classList.add('modal-open');
+      document.body.classList.add('booking-open');
+      el.scrollTop = 0;
+    } else {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+  window.cerrarBookingModal = function() {
+    document.getElementById('reservar').classList.remove('modal-open');
+    document.body.classList.remove('booking-open');
+  };
+
   document.querySelectorAll('[data-scroll-to]').forEach(el => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
       const targetId = el.getAttribute('data-scroll-to');
+      if (targetId === 'reservar') {
+        abrirBookingModal();
+        return;
+      }
       const target = document.getElementById(targetId);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2536,7 +2582,12 @@
           '<div>📅&nbsp; ' + fl.charAt(0).toUpperCase() + fl.slice(1) + '</div>' +
           '<div>🕐&nbsp; ' + est.hora + '</div>';
       }
-      window.scrollTo({ top: document.getElementById('reservar').offsetTop - 80, behavior: 'smooth' });
+      const rEl = document.getElementById('reservar');
+      if (rEl.classList.contains('modal-open')) {
+        rEl.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: rEl.offsetTop - 80, behavior: 'smooth' });
+      }
     };
 
     function actualizarSteps() {
@@ -2797,7 +2848,12 @@
       est.paso = 5;
       document.getElementById('paso5').classList.add('activo');
       document.getElementById('stepsBar').style.display = 'none';
-      window.scrollTo({ top: document.getElementById('reservar').offsetTop - 80, behavior: 'smooth' });
+      const rElC = document.getElementById('reservar');
+      if (rElC.classList.contains('modal-open')) {
+        rElC.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: rElC.offsetTop - 80, behavior: 'smooth' });
+      }
     };
 
     // ── Reiniciar ──
