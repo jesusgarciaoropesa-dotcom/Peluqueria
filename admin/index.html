@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WTJ Admin · Reservas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --negro: #0A0A0A; --bg: #0E0E0E; --bg2: #141414; --bg3: #1A1A1A; --bg4: #202020;
+      --verde: #7CB518; --verde2: rgba(124,181,24,0.12); --oro: #C8882A;
+      --crema: #F2EDD7; --gris: rgba(242,237,215,0.45);
+      --pend: #C8882A; --conf: #7CB518; --canc: #666; --comp: #4a8fd4;
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--crema); font-family: 'Crimson Pro', serif; }
+
+    /* ── LOGIN ── */
+    #loginScreen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--negro); }
+    .login-box { background: var(--bg2); border: 1px solid rgba(124,181,24,0.2); border-radius: 14px; padding: 2.5rem 2rem; width: 100%; max-width: 360px; text-align: center; }
+    .login-logo { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 0.1em; color: var(--crema); line-height: 1; }
+    .login-logo span { color: var(--verde); }
+    .login-sub { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.18em; color: var(--gris); text-transform: uppercase; margin: 0.4rem 0 2rem; }
+    .login-input { width: 100%; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.2); border-radius: 8px; padding: 0.8rem 1rem; color: var(--crema); font-family: 'Crimson Pro', serif; font-size: 1rem; outline: none; margin-bottom: 0.9rem; transition: border-color 0.2s; }
+    .login-input:focus { border-color: var(--verde); }
+    .login-btn { width: 100%; background: var(--verde); border: none; border-radius: 8px; padding: 0.85rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; cursor: pointer; transition: all 0.2s; margin-top: 0.3rem; }
+    .login-btn:hover { background: #8fd11e; }
+    .login-btn:disabled { opacity: 0.5; cursor: default; }
+    .login-err { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.65rem; margin-top: 0.8rem; }
+
+    /* ── DASHBOARD ── */
+    #dashboard { display: none; min-height: 100vh; }
+
+    /* Header */
+    .adm-header {
+      background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12);
+      padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50; gap: 0.75rem;
+    }
+    .adm-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.55rem; letter-spacing: 0.08em; flex-shrink: 0; }
+    .adm-logo span { color: var(--verde); }
+    .adm-logo em { font-style: normal; font-family: 'Space Mono', monospace; font-size: 0.52rem; color: var(--gris); letter-spacing: 0.15em; margin-left: 0.4rem; vertical-align: middle; }
+    .header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+
+    .btn-nueva {
+      background: var(--verde); border: none; border-radius: 7px;
+      padding: 0.55rem 1rem; color: var(--negro);
+      font-family: 'Space Mono', monospace; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.05em; cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    .btn-nueva:hover { background: #8fd11e; }
+    .btn-menu {
+      background: none; border: 1px solid rgba(124,181,24,0.25); color: var(--gris);
+      width: 2.2rem; height: 2.2rem; border-radius: 7px; font-size: 1.3rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; line-height: 1; padding-bottom: 2px;
+    }
+    .btn-menu:hover { border-color: var(--verde); color: var(--verde); }
+
+    /* Dropdown menú secundario */
+    .admin-drop {
+      position: sticky; top: 53px; z-index: 49; display: none;
+      background: var(--bg2); border-bottom: 1px solid rgba(124,181,24,0.12);
+      padding: 0.55rem 1rem; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .admin-drop.open { display: flex; }
+    .admin-drop-btn {
+      background: none; border: 1px solid rgba(242,237,215,0.12); border-radius: 6px;
+      padding: 0.45rem 0.9rem; color: var(--gris);
+      font-family: 'Space Mono', monospace; font-size: 0.62rem; cursor: pointer;
+      transition: all 0.18s; white-space: nowrap;
+    }
+    .admin-drop-btn:hover { border-color: rgba(242,237,215,0.35); color: var(--crema); }
+
+    /* Stats */
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: rgba(124,181,24,0.08); border-bottom: 1px solid rgba(124,181,24,0.08); }
+    .stat-card { background: var(--negro); padding: 0.9rem 0.5rem; text-align: center; }
+    .stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: var(--verde); line-height: 1; }
+    .stat-label { font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--gris); text-transform: uppercase; margin-top: 0.25rem; }
+
+    /* Tabs */
+    .tabs { display: flex; border-bottom: 1px solid rgba(124,181,24,0.1); background: var(--negro); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex-shrink: 0; background: none; border: none; padding: 1rem 1rem; font-family: 'Space Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; color: var(--gris); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; text-transform: uppercase; white-space: nowrap; }
+    .tab.active { color: var(--verde); border-bottom-color: var(--verde); }
+    .tab:hover:not(.active) { color: var(--crema); }
+
+    /* Week tabs */
+    .week-tabs { display: none; gap: 0.5rem; padding: 0.75rem 1rem; background: var(--bg2); border-bottom: 1px solid rgba(124,181,24,0.08); overflow-x: auto; }
+    .week-tabs.visible { display: flex; }
+    .day-tab { flex-shrink: 0; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.15); border-radius: 8px; padding: 0.6rem 1rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--gris); cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.6; }
+    .day-tab .dt-dia { font-size: 0.85rem; color: var(--crema); display: block; }
+    .day-tab:hover:not(.active) { border-color: rgba(124,181,24,0.4); }
+    .day-tab.active { border-color: var(--verde); background: var(--verde2); color: var(--verde); }
+    .day-tab.active .dt-dia { color: var(--verde); }
+
+    /* List */
+    .list-header { padding: 1rem 1.5rem 0.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .list-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.05em; color: var(--crema); }
+    .filter-sel { background: var(--bg3); border: 1px solid rgba(124,181,24,0.2); border-radius: 6px; padding: 0.5rem 0.8rem; color: var(--crema); font-family: 'Space Mono', monospace; font-size: 0.72rem; outline: none; cursor: pointer; }
+
+    /* Cards */
+    #reservasList { padding: 0.5rem 1rem 5rem; }
+    .fecha-grupo { margin-bottom: 1.5rem; }
+    .fecha-header { font-family: 'Space Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; color: var(--verde); text-transform: uppercase; padding: 0.75rem 0.5rem 0.5rem; border-bottom: 1px solid rgba(124,181,24,0.12); margin-bottom: 0.6rem; }
+
+    .reserva-card {
+      background: var(--bg2); border: 1px solid rgba(124,181,24,0.1);
+      border-radius: 12px; padding: 0.9rem 1rem 0.8rem;
+      margin-bottom: 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;
+      transition: border-color 0.2s;
+    }
+    .reserva-card:hover { border-color: rgba(124,181,24,0.22); }
+
+    /* Fila superior: hora + estado */
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .card-hora { font-family: 'Bebas Neue', sans-serif; font-size: 1.75rem; color: var(--crema); letter-spacing: 0.04em; line-height: 1; }
+
+    /* Nombre cliente */
+    .card-nombre { font-size: 1.15rem; font-weight: 600; color: var(--crema); line-height: 1.2; }
+
+    /* Meta: servicio · duración · teléfono */
+    .card-meta { font-family: 'Space Mono', monospace; font-size: 0.67rem; color: rgba(242,237,215,0.5); letter-spacing: 0.02em; }
+    .card-meta a { color: inherit; text-decoration: none; }
+    .card-meta a:hover { color: var(--verde); }
+
+    .card-notas { font-size: 0.9rem; color: rgba(242,237,215,0.45); font-style: italic; }
+
+    /* Pie de tarjeta: CTA principal + iconos secundarios */
+    .card-footer { display: flex; align-items: center; gap: 0.45rem; margin-top: 0.3rem; }
+    .card-cta {
+      flex: 1; padding: 0.55rem 0.5rem;
+      font-family: 'Space Mono', monospace; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.04em; border-radius: 7px; cursor: pointer;
+      transition: background 0.15s; border: 1.5px solid; background: none;
+      white-space: nowrap;
+    }
+    .card-cta.act-confirmar { border-color: rgba(124,181,24,0.45); color: #9ad420; }
+    .card-cta.act-confirmar:hover { background: rgba(124,181,24,0.18); }
+    .card-cta.act-completar { border-color: rgba(74,143,212,0.45); color: #6eb5f0; }
+    .card-cta.act-completar:hover { background: rgba(74,143,212,0.15); }
+    .card-cta.act-reactivar { border-color: rgba(124,181,24,0.35); color: var(--verde); }
+    .card-cta.act-reactivar:hover { background: rgba(124,181,24,0.1); }
+
+    .card-icons { display: flex; gap: 0.35rem; flex-shrink: 0; }
+    .card-icon-btn {
+      width: 2.1rem; height: 2.1rem; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 7px; border: 1.5px solid; font-size: 0.85rem;
+      cursor: pointer; background: none; text-decoration: none;
+      transition: background 0.15s;
+    }
+    .card-icon-btn.act-cancelar { border-color: rgba(220,80,80,0.4); color: #e06060; }
+    .card-icon-btn.act-cancelar:hover { background: rgba(220,80,80,0.12); }
+    .card-icon-btn.act-wa { border-color: rgba(37,211,102,0.4); color: #25D366; }
+    .card-icon-btn.act-wa:hover { background: rgba(37,211,102,0.1); }
+    .card-icon-btn.act-editar { border-color: rgba(200,136,42,0.4); color: #f5a623; }
+    .card-icon-btn.act-editar:hover { background: rgba(200,136,42,0.12); }
+
+    /* Estado — grande y con color de fondo sólido */
+    .status-badge {
+      font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.35rem 0.8rem; border-radius: 6px;
+      font-weight: 700; white-space: nowrap;
+    }
+    .badge-pendiente  { background: rgba(200,136,42,0.25); color: #f5a623; border: 1.5px solid rgba(200,136,42,0.5); }
+    .badge-confirmada { background: rgba(124,181,24,0.22); color: #9ad420; border: 1.5px solid rgba(124,181,24,0.5); }
+    .badge-cancelada  { background: rgba(180,60,60,0.2);   color: #e06060; border: 1.5px solid rgba(180,60,60,0.45); }
+    .badge-completada { background: rgba(74,143,212,0.2);  color: #6eb5f0; border: 1.5px solid rgba(74,143,212,0.45); }
+
+    .card-actions { display: flex; flex-direction: column; gap: 0.35rem; align-items: flex-end; }
+    .act-btn { background: none; border: 1.5px solid; border-radius: 6px; padding: 0.35rem 0.75rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; white-space: nowrap; transition: all 0.15s; font-weight: 700; }
+    .act-confirmar { border-color: rgba(124,181,24,0.5); color: #9ad420; }
+    .act-confirmar:hover { background: rgba(124,181,24,0.15); }
+    .act-cancelar   { border-color: rgba(220,80,80,0.5); color: #e06060; }
+    .act-cancelar:hover { background: rgba(220,80,80,0.12); }
+    .act-completar  { border-color: rgba(74,143,212,0.5); color: #6eb5f0; }
+    .act-completar:hover { background: rgba(74,143,212,0.12); }
+    .act-editar     { border-color: rgba(200,136,42,0.5); color: #f5a623; }
+    .act-editar:hover { background: rgba(200,136,42,0.12); }
+    .act-reactivar  { border-color: rgba(124,181,24,0.4); color: var(--verde); }
+    .act-reactivar:hover { background: rgba(124,181,24,0.1); }
+    .act-wa         { border-color: rgba(37,211,102,0.5); color: #25D366; text-decoration: none; display: inline-block; }
+    .act-wa:hover   { background: rgba(37,211,102,0.1); }
+
+    /* Empty / loading */
+    .empty-msg { text-align: center; padding: 3rem 1rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--gris); }
+    .spinner { display: inline-block; width: 1.2rem; height: 1.2rem; border: 2px solid rgba(124,181,24,0.2); border-top-color: var(--verde); border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 0.5rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── MODAL ── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: var(--bg2); border: 1px solid rgba(124,181,24,0.2); border-radius: 16px 16px 0 0; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; padding: 1.5rem 1.5rem 2rem; transform: translateY(40px); transition: transform 0.28s; }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+    .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; color: var(--crema); }
+    .modal-close { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); width: 2rem; height: 2rem; border-radius: 50%; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .modal-close:hover { border-color: var(--verde); color: var(--verde); }
+    .campo-grupo { margin-bottom: 1rem; }
+    .campo-label { display: block; font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gris); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .campo-input, .campo-select, .campo-textarea {
+      width: 100%; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.18);
+      border-radius: 7px; padding: 0.7rem 0.9rem; color: var(--crema);
+      font-family: 'Crimson Pro', serif; font-size: 1rem; outline: none; transition: border-color 0.2s;
+    }
+    .campo-input:focus, .campo-select:focus, .campo-textarea:focus { border-color: var(--verde); }
+    .campo-select option { background: var(--bg3); }
+    .campo-textarea { resize: vertical; min-height: 70px; }
+    .campos-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .modal-footer { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
+    .btn-guardar { flex: 1; background: var(--verde); border: none; border-radius: 7px; padding: 0.8rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
+    .btn-guardar:hover { background: #8fd11e; }
+    .btn-guardar:disabled { opacity: 0.4; cursor: default; }
+    .btn-cancelar-modal { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); padding: 0.8rem 1.2rem; border-radius: 7px; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
+    .btn-cancelar-modal:hover { border-color: rgba(242,237,215,0.3); color: var(--crema); }
+    .modal-error { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.62rem; margin-top: 0.6rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--bg3); border: 1px solid rgba(124,181,24,0.3); border-radius: 8px; padding: 0.7rem 1.4rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--verde); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 999; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+
+    /* Notificación nueva reserva */
+    .notif-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      background: var(--verde); color: var(--negro);
+      font-family: 'Space Mono', monospace; font-size: 0.8rem; font-weight: 700;
+      padding: 0.9rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      transform: translateY(-100%); transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .notif-banner.show { transform: translateY(0); }
+    .notif-banner button { background: rgba(0,0,0,0.15); border: none; border-radius: 5px; padding: 0.35rem 0.8rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; font-weight: 700; color: var(--negro); cursor: pointer; }
+    .notif-banner button:hover { background: rgba(0,0,0,0.25); }
+
+    /* Agenda semanal */
+    .agenda-nav { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1.5rem; background: var(--bg2); border-bottom: 1px solid rgba(124,181,24,0.08); }
+    .agenda-rango { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--crema); }
+    .agenda-btn { background: none; border: 1px solid rgba(124,181,24,0.25); color: var(--gris); border-radius: 6px; padding: 0.35rem 0.8rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
+    .agenda-btn:hover { border-color: var(--verde); color: var(--verde); }
+    .agenda-wrap { overflow-x: auto; padding: 0 1rem 4rem; }
+    .agenda-grid { display: grid; min-width: 520px; border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; overflow: hidden; }
+    .agenda-head { display: grid; grid-template-columns: 3.5rem repeat(5,1fr) 0.85fr; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); }
+    .agenda-hcell { padding: 0.55rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: center; text-transform: uppercase; letter-spacing: 0.08em; }
+    .agenda-hcell.hoy-col { color: var(--verde); }
+    .agenda-row { display: grid; grid-template-columns: 3.5rem repeat(5,1fr) 0.85fr; border-bottom: 1px solid rgba(124,181,24,0.06); }
+    .agenda-row:last-child { border-bottom: none; }
+    .agenda-time { padding: 0.4rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: right; padding-right: 0.6rem; display: flex; align-items: center; justify-content: flex-end; background: var(--negro); }
+    .agenda-cell { border-left: 1px solid rgba(124,181,24,0.06); min-height: 2.4rem; padding: 0.25rem; position: relative; }
+    .agenda-cell.hoy-col { background: rgba(124,181,24,0.04); }
+    .agenda-chip {
+      background: rgba(124,181,24,0.15); border: 1px solid rgba(124,181,24,0.3);
+      border-radius: 5px; padding: 0.2rem 0.35rem;
+      font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--verde);
+      cursor: pointer; line-height: 1.4; transition: background 0.15s;
+    }
+    .agenda-chip:hover { background: rgba(124,181,24,0.25); }
+    .agenda-chip.pendiente  { background: rgba(200,136,42,0.15); border-color: rgba(200,136,42,0.35); color: #f5a623; }
+    .agenda-chip.confirmada { background: rgba(124,181,24,0.15); border-color: rgba(124,181,24,0.35); color: #9ad420; }
+    .agenda-chip.cancelada  { background: rgba(180,60,60,0.12);  border-color: rgba(180,60,60,0.3);  color: #e06060; }
+    .agenda-chip.completada { background: rgba(74,143,212,0.15); border-color: rgba(74,143,212,0.35); color: #6eb5f0; }
+
+    @media (max-width: 500px) {
+      .campos-2col { grid-template-columns: 1fr; }
+      .modal { border-radius: 14px 14px 0 0; }
+      #reservasList { padding: 0.5rem 0.75rem 5rem; }
+    }
+
+    /* ═══════════════════════════════════════
+       LIBRETA — notebook tab
+    ═══════════════════════════════════════ */
+    #libretaWrap { background: #EEE8D8; min-height: calc(100vh - 200px); }
+
+    /* Nav semana */
+    .lib-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 1.2rem; background: #E4DCC8;
+      border-bottom: 1px solid #C8BAA0;
+    }
+    .lib-nav-rango { font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #2a1f0a; letter-spacing: 0.04em; }
+    .lib-nav-btn {
+      background: none; border: 1.5px solid #B8A888; border-radius: 6px;
+      padding: 0.3rem 0.75rem; color: #5a4a30;
+      font-family: 'Space Mono', monospace; font-size: 0.62rem; cursor: pointer; transition: all 0.15s;
+    }
+    .lib-nav-btn:hover { border-color: #7a5a28; color: #2a1a05; }
+
+    /* Pestañas de día */
+    .lib-dias {
+      display: flex; overflow-x: auto; background: #DDD5C0;
+      border-bottom: 2px solid #B8A070;
+    }
+    .lib-dia-tab {
+      flex: 1; min-width: 3.5rem; flex-shrink: 0;
+      background: none; border: none; border-bottom: 3px solid transparent;
+      padding: 0.6rem 0.4rem 0.55rem;
+      font-family: 'Space Mono', monospace; font-size: 0.58rem; color: #7a6a50;
+      cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em;
+      text-align: center; line-height: 1.5; transition: all 0.15s;
+    }
+    .lib-dia-tab:hover:not(.active) { background: rgba(180,150,80,0.15); color: #3a2a10; }
+    .lib-dia-tab.active { color: #1a1005; border-bottom-color: #C8882A; background: rgba(200,160,80,0.2); }
+    .lib-dia-tab.hoy-tab .lib-dia-num { color: #7CB518; }
+    .lib-dia-tab.hoy-tab.active .lib-dia-num { color: #5a8a0a; }
+    .lib-dia-tab.cerrado-tab { color: rgba(120,100,70,0.35); cursor: default; }
+    .lib-dia-num { display: block; font-size: 1.15rem; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; line-height: 1.1; }
+    .lib-dia-nombre { display: block; font-size: 0.52rem; }
+    .lib-dia-count { display: block; font-size: 0.55rem; color: #C8882A; margin-top: 0.1rem; }
+
+    /* Página de la libreta */
+    .lib-page { padding: 1.25rem 1rem 5rem; max-width: 620px; margin: 0 auto; }
+
+    .lib-paper {
+      background: #FFFDF4;
+      border-radius: 3px 3px 4px 4px;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.15), 2px 2px 0 #E0D8B0, 4px 4px 0 #D0C8A0;
+      overflow: hidden; position: relative;
+    }
+
+    /* Línea de espiral arriba */
+    .lib-paper::before {
+      content: '';
+      display: block; height: 0.5rem;
+      background: repeating-linear-gradient(90deg, transparent, transparent 1.2rem, #B8A070 1.2rem, #B8A070 1.4rem);
+      border-bottom: 2px solid #C8B880;
+    }
+
+    /* Encabezado de la página */
+    .lib-head {
+      padding: 1rem 1.2rem 0.85rem;
+      border-bottom: 2px solid #D8D0A8;
+      background: #FFFAE8;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+    }
+    .lib-head-left {}
+    .lib-head-dia {
+      font-family: 'Crimson Pro', serif; font-size: 2rem; font-style: italic;
+      font-weight: 600; color: #1a1005; line-height: 1;
+    }
+    .lib-head-fecha {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      color: #9a8060; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.25rem;
+    }
+    .lib-head-count {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      color: #9a8060; text-align: right; white-space: nowrap;
+    }
+    .lib-head-count strong { color: #C8882A; font-size: 1.1rem; font-family: 'Bebas Neue', sans-serif; display: block; line-height: 1; }
+
+    /* Separador Mañana / Tarde */
+    .lib-turno {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.45rem 1rem 0.45rem 4.2rem;
+      background: #F5EDD8; border-bottom: 1px solid #D8D0A8; border-top: 1px solid #D8D0A8;
+    }
+    .lib-turno-label {
+      font-family: 'Space Mono', monospace; font-size: 0.55rem; color: #9a8060;
+      letter-spacing: 0.18em; text-transform: uppercase; flex-shrink: 0;
+    }
+    .lib-turno-line { flex: 1; height: 1px; background: #C8C0A0; }
+
+    /* Filas de cita */
+    .lib-slot {
+      display: grid; grid-template-columns: 4.2rem 1fr;
+      border-bottom: 1px solid #E0D8B8; transition: background 0.12s;
+    }
+    .lib-slot:last-child { border-bottom: none; }
+    .lib-slot-time {
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 0 0.65rem 0 0.5rem;
+      font-family: 'Space Mono', monospace; font-size: 0.66rem; color: #9a8060;
+      background: #FFFAE8; min-height: 2.8rem;
+    }
+    .lib-slot-body {
+      border-left: 2px solid rgba(195,50,50,0.28);
+      padding: 0.55rem 1rem; min-height: 2.8rem;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* Libre */
+    .lib-slot-libre .lib-slot-body {
+      background-image: repeating-linear-gradient(transparent, transparent calc(100% - 1px), rgba(180,170,140,0.25) calc(100% - 1px), rgba(180,170,140,0.25) 100%);
+    }
+    .lib-slot-libre .lib-slot-time { color: #C0B0A0; }
+
+    /* Ocupado */
+    .lib-slot-pend   .lib-slot-body { background: rgba(200,136,42,0.06); }
+    .lib-slot-conf   .lib-slot-body { background: rgba(124,181,24,0.05); }
+    .lib-slot-comp   .lib-slot-body { background: rgba(74,143,212,0.05); }
+    .lib-slot-canc   .lib-slot-body { background: rgba(180,60,60,0.04); }
+    .lib-slot-canc   .lib-slot-time { color: #C0B0A0; }
+
+    .lib-slot-ocupado:hover .lib-slot-body { background: rgba(200,160,80,0.12); cursor: pointer; }
+
+    .lib-nombre {
+      font-family: 'Crimson Pro', serif; font-size: 1.1rem;
+      font-style: italic; font-weight: 600; color: #1a1005;
+      display: flex; align-items: center; gap: 0.4rem; line-height: 1.2;
+    }
+    .lib-slot-canc .lib-nombre { text-decoration: line-through; color: #A09080; }
+    .lib-servicio {
+      font-family: 'Space Mono', monospace; font-size: 0.56rem;
+      color: #9a8060; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.1rem;
+    }
+    .lib-slot-canc .lib-servicio { color: #C0B0A0; }
+
+    .lib-dot {
+      display: inline-block; width: 0.42rem; height: 0.42rem; border-radius: 50%; flex-shrink: 0;
+    }
+    .lib-dot-pend { background: #C8882A; }
+    .lib-dot-conf { background: #7CB518; }
+    .lib-dot-comp { background: #4a8fd4; }
+    .lib-dot-canc { background: #c0392b; }
+
+    /* Cerrado */
+    .lib-cerrado {
+      padding: 3.5rem 1rem; text-align: center;
+      font-family: 'Crimson Pro', serif; font-size: 1.25rem; font-style: italic; color: #9a8060;
+    }
+
+    /* Tel rápido en la cita */
+    .lib-tel {
+      font-family: 'Space Mono', monospace; font-size: 0.55rem; color: #B0A080;
+      text-decoration: none; letter-spacing: 0.03em;
+    }
+    .lib-tel:hover { color: #C8882A; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">WTJ<span>.</span></div>
+    <div class="login-sub">Panel de Administración</div>
+    <input class="login-input" id="loginEmail" type="email" placeholder="Email" autocomplete="email" />
+    <input class="login-input" id="loginPass" type="password" placeholder="Contraseña" autocomplete="current-password" />
+    <button class="login-btn" id="loginBtn" onclick="login()">Entrar</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header class="adm-header">
+    <div class="adm-logo">WTJ<span>.</span><em>ADMIN</em></div>
+    <div class="header-right">
+      <button class="btn-nueva" onclick="abrirModal()">+ Nueva</button>
+      <button class="btn-menu" id="btnMenu" onclick="toggleAdminMenu()" aria-label="Más opciones">⋮</button>
+    </div>
+  </header>
+  <div class="admin-drop" id="adminDrop">
+    <button class="admin-drop-btn" onclick="abrirBloqueos();toggleAdminMenu()">✕ Días bloqueados</button>
+    <button class="admin-drop-btn" onclick="logout()">→ Cerrar sesión</button>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-n" id="statTotal">—</div><div class="stat-label">Hoy</div></div>
+    <div class="stat-card"><div class="stat-n" id="statPend">—</div><div class="stat-label">Pendientes</div></div>
+    <div class="stat-card"><div class="stat-n" id="statConf">—</div><div class="stat-label">Confirmadas</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-vista="hoy"        onclick="setVista('hoy',this)">Hoy</button>
+    <button class="tab"        data-vista="semana"     onclick="setVista('semana',this)">Semana</button>
+    <button class="tab"        data-vista="proximas"   onclick="setVista('proximas',this)">Próximas</button>
+    <button class="tab"        data-vista="stats"      onclick="setVista('stats',this)">Stats</button>
+    <button class="tab"        data-vista="libreta"    onclick="setVista('libreta',this)">📓 Libreta</button>
+  </div>
+
+  <div class="week-tabs" id="weekTabs"></div>
+
+  <!-- Agenda semanal (solo visible en vista semana) -->
+  <div id="agendaWrap" style="display:none;">
+    <div class="agenda-nav">
+      <button class="agenda-btn" id="agendaPrev">← Semana anterior</button>
+      <div class="agenda-rango" id="agendaRango"></div>
+      <button class="agenda-btn" id="agendaNext">Semana siguiente →</button>
+    </div>
+    <div class="agenda-wrap">
+      <div class="agenda-grid" id="agendaGrid"></div>
+    </div>
+  </div>
+
+  <div class="list-header" id="listHeader" style="display:none;">
+    <div class="list-title" id="listTitle">Reservas de hoy</div>
+    <select class="filter-sel" id="filterEstado" onchange="aplicarFiltro()">
+      <option value="">Todos</option>
+      <option value="pendiente">Pendiente</option>
+      <option value="confirmada">Confirmada</option>
+      <option value="cancelada">Cancelada</option>
+      <option value="completada">Completada</option>
+    </select>
+  </div>
+
+  <div id="reservasList"></div>
+
+  <!-- Vista estadísticas de ingresos -->
+  <div id="statsWrap" style="display:none;"></div>
+
+  <!-- Vista libreta -->
+  <div id="libretaWrap" style="display:none;"></div>
+</div>
+
+<!-- BANNER NUEVA RESERVA -->
+<div class="notif-banner" id="notifBanner">
+  <span id="notifTexto">🔔 Nueva reserva recibida</span>
+  <button onclick="cerrarNotif()">Ver · Cerrar</button>
+</div>
+
+<!-- MODAL CREAR / EDITAR -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <div class="modal-titulo" id="modalTitulo">Nueva reserva</div>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+
+    <div class="campos-2col">
+      <div class="campo-grupo">
+        <label class="campo-label">Nombre cliente</label>
+        <input class="campo-input" id="mNombre" type="text" placeholder="Nombre" autocomplete="off" />
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label">Teléfono</label>
+        <input class="campo-input" id="mTelefono" type="tel" placeholder="+34 600 000 000" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Servicio</label>
+      <select class="campo-select" id="mServicio"></select>
+    </div>
+
+    <div class="campos-2col">
+      <div class="campo-grupo">
+        <label class="campo-label">Fecha</label>
+        <input class="campo-input" id="mFecha" type="date" />
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label">Hora</label>
+        <select class="campo-select" id="mHora"></select>
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Estado</label>
+      <select class="campo-select" id="mEstado">
+        <option value="pendiente">Pendiente</option>
+        <option value="confirmada">Confirmada</option>
+        <option value="cancelada">Cancelada</option>
+        <option value="completada">Completada</option>
+      </select>
+    </div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Notas (opcional)</label>
+      <textarea class="campo-textarea" id="mNotas" placeholder="Observaciones..."></textarea>
+    </div>
+
+    <div class="modal-error" id="modalError"></div>
+
+    <div id="mHistorialWrap" style="display:none;margin-top:1.4rem;border-top:1px solid rgba(124,181,24,0.15);padding-top:1.2rem;">
+      <div style="font-family:'Space Mono',monospace;font-size:0.7rem;letter-spacing:0.08em;color:var(--verde);text-transform:uppercase;margin-bottom:0.8rem;">Historial del cliente</div>
+      <div id="mHistorialLista"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancelar-modal" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-guardar" id="btnGuardar" onclick="guardarReserva()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- MODAL DÍAS BLOQUEADOS -->
+<div class="modal-overlay" id="bloqueosOverlay" onclick="cerrarBloqueos(event)">
+  <div class="modal" id="bloqueosModal">
+    <div class="modal-header">
+      <div class="modal-titulo">Días bloqueados</div>
+      <button class="modal-close" onclick="cerrarBloqueos()">✕</button>
+    </div>
+    <p style="font-size:0.95rem;color:var(--gris);margin-bottom:1.2rem;">Bloquea días de vacaciones o festivos para que los clientes no puedan reservar.</p>
+    <div class="campos-2col" style="margin-bottom:1rem;">
+      <div class="campo-grupo" style="margin-bottom:0;">
+        <label class="campo-label">Fecha a bloquear</label>
+        <input class="campo-input" id="bFecha" type="date" />
+      </div>
+      <div class="campo-grupo" style="margin-bottom:0;">
+        <label class="campo-label">Motivo (opcional)</label>
+        <input class="campo-input" id="bMotivo" type="text" placeholder="Vacaciones, festivo..." />
+      </div>
+    </div>
+    <button class="btn-guardar" style="width:100%;margin-bottom:1.5rem;" onclick="agregarBloqueo()">Bloquear este día</button>
+    <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--verde);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem;">Días actualmente bloqueados</div>
+    <div id="bloqueosList"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const SUPA_URL = 'https://gimoqpusrdltlkrwsykr.supabase.co';
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbW9xcHVzcmRsdGxrcndzeWtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDA0NDIsImV4cCI6MjA5Nzk3NjQ0Mn0.xmxP3TGAkXNPsrIKSYj1A-NXrIN1JIyzl9Fv6_FP8Dw';
+  const db = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+  let vista = 'hoy';
+  let diaSeleccionado = hoy();
+  let todasReservas = [];
+  let serviciosData = [];
+  let editandoId = null;
+
+  function hoy() { return new Date().toISOString().slice(0, 10); }
+
+  // ── Slots por día ──
+  function slotsDelDia(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    const ds = d.getDay();
+    if (ds === 0 || ds === 1) return [];
+    if (ds === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+    return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+  }
+
+  // ── HEADER MENU ──
+  window.toggleAdminMenu = function() {
+    document.getElementById('adminDrop').classList.toggle('open');
+  };
+  document.addEventListener('click', function(e) {
+    const drop = document.getElementById('adminDrop');
+    const btn  = document.getElementById('btnMenu');
+    if (drop && btn && !drop.contains(e.target) && !btn.contains(e.target)) {
+      drop.classList.remove('open');
+    }
+  });
+
+  // ── AUTH ──
+  window.login = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+    const errDiv = document.getElementById('loginErr');
+    const btn = document.getElementById('loginBtn');
+    errDiv.textContent = '';
+    if (!email || !pass) { errDiv.textContent = 'Introduce email y contraseña.'; return; }
+    btn.disabled = true; btn.textContent = 'Entrando...';
+    const { error } = await db.auth.signInWithPassword({ email, password: pass });
+    if (error) {
+      errDiv.textContent = 'Email o contraseña incorrectos.';
+      btn.disabled = false; btn.textContent = 'Entrar';
+    }
+  };
+
+  window.logout = async function() {
+    await db.auth.signOut();
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+  };
+
+  db.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      cargarServicios();
+      cargarEstadisticas();
+      setVista('hoy', document.querySelector('.tab[data-vista="hoy"]'));
+      iniciarRealtime();
+    }
+  });
+
+  // ── REALTIME: nueva reserva ──
+  let realtimeChannel = null;
+  function iniciarRealtime() {
+    if (realtimeChannel) return;
+    realtimeChannel = db.channel('reservas-nuevas')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'reservas' }, payload => {
+        cargarReservas();
+        cargarEstadisticas();
+        mostrarNotif(payload.new);
+        sonarNotif();
+      })
+      .subscribe();
+  }
+
+  function mostrarNotif(r) {
+    const banner = document.getElementById('notifBanner');
+    const texto  = document.getElementById('notifTexto');
+    const fecha  = r.fecha || '';
+    const hora   = r.hora ? r.hora.slice(0,5) : '';
+    texto.textContent = '🔔 Nueva reserva — ' + fecha + ' a las ' + hora;
+    banner.classList.add('show');
+    setTimeout(() => banner.classList.remove('show'), 8000);
+  }
+
+  window.cerrarNotif = function() {
+    document.getElementById('notifBanner').classList.remove('show');
+  };
+
+  function sonarNotif() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      [0, 150, 300].forEach((delay, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = [880, 1100, 1320][i];
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.18, ctx.currentTime + delay / 1000);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay / 1000 + 0.3);
+        osc.start(ctx.currentTime + delay / 1000);
+        osc.stop(ctx.currentTime + delay / 1000 + 0.3);
+      });
+    } catch(e) {}
+  }
+
+  // ── SERVICIOS ──
+  async function cargarServicios() {
+    const { data } = await db.from('servicios').select('*').order('precio_desde');
+    if (data) serviciosData = data;
+  }
+
+  // ── VISTA ──
+  let agendaLunes = null;
+
+  window.setVista = function(v, btn) {
+    vista = v;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.getElementById('weekTabs').classList.remove('visible');
+    const agendaWrap   = document.getElementById('agendaWrap');
+    const listHeader   = document.getElementById('listHeader');
+    const reservasList = document.getElementById('reservasList');
+    const statsWrap    = document.getElementById('statsWrap');
+    const libretaWrap  = document.getElementById('libretaWrap');
+    agendaWrap.style.display   = 'none';
+    statsWrap.style.display    = 'none';
+    libretaWrap.style.display  = 'none';
+    listHeader.style.display   = 'none';
+    reservasList.style.display = '';
+    if (v === 'semana') {
+      agendaWrap.style.display = 'block';
+      reservasList.innerHTML = '';
+      iniciarAgenda();
+    } else if (v === 'stats') {
+      statsWrap.style.display = 'block';
+      reservasList.style.display = 'none';
+      cargarStatsIngresos();
+    } else if (v === 'libreta') {
+      libretaWrap.style.display = 'block';
+      reservasList.style.display = 'none';
+      iniciarLibreta();
+    } else {
+      listHeader.style.display = '';
+      cargarReservas();
+    }
+  };
+
+  function lunesToSemana(ref) {
+    const d = new Date(ref);
+    const dow = d.getDay();
+    d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+    d.setHours(0,0,0,0);
+    return d;
+  }
+
+  function iniciarAgenda() {
+    if (!agendaLunes) agendaLunes = lunesToSemana(new Date());
+    renderAgenda();
+  }
+
+  document.getElementById('agendaPrev').addEventListener('click', () => {
+    agendaLunes.setDate(agendaLunes.getDate() - 7);
+    renderAgenda();
+  });
+  document.getElementById('agendaNext').addEventListener('click', () => {
+    agendaLunes.setDate(agendaLunes.getDate() + 7);
+    renderAgenda();
+  });
+
+  async function renderAgenda() {
+    const grid = document.getElementById('agendaGrid');
+    grid.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;"><div class="spinner"></div><br>Cargando...</div>';
+    const dias = ['Mar','Mié','Jue','Vie','Sáb'];
+    const fechas = []; // Mar-Sáb (índices 1-5 desde lunes)
+    for (let i = 1; i <= 5; i++) {
+      const d = new Date(agendaLunes);
+      d.setDate(agendaLunes.getDate() + i);
+      fechas.push(d.toISOString().slice(0,10));
+    }
+    const sabado = new Date(agendaLunes); sabado.setDate(agendaLunes.getDate() + 6);
+    fechas.push(sabado.toISOString().slice(0,10));
+    const todosSlots = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+    const fechaInicio = fechas[0]; const fechaFin = fechas[fechas.length-1];
+    const lunes  = new Date(agendaLunes); lunes.setDate(agendaLunes.getDate() + 1);
+    const viernes = new Date(agendaLunes); viernes.setDate(agendaLunes.getDate() + 5);
+    document.getElementById('agendaRango').textContent =
+      lunes.toLocaleDateString('es', { day:'numeric', month:'short' }) + ' — ' +
+      sabado.toLocaleDateString('es', { day:'numeric', month:'short', year:'numeric' });
+
+    const { data } = await db.from('reservas')
+      .select('*, servicios(nombre), clientes(nombre)')
+      .gte('fecha', fechaInicio).lte('fecha', fechaFin)
+      .neq('estado','cancelada').order('hora');
+
+    const mapaReservas = {};
+    (data || []).forEach(r => {
+      const key = r.fecha + '_' + r.hora.slice(0,5);
+      if (!mapaReservas[key]) mapaReservas[key] = [];
+      mapaReservas[key].push(r);
+    });
+
+    const hoyStr = hoy();
+    const diasHead = ['Mar','Mié','Jue','Vie','Vie','Sáb'];
+    const diasNombres = ['Martes','Miércoles','Jueves','Viernes','Viernes','Sábado'];
+    // 6 columnas: mar,mie,jue,vie,vie... wait, actually it should be Mar,Mié,Jue,Vie,Sáb — 5 días laborables + sábado = 6 cols
+    // Let me redo: fechas[0]=mar, [1]=mie, [2]=jue, [3]=vie, [4]=sab  -- wait no
+    // agendaLunes is Monday. +1=Tue,+2=Wed,+3=Thu,+4=Fri,+5=Sat
+    // Actually I set fechas as [mar,mie,jue,vie,sab] (5 days), then pushed sabado again — let me fix
+    // fechas = [mar, mie, jue, vie, ???, sab] — I had i from 1-5 (+sab separately)
+    // i=1 = Tue, i=2=Wed, i=3=Thu, i=4=Fri, i=5=Sat, then pushed sab again => 6 items, wrong
+    // Fix: just do i=1 to 5 for Tue-Sat (5 workdays+sat=correct since sat is +5)
+    // Actually: lunes+1=mar, +2=mie, +3=jue, +4=vie, +5=sab — perfect, 5 items
+
+    // Rebuild correct fechas
+    const fechasOk = [];
+    for (let i = 1; i <= 5; i++) {
+      const d = new Date(agendaLunes);
+      d.setDate(agendaLunes.getDate() + i);
+      fechasOk.push({ iso: d.toISOString().slice(0,10), d });
+    }
+    const dNombres = ['MAR','MIÉ','JUE','VIE','SÁB'];
+    // Slot filter per column (Sáb only morning)
+    const slotsCol = (colIdx) => colIdx < 4
+      ? ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30']
+      : ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+    const allSlots = [...new Set([...slotsCol(0), ...slotsCol(4)])].sort();
+
+    let html = '<div class="agenda-head"><div class="agenda-hcell">Hora</div>';
+    fechasOk.forEach((f, i) => {
+      const d = f.d;
+      const esHoy = f.iso === hoyStr;
+      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + '">' + dNombres[i] + '<br><span style="font-size:0.75rem;color:' + (esHoy ? 'var(--verde)' : 'var(--crema)') + ';">' + d.getDate() + '</span></div>';
+    });
+    html += '</div>';
+
+    allSlots.forEach(slot => {
+      html += '<div class="agenda-row"><div class="agenda-time">' + slot + '</div>';
+      fechasOk.forEach((f, colIdx) => {
+        const esHoy = f.iso === hoyStr;
+        const available = slotsCol(colIdx).includes(slot);
+        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + '">';
+        if (available) {
+          const key = f.iso + '_' + slot;
+          (mapaReservas[key] || []).forEach(r => {
+            const nombre = r.clientes ? (r.clientes.nombre || '—') : '—';
+            const srv = r.servicios ? r.servicios.nombre : '';
+            html += '<div class="agenda-chip ' + r.estado + '" onclick="abrirModal(\'' + r.id + '\')" title="' + nombre + ' · ' + srv + '">' +
+              nombre.split(' ')[0] + '<br><span style="opacity:0.7">' + srv.split(' ')[0] + '</span></div>';
+          });
+        }
+        html += '</div>';
+      });
+      html += '</div>';
+    });
+
+    grid.innerHTML = html;
+  }
+
+  function renderWeekTabs() {
+    const cont = document.getElementById('weekTabs');
+    cont.innerHTML = '';
+    const ref = new Date();
+    const dow = ref.getDay();
+    const lunes = new Date(ref);
+    lunes.setDate(ref.getDate() - (dow === 0 ? 6 : dow - 1));
+    const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb'];
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(lunes);
+      d.setDate(lunes.getDate() + i);
+      const iso = d.toISOString().slice(0,10);
+      const btn = document.createElement('button');
+      btn.className = 'day-tab' + (iso === diaSeleccionado ? ' active' : '');
+      btn.innerHTML = '<span class="dt-dia">' + dias[i] + '</span>' + d.getDate();
+      btn.onclick = () => {
+        diaSeleccionado = iso;
+        document.querySelectorAll('.day-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        cargarReservas();
+      };
+      cont.appendChild(btn);
+    }
+  }
+
+  // ── ESTADÍSTICAS CABECERA ──
+  async function cargarEstadisticas() {
+    const { data } = await db.from('reservas').select('estado').eq('fecha', hoy());
+    if (!data) return;
+    document.getElementById('statTotal').textContent = data.length || '0';
+    document.getElementById('statPend').textContent  = data.filter(r => r.estado === 'pendiente').length  || '0';
+    document.getElementById('statConf').textContent  = data.filter(r => r.estado === 'confirmada').length || '0';
+  }
+
+  // ── ESTADÍSTICAS DE INGRESOS ──
+  async function cargarStatsIngresos() {
+    const wrap = document.getElementById('statsWrap');
+    wrap.innerHTML = '<div class="empty-msg"><div class="spinner"></div><br>Cargando estadísticas...</div>';
+
+    const ahora = new Date();
+    const y = ahora.getFullYear(), m = ahora.getMonth();
+    const fmtMes = (yr, mo) => yr + '-' + String(mo+1).padStart(2,'0');
+    const mesActual = fmtMes(y, m);
+    const mesPrev   = fmtMes(m === 0 ? y-1 : y, m === 0 ? 11 : m-1);
+    const inicio6m  = fmtMes(m < 5 ? y-1 : y, (m-5+12)%12) + '-01';
+
+    const { data: raw, error } = await db.from('reservas')
+      .select('id, estado, fecha, cliente_id, clientes(nombre), servicios(nombre, precio_desde)')
+      .gte('fecha', inicio6m)
+      .neq('estado', 'cancelada');
+
+    if (error) { wrap.innerHTML = '<div class="empty-msg">Error al cargar estadísticas.</div>'; return; }
+    const todo = raw || [];
+
+    const getMes = d => d.slice(0,7);
+    const precio = r => (r.servicios && r.servicios.precio_desde) ? Number(r.servicios.precio_desde) : 0;
+
+    const rMes    = todo.filter(r => getMes(r.fecha) === mesActual);
+    const rPrev   = todo.filter(r => getMes(r.fecha) === mesPrev);
+
+    const ingresosReales   = rMes.filter(r => r.estado === 'completada').reduce((s,r) => s + precio(r), 0);
+    const ingresosPrevistos = rMes.reduce((s,r) => s + precio(r), 0);
+    const ingresosPrev     = rPrev.filter(r => r.estado === 'completada').reduce((s,r) => s + precio(r), 0);
+    const completadasMes   = rMes.filter(r => r.estado === 'completada').length;
+    const ticketMedio      = completadasMes > 0 ? Math.round(ingresosReales / completadasMes) : 0;
+
+    let cambio = null;
+    if (ingresosPrev > 0) cambio = Math.round(((ingresosReales - ingresosPrev) / ingresosPrev) * 100);
+
+    // Por servicio
+    const porSrv = {};
+    rMes.forEach(r => {
+      const n = r.servicios ? r.servicios.nombre : 'Sin servicio';
+      if (!porSrv[n]) porSrv[n] = { count:0, total:0 };
+      porSrv[n].count++;
+      porSrv[n].total += precio(r);
+    });
+    const srvList = Object.entries(porSrv).sort((a,b) => b[1].total - a[1].total);
+    const maxSrv  = srvList[0]?.[1]?.total || 1;
+
+    // Tendencia 6 meses
+    const meses6 = [];
+    for (let i = 5; i >= 0; i--) {
+      const mo = (m - i + 12) % 12, yr = m - i < 0 ? y - 1 : y;
+      const key = fmtMes(yr, mo);
+      const lbl = new Date(yr, mo, 1).toLocaleDateString('es', { month: 'short' });
+      const ing = todo.filter(r => getMes(r.fecha) === key && r.estado === 'completada').reduce((s,r) => s + precio(r), 0);
+      meses6.push({ key, lbl, ing });
+    }
+    const maxMes = Math.max(...meses6.map(x => x.ing), 1);
+
+    // Top clientes
+    const porCli = {};
+    rMes.forEach(r => {
+      const n = r.clientes ? r.clientes.nombre : 'Desconocido';
+      if (!porCli[n]) porCli[n] = { citas:0, total:0 };
+      porCli[n].citas++;
+      porCli[n].total += precio(r);
+    });
+    const topCli = Object.entries(porCli).sort((a,b) => b[1].citas - a[1].citas).slice(0,5);
+
+    const nomMes     = ahora.toLocaleDateString('es', { month: 'long', year: 'numeric' });
+    const nomMesPrev = new Date(y, m-1, 1).toLocaleDateString('es', { month: 'long' });
+    const camHtml    = cambio !== null
+      ? `<div style="font-family:'Space Mono',monospace;font-size:0.63rem;margin-top:0.45rem;color:${cambio>=0?'#9ad420':'#e06060'};">
+           ${cambio>=0?'▲':'▼'} ${Math.abs(cambio)}% vs ${nomMesPrev}
+         </div>`
+      : '';
+
+    const kpi = (val, lbl, color) => `
+      <div style="background:var(--bg2);border:1px solid rgba(124,181,24,0.13);border-radius:12px;padding:1.1rem;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:${color};">${val}</div>
+        <div style="font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:var(--gris);text-transform:uppercase;margin-top:0.3rem;">${lbl}</div>
+      </div>`;
+
+    const secTitulo = t => `<div style="font-family:'Space Mono',monospace;font-size:0.63rem;letter-spacing:0.12em;color:var(--verde);text-transform:uppercase;margin:1.6rem 0 0.8rem;padding-bottom:0.35rem;border-bottom:1px solid rgba(124,181,24,0.12);">${t}</div>`;
+
+    wrap.innerHTML = `<div style="padding:1rem 1rem 5rem;">
+      ${secTitulo(nomMes)}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-bottom:0.2rem;">
+        <div style="background:var(--bg2);border:1px solid rgba(124,181,24,0.2);border-radius:12px;padding:1.1rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--crema);">${ingresosReales}€</div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:var(--gris);text-transform:uppercase;margin-top:0.3rem;">Ingresos reales</div>
+          ${camHtml}
+        </div>
+        <div style="background:var(--bg2);border:1px solid rgba(200,136,42,0.2);border-radius:12px;padding:1.1rem;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;line-height:1;color:var(--oro);">${ingresosPrevistos}€</div>
+          <div style="font-family:'Space Mono',monospace;font-size:0.58rem;letter-spacing:0.08em;color:var(--gris);text-transform:uppercase;margin-top:0.3rem;">Previsto total</div>
+        </div>
+        ${kpi(completadasMes, 'Completadas', 'var(--crema)')}
+        ${kpi(ticketMedio + '€', 'Ticket medio', 'var(--crema)')}
+      </div>
+
+      ${secTitulo('Por servicio — este mes')}
+      ${srvList.length === 0
+        ? '<div style="font-family:\'Space Mono\',monospace;font-size:0.7rem;color:var(--gris);">Sin datos este mes.</div>'
+        : srvList.map(([n, d]) => `
+          <div style="display:flex;align-items:center;gap:0.7rem;margin-bottom:0.6rem;">
+            <div style="font-family:'Crimson Pro',serif;font-size:0.9rem;color:var(--crema);min-width:9rem;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${n}">${n}</div>
+            <div style="flex:1;height:7px;background:rgba(124,181,24,0.08);border-radius:4px;overflow:hidden;">
+              <div style="height:100%;background:var(--verde);border-radius:4px;width:${Math.round((d.total/maxSrv)*100)}%;"></div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--gris);min-width:4.5rem;text-align:right;">${d.count} · ${d.total}€</div>
+          </div>`).join('')}
+
+      ${secTitulo('Tendencia (6 meses)')}
+      <div style="display:flex;align-items:flex-end;gap:5px;height:72px;margin-bottom:4px;">
+        ${meses6.map(mes => `
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;">
+            <div title="${mes.ing}€" style="width:100%;background:${mes.key===mesActual?'var(--verde)':'rgba(124,181,24,0.28)'};border-radius:3px 3px 0 0;height:${mes.ing>0?Math.max(4,Math.round((mes.ing/maxMes)*68)):2}px;"></div>
+          </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:5px;margin-bottom:0.2rem;">
+        ${meses6.map(mes => `
+          <div style="flex:1;text-align:center;font-family:'Space Mono',monospace;font-size:0.5rem;color:${mes.key===mesActual?'var(--verde)':'var(--gris)'};text-transform:uppercase;">${mes.lbl}</div>`).join('')}
+      </div>
+
+      ${secTitulo('Top clientes — este mes')}
+      ${topCli.length === 0
+        ? '<div style="font-family:\'Space Mono\',monospace;font-size:0.7rem;color:var(--gris);">Sin datos este mes.</div>'
+        : topCli.map(([n, d], i) => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0;border-bottom:1px solid rgba(124,181,24,0.06);">
+            <div style="display:flex;align-items:center;gap:0.7rem;">
+              <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--verde);min-width:1.2rem;">${i+1}</div>
+              <div style="font-family:'Crimson Pro',serif;font-size:1rem;color:var(--crema);">${n}</div>
+            </div>
+            <div style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--gris);">${d.citas} cita${d.citas>1?'s':''} · ${d.total}€</div>
+          </div>`).join('')}
+    </div>`;
+  }
+
+  // ── CARGAR RESERVAS ──
+  async function cargarReservas() {
+    if (vista === 'semana') return;
+    const list = document.getElementById('reservasList');
+    list.innerHTML = '<div class="empty-msg"><div class="spinner"></div><br>Cargando...</div>';
+    let query = db.from('reservas')
+      .select('*, servicios(nombre, duracion_minutos), clientes(nombre, telefono)');
+    const titulo = document.getElementById('listTitle');
+    if (vista === 'hoy') {
+      query = query.eq('fecha', hoy()).order('hora');
+      titulo.textContent = 'Reservas de hoy';
+    } else {
+      query = query.gte('fecha', hoy()).order('fecha').order('hora');
+      titulo.textContent = 'Próximas reservas';
+    }
+    const { data, error } = await query;
+    if (error) { list.innerHTML = '<div class="empty-msg">Error: ' + error.message + '</div>'; return; }
+    todasReservas = data || [];
+    renderLista();
+  }
+
+  window.aplicarFiltro = function() { renderLista(); };
+
+  function renderLista() {
+    const filtro = document.getElementById('filterEstado').value;
+    const list = document.getElementById('reservasList');
+    let datos = todasReservas;
+    if (filtro) datos = datos.filter(r => r.estado === filtro);
+    if (datos.length === 0) {
+      list.innerHTML = '<div class="empty-msg">Sin reservas para mostrar.</div>';
+      return;
+    }
+    if (vista === 'proximas') {
+      list.innerHTML = '';
+      const grupos = {};
+      datos.forEach(r => { if (!grupos[r.fecha]) grupos[r.fecha] = []; grupos[r.fecha].push(r); });
+      Object.keys(grupos).sort().forEach(fecha => {
+        const d = new Date(fecha + 'T00:00:00');
+        const label = d.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+        const grp = document.createElement('div');
+        grp.className = 'fecha-grupo';
+        grp.innerHTML = '<div class="fecha-header">' + label.charAt(0).toUpperCase() + label.slice(1) + '</div>';
+        grupos[fecha].forEach(r => grp.appendChild(crearCard(r)));
+        list.appendChild(grp);
+      });
+    } else {
+      list.innerHTML = '';
+      datos.forEach(r => list.appendChild(crearCard(r)));
+    }
+  }
+
+  function crearCard(r) {
+    const card = document.createElement('div');
+    card.className = 'reserva-card';
+    card.id = 'card-' + r.id;
+
+    const hora          = r.hora ? r.hora.slice(0,5) : '—';
+    const servicio      = r.servicios ? r.servicios.nombre : '—';
+    const duracion      = r.servicios ? r.servicios.duracion_minutos + 'min' : '';
+    const clienteNombre = r.clientes ? (r.clientes.nombre || 'Sin nombre') : 'Sin nombre';
+    const clienteTel    = r.clientes ? (r.clientes.telefono || '') : '';
+    const badgeClass    = 'badge-' + r.estado;
+
+    // Línea meta: servicio · duración · teléfono (clicable)
+    const telHtml = clienteTel
+      ? '<a href="tel:' + clienteTel.replace(/\s/g,'') + '">' + clienteTel + '</a>'
+      : '';
+    const metaParts = [servicio, duracion, telHtml].filter(Boolean);
+    const metaHtml  = metaParts.join(' · ');
+
+    // Botón CTA principal
+    let cta = '';
+    if (r.estado === 'pendiente') {
+      cta = '<button class="card-cta act-confirmar" onclick="cambiarEstado(\'' + r.id + '\',\'confirmada\')">✓ Confirmar</button>';
+    } else if (r.estado === 'confirmada') {
+      cta = '<button class="card-cta act-completar" onclick="cambiarEstado(\'' + r.id + '\',\'completada\')">✓ Completar</button>';
+    } else if (r.estado === 'cancelada') {
+      cta = '<button class="card-cta act-reactivar" onclick="cambiarEstado(\'' + r.id + '\',\'pendiente\')">↺ Reactivar</button>';
+    } else {
+      cta = '<div style="flex:1"></div>';
+    }
+
+    // Iconos secundarios
+    let icons = '';
+    if (r.estado === 'pendiente' || r.estado === 'confirmada') {
+      icons += '<button class="card-icon-btn act-cancelar" title="Cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">✕</button>';
+    }
+    if ((r.estado === 'pendiente' || r.estado === 'confirmada') && clienteTel) {
+      const waNum = (function(t){ const d=t.replace(/\D/g,''); return d.startsWith('34')?d:'34'+d; })(clienteTel);
+      const fd    = new Date(r.fecha + 'T00:00:00');
+      const fl    = fd.toLocaleDateString('es', { weekday:'long', day:'numeric', month:'long' });
+      const waMsg = encodeURIComponent('Hola ' + clienteNombre + '! Te recordamos tu cita en WTJ Barber Shop:\n✂ ' + servicio + '\n📅 ' + fl.charAt(0).toUpperCase() + fl.slice(1) + '\n🕐 ' + hora + '\n\n¡Te esperamos!');
+      icons += '<a class="card-icon-btn act-wa" href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener" title="Recordar por WA">📲</a>';
+    }
+    icons += '<button class="card-icon-btn act-editar" title="Editar" onclick="abrirModal(\'' + r.id + '\')">✏</button>';
+
+    card.innerHTML =
+      '<div class="card-top">' +
+        '<span class="card-hora">' + hora + '</span>' +
+        '<span class="status-badge ' + badgeClass + '">' + r.estado + '</span>' +
+      '</div>' +
+      '<div class="card-nombre">' + clienteNombre + '</div>' +
+      '<div class="card-meta">' + metaHtml + '</div>' +
+      (r.notas ? '<div class="card-notas">' + r.notas + '</div>' : '') +
+      '<div class="card-footer">' + cta + '<div class="card-icons">' + icons + '</div></div>';
+    return card;
+  }
+
+  // ── CAMBIAR ESTADO RÁPIDO ──
+  window.cambiarEstado = async function(id, nuevoEstado) {
+    const { error } = await db.from('reservas').update({ estado: nuevoEstado }).eq('id', id);
+    if (error) { mostrarToast('Error: ' + error.message); return; }
+    todasReservas = todasReservas.map(r => r.id === id ? { ...r, estado: nuevoEstado } : r);
+    renderLista();
+    cargarEstadisticas();
+    const labels = { confirmada: '✓ Confirmada', cancelada: '✗ Cancelada', completada: '✓ Completada', pendiente: '↺ Reactivada' };
+    mostrarToast(labels[nuevoEstado] || nuevoEstado);
+  };
+
+  // ── MODAL ──
+  window.abrirModal = function(id) {
+    editandoId = id || null;
+    const overlay = document.getElementById('modalOverlay');
+    document.getElementById('modalTitulo').textContent = id ? 'Editar reserva' : 'Nueva reserva';
+    document.getElementById('modalError').textContent = '';
+
+    // Rellenar select de servicios
+    const sel = document.getElementById('mServicio');
+    sel.innerHTML = '';
+    serviciosData.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.id;
+      o.textContent = s.nombre + ' — ' + s.precio_desde + '€';
+      sel.appendChild(o);
+    });
+
+    // Fecha por defecto: hoy
+    document.getElementById('mFecha').value = hoy();
+    actualizarHorasModal(hoy());
+
+    const histWrap  = document.getElementById('mHistorialWrap');
+    const histLista = document.getElementById('mHistorialLista');
+    histWrap.style.display = 'none';
+    histLista.innerHTML = '';
+
+    if (id) {
+      // Rellenar con datos existentes
+      const r = todasReservas.find(x => x.id === id);
+      if (r) {
+        document.getElementById('mNombre').value   = r.clientes ? (r.clientes.nombre || '') : '';
+        document.getElementById('mTelefono').value = r.clientes ? (r.clientes.telefono || '') : '';
+        document.getElementById('mEstado').value   = r.estado;
+        document.getElementById('mNotas').value    = r.notas || '';
+        document.getElementById('mFecha').value    = r.fecha;
+        actualizarHorasModal(r.fecha, r.hora ? r.hora.slice(0,5) : null);
+        if (r.servicio_id) document.getElementById('mServicio').value = r.servicio_id;
+
+        // Cargar historial del cliente en segundo plano
+        if (r.cliente_id) {
+          histWrap.style.display = 'block';
+          histLista.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:0.72rem;color:var(--gris);">Cargando...</div>';
+          db.from('reservas')
+            .select('id,fecha,hora,estado,servicios(nombre)')
+            .eq('cliente_id', r.cliente_id)
+            .neq('id', id)
+            .order('fecha', { ascending: false })
+            .limit(10)
+            .then(({ data }) => {
+              if (!data || data.length === 0) {
+                histLista.innerHTML = '<div style="font-family:Space Mono,monospace;font-size:0.72rem;color:var(--gris);">Sin citas anteriores.</div>';
+                return;
+              }
+              const badgeColors = { pendiente:'#C8882A', confirmada:'#7CB518', cancelada:'#c0392b', completada:'#2980b9' };
+              histLista.innerHTML = data.map(h => {
+                const d = new Date(h.fecha + 'T00:00:00');
+                const fechaLabel = d.toLocaleDateString('es', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+                const horaLabel  = h.hora ? h.hora.slice(0,5) : '';
+                const srvLabel   = h.servicios ? h.servicios.nombre : '—';
+                const color      = badgeColors[h.estado] || '#888';
+                return '<div style="display:flex;align-items:center;gap:0.6rem;padding:0.45rem 0;border-bottom:1px solid rgba(124,181,24,0.06);font-size:0.8rem;">' +
+                  '<span style="font-family:Space Mono,monospace;color:var(--gris);min-width:5.5rem;font-size:0.7rem;">' + fechaLabel + '</span>' +
+                  '<span style="font-family:Space Mono,monospace;color:var(--crema);min-width:2.5rem;">' + horaLabel + '</span>' +
+                  '<span style="flex:1;color:var(--crema);">' + srvLabel + '</span>' +
+                  '<span style="font-size:0.68rem;font-family:Space Mono,monospace;padding:0.15rem 0.5rem;border-radius:3px;background:' + color + '22;color:' + color + ';border:1px solid ' + color + '55;text-transform:uppercase;letter-spacing:0.05em;">' + h.estado + '</span>' +
+                  '</div>';
+              }).join('');
+            });
+        }
+      }
+    } else {
+      document.getElementById('mNombre').value   = '';
+      document.getElementById('mTelefono').value = '';
+      document.getElementById('mEstado').value   = 'pendiente';
+      document.getElementById('mNotas').value    = '';
+    }
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.cerrarModal = function(e) {
+    if (e && e.target !== document.getElementById('modalOverlay')) return;
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+    editandoId = null;
+  };
+
+  function actualizarHorasModal(fecha, horaActual) {
+    const slots = slotsDelDia(fecha);
+    const sel = document.getElementById('mHora');
+    sel.innerHTML = '';
+    if (slots.length === 0) {
+      const o = document.createElement('option');
+      o.textContent = 'Día cerrado'; sel.appendChild(o); return;
+    }
+    slots.forEach(h => {
+      const o = document.createElement('option');
+      o.value = h; o.textContent = h;
+      if (h === horaActual) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+
+  document.getElementById('mFecha').addEventListener('change', function() {
+    actualizarHorasModal(this.value);
+  });
+
+  // ── GUARDAR RESERVA (crear o editar) ──
+  window.guardarReserva = async function() {
+    const nombre   = document.getElementById('mNombre').value.trim();
+    const telefono = document.getElementById('mTelefono').value.trim();
+    const servicioId = document.getElementById('mServicio').value;
+    const fecha    = document.getElementById('mFecha').value;
+    const hora     = document.getElementById('mHora').value;
+    const estado   = document.getElementById('mEstado').value;
+    const notas    = document.getElementById('mNotas').value.trim();
+    const errDiv   = document.getElementById('modalError');
+    const btn      = document.getElementById('btnGuardar');
+
+    errDiv.textContent = '';
+    if (!nombre || !telefono || !fecha || !hora) {
+      errDiv.textContent = 'Nombre, teléfono, fecha y hora son obligatorios.'; return;
+    }
+
+    btn.disabled = true; btn.textContent = 'Guardando...';
+
+    // Obtener o crear cliente
+    let clienteId;
+    const { data: cliNew, error: cliInsErr } = await db.from('clientes')
+      .insert({ telefono, nombre }).select('id').single();
+    if (cliInsErr) {
+      if (cliInsErr.code === '23505') {
+        const { data: cliEx } = await db.from('clientes').select('id').eq('telefono', telefono).single();
+        if (cliEx) {
+          clienteId = cliEx.id;
+          // Actualizar nombre si cambió
+          await db.from('clientes').update({ nombre }).eq('id', clienteId);
+        } else {
+          errDiv.textContent = 'Error buscando cliente.';
+          btn.disabled = false; btn.textContent = 'Guardar'; return;
+        }
+      } else {
+        errDiv.textContent = 'Error cliente: ' + cliInsErr.message;
+        btn.disabled = false; btn.textContent = 'Guardar'; return;
+      }
+    } else {
+      clienteId = cliNew.id;
+    }
+
+    if (editandoId) {
+      // EDITAR
+      const { error } = await db.from('reservas').update({
+        cliente_id: clienteId, servicio_id: servicioId,
+        fecha, hora: hora + ':00', estado, notas: notas || null
+      }).eq('id', editandoId);
+      if (error) { errDiv.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Guardar'; return; }
+      mostrarToast('✓ Reserva actualizada');
+    } else {
+      // CREAR
+      const { error } = await db.from('reservas').insert({
+        cliente_id: clienteId, servicio_id: servicioId,
+        fecha, hora: hora + ':00', estado, notas: notas || null
+      });
+      if (error) { errDiv.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Guardar'; return; }
+      mostrarToast('✓ Reserva creada');
+    }
+
+    btn.disabled = false; btn.textContent = 'Guardar';
+    cerrarModal();
+    cargarReservas();
+    cargarEstadisticas();
+  };
+
+  // ── TOAST ──
+  function mostrarToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ── DÍAS BLOQUEADOS ──
+  window.abrirBloqueos = function() {
+    document.getElementById('bloqueosOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('bFecha').value = '';
+    document.getElementById('bMotivo').value = '';
+    cargarBloqueos();
+  };
+
+  window.cerrarBloqueos = function(e) {
+    if (e && e.target !== document.getElementById('bloqueosOverlay')) return;
+    document.getElementById('bloqueosOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  async function cargarBloqueos() {
+    const cont = document.getElementById('bloqueosList');
+    cont.innerHTML = '<div style="color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;">Cargando...</div>';
+    const { data } = await db.from('dias_bloqueados').select('*').order('fecha');
+    if (!data || data.length === 0) {
+      cont.innerHTML = '<div style="color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;">Sin días bloqueados.</div>';
+      return;
+    }
+    cont.innerHTML = '';
+    data.forEach(b => {
+      const d = new Date(b.fecha + 'T00:00:00');
+      const label = d.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(124,181,24,0.08);gap:0.5rem;';
+      row.innerHTML =
+        '<div><div style="font-size:1rem;color:var(--crema);">' + label.charAt(0).toUpperCase() + label.slice(1) + '</div>' +
+        (b.motivo ? '<div style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--gris);">' + b.motivo + '</div>' : '') +
+        '</div>' +
+        '<button onclick="eliminarBloqueo(\'' + b.id + '\')" style="background:rgba(200,80,80,0.15);border:1px solid rgba(200,80,80,0.3);color:#e06060;border-radius:5px;padding:0.3rem 0.7rem;font-family:Space Mono,monospace;font-size:0.6rem;cursor:pointer;">Quitar</button>';
+      cont.appendChild(row);
+    });
+  }
+
+  window.agregarBloqueo = async function() {
+    const fecha  = document.getElementById('bFecha').value;
+    const motivo = document.getElementById('bMotivo').value.trim();
+    if (!fecha) { mostrarToast('Elige una fecha'); return; }
+    const { error } = await db.from('dias_bloqueados').insert({ fecha, motivo: motivo || null });
+    if (error) { mostrarToast('Error: ' + (error.code === '23505' ? 'ese día ya está bloqueado' : error.message)); return; }
+    mostrarToast('✓ Día bloqueado');
+    document.getElementById('bFecha').value = '';
+    document.getElementById('bMotivo').value = '';
+    cargarBloqueos();
+  };
+
+  window.eliminarBloqueo = async function(id) {
+    const { error } = await db.from('dias_bloqueados').delete().eq('id', id);
+    if (error) { mostrarToast('Error: ' + error.message); return; }
+    mostrarToast('✓ Día desbloqueado');
+    cargarBloqueos();
+  };
+
+  // ── AUTO-REFRESH ──
+  setInterval(() => { cargarEstadisticas(); cargarReservas(); }, 60000);
+
+  // ════════════════════════════════════════
+  // LIBRETA — notebook day view
+  // ════════════════════════════════════════
+  let libretaLunes = null;
+  let libretaDiaActivo = null;
+
+  function iniciarLibreta() {
+    if (!libretaLunes) libretaLunes = lunesToSemana(new Date());
+    if (!libretaDiaActivo) {
+      const h = new Date();
+      const dow = h.getDay();
+      if (dow >= 2 && dow <= 6) {
+        libretaDiaActivo = h.toISOString().slice(0,10);
+      } else {
+        const t = new Date(h);
+        t.setDate(t.getDate() + (dow === 0 ? 2 : 1));
+        libretaDiaActivo = t.toISOString().slice(0,10);
+      }
+    }
+    renderLibreta();
+  }
+
+  async function renderLibreta() {
+    const wrap = document.getElementById('libretaWrap');
+    wrap.innerHTML = '<div class="lib-nav"><div class="lib-nav-rango" style="margin:auto;"><div class="spinner"></div></div></div>';
+
+    // Build Tue–Sat of the current libreta week
+    const diasSemana = [];
+    for (let i = 1; i <= 5; i++) {
+      const d = new Date(libretaLunes);
+      d.setDate(d.getDate() + i);
+      diasSemana.push(d);
+    }
+
+    const desde = diasSemana[0].toISOString().slice(0,10);
+    const hasta  = diasSemana[4].toISOString().slice(0,10);
+
+    // Fetch all reservas for the week (including cancelled so admin sees full picture)
+    const { data: reservas } = await db.from('reservas')
+      .select('id,fecha,hora,estado,clientes(nombre,telefono),servicios(nombre)')
+      .gte('fecha', desde).lte('fecha', hasta)
+      .order('hora');
+
+    const byFecha = {};
+    (reservas || []).forEach(r => {
+      if (!byFecha[r.fecha]) byFecha[r.fecha] = [];
+      byFecha[r.fecha].push(r);
+    });
+
+    const hoyStr = new Date().toISOString().slice(0,10);
+
+    // Default active day to first day of new week if out of range
+    if (!diasSemana.some(d => d.toISOString().slice(0,10) === libretaDiaActivo)) {
+      const inWeek = diasSemana.find(d => d.toISOString().slice(0,10) === hoyStr);
+      libretaDiaActivo = inWeek ? hoyStr : diasSemana[0].toISOString().slice(0,10);
+    }
+
+    // Week nav label
+    const fmt = d => d.toLocaleDateString('es', { day:'numeric', month:'short' });
+    const rangoLabel = fmt(diasSemana[0]) + ' – ' + fmt(diasSemana[4]) + ' · ' +
+      diasSemana[0].toLocaleDateString('es', { year:'numeric' });
+
+    // Day selector tabs (Tue–Sat)
+    const DIA_LABEL = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const tabsHtml = diasSemana.map(d => {
+      const iso = d.toISOString().slice(0,10);
+      const activo = iso === libretaDiaActivo ? ' active' : '';
+      const esHoy  = iso === hoyStr ? ' hoy-tab' : '';
+      const cnt    = (byFecha[iso] || []).filter(r => r.estado !== 'cancelada').length;
+      return `<button class="lib-dia-tab${activo}${esHoy}" onclick="libretaSelDia('${iso}')">
+        <span class="lib-dia-num">${d.getDate()}</span>
+        <span class="lib-dia-nombre">${DIA_LABEL[d.getDay()]}</span>
+        ${cnt > 0 ? '<span class="lib-dia-count">' + cnt + ' ✂</span>' : '<span class="lib-dia-count" style="visibility:hidden">0</span>'}
+      </button>`;
+    }).join('');
+
+    // ── Render the selected day ──
+    const selDate = new Date(libretaDiaActivo + 'T00:00:00');
+    const dow = selDate.getDay();
+
+    function slotsForDow(d) {
+      if (d === 0 || d === 1) return [];
+      if (d === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+      return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+    }
+
+    const slots      = slotsForDow(dow);
+    const resDelDia  = byFecha[libretaDiaActivo] || [];
+    const ocupadas   = resDelDia.filter(r => r.estado !== 'cancelada').length;
+    const total      = slots.length;
+
+    const DIAS_FULL  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const MESES      = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const diaLabel   = DIAS_FULL[dow];
+    const mesLabel   = MESES[selDate.getMonth()];
+    const anyo       = selDate.getFullYear();
+    const diaNum     = selDate.getDate();
+
+    function renderSlotRow(slot) {
+      const res = resDelDia.find(r => r.hora && r.hora.slice(0,5) === slot);
+      if (!res) {
+        return `<div class="lib-slot lib-slot-libre">
+          <div class="lib-slot-time">${slot}</div>
+          <div class="lib-slot-body"></div>
+        </div>`;
+      }
+      const nombre   = res.clientes  ? res.clientes.nombre   : '—';
+      const tel      = res.clientes  ? (res.clientes.telefono || '') : '';
+      const servicio = res.servicios ? res.servicios.nombre  : '—';
+      const est      = res.estado;
+      const dotMap   = { pendiente:'lib-dot-pend', confirmada:'lib-dot-conf', completada:'lib-dot-comp', cancelada:'lib-dot-canc' };
+      const clsMap   = { pendiente:'lib-slot-pend', confirmada:'lib-slot-conf', completada:'lib-slot-comp', cancelada:'lib-slot-canc' };
+      return `<div class="lib-slot lib-slot-ocupado ${clsMap[est]||''}" onclick="abrirModal('${res.id}')" title="Editar reserva">
+        <div class="lib-slot-time">${slot}</div>
+        <div class="lib-slot-body">
+          <div class="lib-nombre"><span class="lib-dot ${dotMap[est]||''}"></span>${nombre}</div>
+          <div class="lib-servicio">${servicio}${tel ? ' · <a class="lib-tel" href="tel:'+tel.replace(/\s/g,'')+'" onclick="event.stopPropagation()">'+tel+'</a>' : ''}</div>
+        </div>
+      </div>`;
+    }
+
+    let pageHtml;
+    if (slots.length === 0) {
+      pageHtml = '<div class="lib-cerrado">Cerrado</div>';
+    } else {
+      const manana = slots.filter(s => parseInt(s) < 14);
+      const tarde  = slots.filter(s => parseInt(s) >= 14);
+      pageHtml =
+        '<div class="lib-turno"><div class="lib-turno-label">Mañana</div><div class="lib-turno-line"></div></div>' +
+        manana.map(renderSlotRow).join('') +
+        (tarde.length ? '<div class="lib-turno"><div class="lib-turno-label">Tarde</div><div class="lib-turno-line"></div></div>' + tarde.map(renderSlotRow).join('') : '');
+    }
+
+    wrap.innerHTML = `
+      <div class="lib-nav">
+        <button class="lib-nav-btn" id="libPrev">← Anterior</button>
+        <span class="lib-nav-rango">${rangoLabel}</span>
+        <button class="lib-nav-btn" id="libNext">Siguiente →</button>
+      </div>
+      <div class="lib-dias">${tabsHtml}</div>
+      <div class="lib-page">
+        <div class="lib-paper">
+          <div class="lib-head">
+            <div class="lib-head-left">
+              <div class="lib-head-dia">${diaLabel} ${diaNum}</div>
+              <div class="lib-head-fecha">${mesLabel} · ${anyo}</div>
+            </div>
+            <div class="lib-head-count">
+              <strong>${ocupadas}</strong>
+              de ${total} citas
+            </div>
+          </div>
+          ${pageHtml}
+        </div>
+      </div>`;
+
+    document.getElementById('libPrev').onclick = () => {
+      libretaLunes = new Date(libretaLunes);
+      libretaLunes.setDate(libretaLunes.getDate() - 7);
+      libretaDiaActivo = null;
+      renderLibreta();
+    };
+    document.getElementById('libNext').onclick = () => {
+      libretaLunes = new Date(libretaLunes);
+      libretaLunes.setDate(libretaLunes.getDate() + 7);
+      libretaDiaActivo = null;
+      renderLibreta();
+    };
+  }
+
+  window.libretaSelDia = function(iso) {
+    libretaDiaActivo = iso;
+    renderLibreta();
+  };
+
+})();
+</script>
+</body>
+</html>
