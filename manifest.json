@@ -1,0 +1,32 @@
+{
+  "name": "WTJ Barber Shop",
+  "short_name": "WTJ Barber",
+  "description": "Barbería artesanal en Oropesa. Reserva tu cita online.",
+  "start_url": "/Peluqueria/",
+  "scope": "/Peluqueria/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "icons": [
+    { "src": "assets/logo.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "assets/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [],
+  "categories": ["lifestyle", "health", "beauty"],
+  "shortcuts": [
+    {
+      "name": "Reservar cita",
+      "short_name": "Reservar",
+      "description": "Haz tu reserva online",
+      "url": "/Peluqueria/#reservar"
+    },
+    {
+      "name": "Cancelar reserva",
+      "short_name": "Cancelar",
+      "description": "Cancela tu cita existente",
+      "url": "/Peluqueria/#contacto"
+    }
+  ]
+}

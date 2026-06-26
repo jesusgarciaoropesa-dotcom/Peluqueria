@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WTJ Barber Shop — Welcome to the Jungle · Oropesa</title>
-  <meta name="description" content="Barbería WTJ en C/ Calzada Real 14, Oropesa. Degradados, diseños, tintes y barba. Reserva por WhatsApp o Instagram." />
+  <meta name="description" content="Barbería WTJ en C/ Calzada Real 14, Oropesa. Degradados, diseños, tintes y barba. Reserva online tu cita en segundos." />
+  <link rel="canonical" href="https://jesusgarciaoropesa-dotcom.github.io/Peluqueria/" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preload" href="assets/logo.png" as="image" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -1460,6 +1463,31 @@
     }
     .btn-nueva-reserva:hover { background: rgba(124,181,24,0.1); }
     .r-error { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.7rem; margin-top: 0.5rem; }
+    /* ── FAQ ACCORDION ── */
+    .faq-item { border-bottom: 1px solid rgba(124,181,24,0.12); }
+    .faq-q {
+      width: 100%; background: none; border: none; color: var(--crema);
+      font-family: 'Crimson Pro', serif; font-size: 1.1rem; font-weight: 600;
+      padding: 1.1rem 0; text-align: left; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .faq-q:hover { color: var(--verde-neon); }
+    .faq-chevron { font-size: 0.9rem; color: var(--verde-neon); transition: transform 0.25s; flex-shrink: 0; }
+    .faq-item.open .faq-chevron { transform: rotate(180deg); }
+    .faq-a {
+      font-family: 'Crimson Pro', serif; font-size: 1rem; color: rgba(242,237,215,0.65);
+      line-height: 1.65; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s;
+    }
+    .faq-item.open .faq-a { max-height: 300px; padding-bottom: 1rem; }
+    /* ── RESUMEN RESERVA ── */
+    #resumenBar {
+      background: rgba(124,181,24,0.06); border: 1px solid rgba(124,181,24,0.12);
+      border-radius: 8px; padding: 0.7rem 1rem; margin-bottom: 1.2rem;
+      display: none; gap: 1rem; flex-wrap: wrap; align-items: center;
+    }
+    #resumenBar.visible { display: flex; }
+    .rb-item { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--verde-neon); letter-spacing: 0.05em; }
+    .rb-sep { color: rgba(124,181,24,0.3); font-size: 0.7rem; }
     @media (max-width: 600px) {
       .reservar-card { padding: 1.5rem 1rem; }
       .servicios-grid-r { grid-template-columns: 1fr 1fr; }
@@ -1947,6 +1975,17 @@
   </div>
 </section>
 
+<!-- FAQ -->
+<section id="faq" style="background:var(--bg-alt);padding:4rem 1.5rem;">
+  <div style="max-width:740px;margin:0 auto;">
+    <div class="section-header reveal" style="margin-bottom:2.5rem;">
+      <span class="section-label">// Preguntas frecuentes</span>
+      <h2 class="section-title">FAQ</h2>
+    </div>
+    <div id="faqList"></div>
+  </div>
+</section>
+
 <!-- RESERVAR -->
 <section id="reservar">
   <div class="reservar-inner">
@@ -1961,6 +2000,8 @@
       <div class="step-dot" id="sd4">4</div>
     </div>
     <div class="reservar-card">
+      <!-- Resumen de selección actual -->
+      <div id="resumenBar" role="status" aria-live="polite"></div>
       <!-- PASO 1: Servicio -->
       <div class="paso activo" id="paso1">
         <div class="paso-titulo">// Elige tu servicio</div>
@@ -1980,6 +2021,13 @@
           <button class="cal-nav" id="calNext">&#8250;</button>
         </div>
         <div class="cal-grid" id="calGrid"></div>
+        <div style="margin-top:1rem;text-align:center;">
+          <a href="https://wa.me/34637847114?text=Hola!%20No%20encuentro%20hueco%20disponible%20en%20el%20calendario.%20%C2%BFTen%C3%A9is%20alguna%20cita%20libre%20pronto%3F"
+             target="_blank" rel="noopener"
+             style="font-family:'Space Mono',monospace;font-size:0.6rem;color:rgba(242,237,215,0.35);letter-spacing:0.06em;text-decoration:none;border-bottom:1px solid rgba(242,237,215,0.15);padding-bottom:1px;">
+            ¿No encuentras hueco? Escríbenos por WhatsApp →
+          </a>
+        </div>
         <div class="paso-nav">
           <button class="btn-anterior" onclick="irPaso(1)">← Volver</button>
           <button class="btn-siguiente" id="btn2" disabled onclick="irPaso(3)">Siguiente →</button>
@@ -2099,6 +2147,13 @@
         </div>
       </div>
       <div class="contact-row">
+        <span class="contact-icon">📞</span>
+        <div>
+          <div class="contact-label">Teléfono / WhatsApp</div>
+          <div class="contact-val"><a href="tel:+34637847114" style="color:inherit;">637 847 114</a></div>
+        </div>
+      </div>
+      <div class="contact-row">
         <span class="contact-icon">📱</span>
         <div>
           <div class="contact-label">Instagram</div>
@@ -2151,6 +2206,41 @@
 </div>
 
 <script>
+
+  /* ── Service Worker (PWA) ── */
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+  }
+
+  /* ── FAQ Accordion ── */
+  (function() {
+    const FAQS = [
+      { q: '¿Aceptáis walk-ins sin cita previa?', a: 'Recomendamos reservar cita online para garantizar tu plaza. Si vienes sin cita, te atendemos si hay hueco disponible, pero no podemos garantizarlo.' },
+      { q: '¿Cuánto tarda un corte de pelo?', a: 'Un corte clásico entre 30-45 minutos. Los degradados y diseños 45-60 minutos. Los tintes pueden requerir más tiempo según el tratamiento. Al reservar online verás la duración estimada de cada servicio.' },
+      { q: '¿Hacéis cortes a niños?', a: 'Sí, realizamos cortes a niños. Puedes reservar online o contactarnos por WhatsApp al 637 847 114.' },
+      { q: '¿Cuál es el horario?', a: 'De martes a viernes de 10:00 a 13:00 y de 16:00 a 20:00. Los sábados de 10:00 a 16:00. Cerramos los lunes y domingos.' },
+      { q: '¿Puedo cancelar mi reserva?', a: 'Sí. Puedes cancelar directamente en nuestra web (desde la pantalla de confirmación o el pie de página), o contactándonos por WhatsApp. Te pedimos que avises con al menos 2 horas de antelación.' },
+      { q: '¿Cómo reservo cita?', a: 'En nuestra web, seleccionas servicio → fecha → hora → tus datos. En menos de 2 minutos. También puedes escribirnos por WhatsApp o Instagram si prefieres.' },
+      { q: '¿Dónde estáis?', a: 'En C/ Calzada Real 14, Oropesa, Castilla-La Mancha. Puedes abrir el mapa desde esta misma página.' }
+    ];
+    const cont = document.getElementById('faqList');
+    if (!cont) return;
+    FAQS.forEach(({ q, a }) => {
+      const item = document.createElement('div');
+      item.className = 'faq-item';
+      item.innerHTML =
+        '<button class="faq-q" aria-expanded="false">' +
+          q + '<span class="faq-chevron" aria-hidden="true">▼</span>' +
+        '</button>' +
+        '<div class="faq-a" role="region">' + a + '</div>';
+      const btn = item.querySelector('.faq-q');
+      btn.addEventListener('click', () => {
+        const open = item.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+      });
+      cont.appendChild(item);
+    });
+  })();
 
   /* ── Splash screen ──────────────────── */
   window.addEventListener('load', () => {
@@ -2432,6 +2522,29 @@
         if (i < est.paso) d.classList.add('done');
         else if (i === est.paso) d.classList.add('active');
       }
+      actualizarResumen();
+    }
+
+    function actualizarResumen() {
+      const bar = document.getElementById('resumenBar');
+      const partes = [];
+      if (est.servicio) partes.push({ text: '✂ ' + est.servicio.nombre });
+      if (est.fecha) {
+        const fObj = new Date(est.fecha + 'T00:00:00');
+        const fStr = fObj.toLocaleDateString('es', { weekday: 'short', day: 'numeric', month: 'short' });
+        partes.push({ text: '📅 ' + fStr });
+      }
+      if (est.hora) partes.push({ text: '🕐 ' + est.hora });
+      if (partes.length === 0 || est.paso === 1) {
+        bar.classList.remove('visible');
+        bar.innerHTML = '';
+        return;
+      }
+      bar.innerHTML = partes.map((p, i) =>
+        '<span class="rb-item">' + p.text + '</span>' +
+        (i < partes.length - 1 ? '<span class="rb-sep">·</span>' : '')
+      ).join('');
+      bar.classList.add('visible');
     }
 
     // ── Cargar servicios ──
