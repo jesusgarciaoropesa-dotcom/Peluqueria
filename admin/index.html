@@ -194,6 +194,165 @@
       .campos-2col { grid-template-columns: 1fr; }
       .modal { border-radius: 14px 14px 0 0; }
     }
+
+    /* ═══════════════════════════════════════
+       LIBRETA — notebook tab
+    ═══════════════════════════════════════ */
+    #libretaWrap { background: #EEE8D8; min-height: calc(100vh - 200px); }
+
+    /* Nav semana */
+    .lib-nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.7rem 1.2rem; background: #E4DCC8;
+      border-bottom: 1px solid #C8BAA0;
+    }
+    .lib-nav-rango { font-family: 'Space Mono', monospace; font-size: 0.75rem; font-weight: 700; color: #2a1f0a; letter-spacing: 0.04em; }
+    .lib-nav-btn {
+      background: none; border: 1.5px solid #B8A888; border-radius: 6px;
+      padding: 0.3rem 0.75rem; color: #5a4a30;
+      font-family: 'Space Mono', monospace; font-size: 0.62rem; cursor: pointer; transition: all 0.15s;
+    }
+    .lib-nav-btn:hover { border-color: #7a5a28; color: #2a1a05; }
+
+    /* Pestañas de día */
+    .lib-dias {
+      display: flex; overflow-x: auto; background: #DDD5C0;
+      border-bottom: 2px solid #B8A070;
+    }
+    .lib-dia-tab {
+      flex: 1; min-width: 3.5rem; flex-shrink: 0;
+      background: none; border: none; border-bottom: 3px solid transparent;
+      padding: 0.6rem 0.4rem 0.55rem;
+      font-family: 'Space Mono', monospace; font-size: 0.58rem; color: #7a6a50;
+      cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em;
+      text-align: center; line-height: 1.5; transition: all 0.15s;
+    }
+    .lib-dia-tab:hover:not(.active) { background: rgba(180,150,80,0.15); color: #3a2a10; }
+    .lib-dia-tab.active { color: #1a1005; border-bottom-color: #C8882A; background: rgba(200,160,80,0.2); }
+    .lib-dia-tab.hoy-tab .lib-dia-num { color: #7CB518; }
+    .lib-dia-tab.hoy-tab.active .lib-dia-num { color: #5a8a0a; }
+    .lib-dia-tab.cerrado-tab { color: rgba(120,100,70,0.35); cursor: default; }
+    .lib-dia-num { display: block; font-size: 1.15rem; font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.04em; line-height: 1.1; }
+    .lib-dia-nombre { display: block; font-size: 0.52rem; }
+    .lib-dia-count { display: block; font-size: 0.55rem; color: #C8882A; margin-top: 0.1rem; }
+
+    /* Página de la libreta */
+    .lib-page { padding: 1.25rem 1rem 5rem; max-width: 620px; margin: 0 auto; }
+
+    .lib-paper {
+      background: #FFFDF4;
+      border-radius: 3px 3px 4px 4px;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.15), 2px 2px 0 #E0D8B0, 4px 4px 0 #D0C8A0;
+      overflow: hidden; position: relative;
+    }
+
+    /* Línea de espiral arriba */
+    .lib-paper::before {
+      content: '';
+      display: block; height: 0.5rem;
+      background: repeating-linear-gradient(90deg, transparent, transparent 1.2rem, #B8A070 1.2rem, #B8A070 1.4rem);
+      border-bottom: 2px solid #C8B880;
+    }
+
+    /* Encabezado de la página */
+    .lib-head {
+      padding: 1rem 1.2rem 0.85rem;
+      border-bottom: 2px solid #D8D0A8;
+      background: #FFFAE8;
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+    }
+    .lib-head-left {}
+    .lib-head-dia {
+      font-family: 'Crimson Pro', serif; font-size: 2rem; font-style: italic;
+      font-weight: 600; color: #1a1005; line-height: 1;
+    }
+    .lib-head-fecha {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      color: #9a8060; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.25rem;
+    }
+    .lib-head-count {
+      font-family: 'Space Mono', monospace; font-size: 0.6rem;
+      color: #9a8060; text-align: right; white-space: nowrap;
+    }
+    .lib-head-count strong { color: #C8882A; font-size: 1.1rem; font-family: 'Bebas Neue', sans-serif; display: block; line-height: 1; }
+
+    /* Separador Mañana / Tarde */
+    .lib-turno {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.45rem 1rem 0.45rem 4.2rem;
+      background: #F5EDD8; border-bottom: 1px solid #D8D0A8; border-top: 1px solid #D8D0A8;
+    }
+    .lib-turno-label {
+      font-family: 'Space Mono', monospace; font-size: 0.55rem; color: #9a8060;
+      letter-spacing: 0.18em; text-transform: uppercase; flex-shrink: 0;
+    }
+    .lib-turno-line { flex: 1; height: 1px; background: #C8C0A0; }
+
+    /* Filas de cita */
+    .lib-slot {
+      display: grid; grid-template-columns: 4.2rem 1fr;
+      border-bottom: 1px solid #E0D8B8; transition: background 0.12s;
+    }
+    .lib-slot:last-child { border-bottom: none; }
+    .lib-slot-time {
+      display: flex; align-items: center; justify-content: flex-end;
+      padding: 0 0.65rem 0 0.5rem;
+      font-family: 'Space Mono', monospace; font-size: 0.66rem; color: #9a8060;
+      background: #FFFAE8; min-height: 2.8rem;
+    }
+    .lib-slot-body {
+      border-left: 2px solid rgba(195,50,50,0.28);
+      padding: 0.55rem 1rem; min-height: 2.8rem;
+      display: flex; flex-direction: column; justify-content: center;
+    }
+
+    /* Libre */
+    .lib-slot-libre .lib-slot-body {
+      background-image: repeating-linear-gradient(transparent, transparent calc(100% - 1px), rgba(180,170,140,0.25) calc(100% - 1px), rgba(180,170,140,0.25) 100%);
+    }
+    .lib-slot-libre .lib-slot-time { color: #C0B0A0; }
+
+    /* Ocupado */
+    .lib-slot-pend   .lib-slot-body { background: rgba(200,136,42,0.06); }
+    .lib-slot-conf   .lib-slot-body { background: rgba(124,181,24,0.05); }
+    .lib-slot-comp   .lib-slot-body { background: rgba(74,143,212,0.05); }
+    .lib-slot-canc   .lib-slot-body { background: rgba(180,60,60,0.04); }
+    .lib-slot-canc   .lib-slot-time { color: #C0B0A0; }
+
+    .lib-slot-ocupado:hover .lib-slot-body { background: rgba(200,160,80,0.12); cursor: pointer; }
+
+    .lib-nombre {
+      font-family: 'Crimson Pro', serif; font-size: 1.1rem;
+      font-style: italic; font-weight: 600; color: #1a1005;
+      display: flex; align-items: center; gap: 0.4rem; line-height: 1.2;
+    }
+    .lib-slot-canc .lib-nombre { text-decoration: line-through; color: #A09080; }
+    .lib-servicio {
+      font-family: 'Space Mono', monospace; font-size: 0.56rem;
+      color: #9a8060; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 0.1rem;
+    }
+    .lib-slot-canc .lib-servicio { color: #C0B0A0; }
+
+    .lib-dot {
+      display: inline-block; width: 0.42rem; height: 0.42rem; border-radius: 50%; flex-shrink: 0;
+    }
+    .lib-dot-pend { background: #C8882A; }
+    .lib-dot-conf { background: #7CB518; }
+    .lib-dot-comp { background: #4a8fd4; }
+    .lib-dot-canc { background: #c0392b; }
+
+    /* Cerrado */
+    .lib-cerrado {
+      padding: 3.5rem 1rem; text-align: center;
+      font-family: 'Crimson Pro', serif; font-size: 1.25rem; font-style: italic; color: #9a8060;
+    }
+
+    /* Tel rápido en la cita */
+    .lib-tel {
+      font-family: 'Space Mono', monospace; font-size: 0.55rem; color: #B0A080;
+      text-decoration: none; letter-spacing: 0.03em;
+    }
+    .lib-tel:hover { color: #C8882A; }
   </style>
 </head>
 <body>
@@ -232,6 +391,7 @@
     <button class="tab"        data-vista="semana"     onclick="setVista('semana',this)">Semana</button>
     <button class="tab"        data-vista="proximas"   onclick="setVista('proximas',this)">Próximas</button>
     <button class="tab"        data-vista="stats"      onclick="setVista('stats',this)">Estadísticas</button>
+    <button class="tab"        data-vista="libreta"    onclick="setVista('libreta',this)">📓 Libreta</button>
   </div>
 
   <div class="week-tabs" id="weekTabs"></div>
@@ -263,6 +423,9 @@
 
   <!-- Vista estadísticas de ingresos -->
   <div id="statsWrap" style="display:none;"></div>
+
+  <!-- Vista libreta -->
+  <div id="libretaWrap" style="display:none;"></div>
 </div>
 
 <!-- BANNER NUEVA RESERVA -->
@@ -480,8 +643,10 @@
     const listHeader   = document.getElementById('listHeader');
     const reservasList = document.getElementById('reservasList');
     const statsWrap    = document.getElementById('statsWrap');
+    const libretaWrap  = document.getElementById('libretaWrap');
     agendaWrap.style.display   = 'none';
     statsWrap.style.display    = 'none';
+    libretaWrap.style.display  = 'none';
     listHeader.style.display   = 'none';
     reservasList.style.display = '';
     if (v === 'semana') {
@@ -492,6 +657,10 @@
       statsWrap.style.display = 'block';
       reservasList.style.display = 'none';
       cargarStatsIngresos();
+    } else if (v === 'libreta') {
+      libretaWrap.style.display = 'block';
+      reservasList.style.display = 'none';
+      iniciarLibreta();
     } else {
       listHeader.style.display = '';
       cargarReservas();
@@ -1127,6 +1296,182 @@
 
   // ── AUTO-REFRESH ──
   setInterval(() => { cargarEstadisticas(); cargarReservas(); }, 60000);
+
+  // ════════════════════════════════════════
+  // LIBRETA — notebook day view
+  // ════════════════════════════════════════
+  let libretaLunes = null;
+  let libretaDiaActivo = null;
+
+  function iniciarLibreta() {
+    if (!libretaLunes) libretaLunes = lunesToSemana(new Date());
+    if (!libretaDiaActivo) {
+      const h = new Date();
+      const dow = h.getDay();
+      if (dow >= 2 && dow <= 6) {
+        libretaDiaActivo = h.toISOString().slice(0,10);
+      } else {
+        const t = new Date(h);
+        t.setDate(t.getDate() + (dow === 0 ? 2 : 1));
+        libretaDiaActivo = t.toISOString().slice(0,10);
+      }
+    }
+    renderLibreta();
+  }
+
+  async function renderLibreta() {
+    const wrap = document.getElementById('libretaWrap');
+    wrap.innerHTML = '<div class="lib-nav"><div class="lib-nav-rango" style="margin:auto;"><div class="spinner"></div></div></div>';
+
+    // Build Tue–Sat of the current libreta week
+    const diasSemana = [];
+    for (let i = 1; i <= 5; i++) {
+      const d = new Date(libretaLunes);
+      d.setDate(d.getDate() + i);
+      diasSemana.push(d);
+    }
+
+    const desde = diasSemana[0].toISOString().slice(0,10);
+    const hasta  = diasSemana[4].toISOString().slice(0,10);
+
+    // Fetch all reservas for the week (including cancelled so admin sees full picture)
+    const { data: reservas } = await db.from('reservas')
+      .select('id,fecha,hora,estado,clientes(nombre,telefono),servicios(nombre)')
+      .gte('fecha', desde).lte('fecha', hasta)
+      .order('hora');
+
+    const byFecha = {};
+    (reservas || []).forEach(r => {
+      if (!byFecha[r.fecha]) byFecha[r.fecha] = [];
+      byFecha[r.fecha].push(r);
+    });
+
+    const hoyStr = new Date().toISOString().slice(0,10);
+
+    // Default active day to first day of new week if out of range
+    if (!diasSemana.some(d => d.toISOString().slice(0,10) === libretaDiaActivo)) {
+      const inWeek = diasSemana.find(d => d.toISOString().slice(0,10) === hoyStr);
+      libretaDiaActivo = inWeek ? hoyStr : diasSemana[0].toISOString().slice(0,10);
+    }
+
+    // Week nav label
+    const fmt = d => d.toLocaleDateString('es', { day:'numeric', month:'short' });
+    const rangoLabel = fmt(diasSemana[0]) + ' – ' + fmt(diasSemana[4]) + ' · ' +
+      diasSemana[0].toLocaleDateString('es', { year:'numeric' });
+
+    // Day selector tabs (Tue–Sat)
+    const DIA_LABEL = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+    const tabsHtml = diasSemana.map(d => {
+      const iso = d.toISOString().slice(0,10);
+      const activo = iso === libretaDiaActivo ? ' active' : '';
+      const esHoy  = iso === hoyStr ? ' hoy-tab' : '';
+      const cnt    = (byFecha[iso] || []).filter(r => r.estado !== 'cancelada').length;
+      return `<button class="lib-dia-tab${activo}${esHoy}" onclick="libretaSelDia('${iso}')">
+        <span class="lib-dia-num">${d.getDate()}</span>
+        <span class="lib-dia-nombre">${DIA_LABEL[d.getDay()]}</span>
+        ${cnt > 0 ? '<span class="lib-dia-count">' + cnt + ' ✂</span>' : '<span class="lib-dia-count" style="visibility:hidden">0</span>'}
+      </button>`;
+    }).join('');
+
+    // ── Render the selected day ──
+    const selDate = new Date(libretaDiaActivo + 'T00:00:00');
+    const dow = selDate.getDay();
+
+    function slotsForDow(d) {
+      if (d === 0 || d === 1) return [];
+      if (d === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+      return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+    }
+
+    const slots      = slotsForDow(dow);
+    const resDelDia  = byFecha[libretaDiaActivo] || [];
+    const ocupadas   = resDelDia.filter(r => r.estado !== 'cancelada').length;
+    const total      = slots.length;
+
+    const DIAS_FULL  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const MESES      = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const diaLabel   = DIAS_FULL[dow];
+    const mesLabel   = MESES[selDate.getMonth()];
+    const anyo       = selDate.getFullYear();
+    const diaNum     = selDate.getDate();
+
+    function renderSlotRow(slot) {
+      const res = resDelDia.find(r => r.hora && r.hora.slice(0,5) === slot);
+      if (!res) {
+        return `<div class="lib-slot lib-slot-libre">
+          <div class="lib-slot-time">${slot}</div>
+          <div class="lib-slot-body"></div>
+        </div>`;
+      }
+      const nombre   = res.clientes  ? res.clientes.nombre   : '—';
+      const tel      = res.clientes  ? (res.clientes.telefono || '') : '';
+      const servicio = res.servicios ? res.servicios.nombre  : '—';
+      const est      = res.estado;
+      const dotMap   = { pendiente:'lib-dot-pend', confirmada:'lib-dot-conf', completada:'lib-dot-comp', cancelada:'lib-dot-canc' };
+      const clsMap   = { pendiente:'lib-slot-pend', confirmada:'lib-slot-conf', completada:'lib-slot-comp', cancelada:'lib-slot-canc' };
+      return `<div class="lib-slot lib-slot-ocupado ${clsMap[est]||''}" onclick="abrirModal('${res.id}')" title="Editar reserva">
+        <div class="lib-slot-time">${slot}</div>
+        <div class="lib-slot-body">
+          <div class="lib-nombre"><span class="lib-dot ${dotMap[est]||''}"></span>${nombre}</div>
+          <div class="lib-servicio">${servicio}${tel ? ' · <a class="lib-tel" href="tel:'+tel.replace(/\s/g,'')+'" onclick="event.stopPropagation()">'+tel+'</a>' : ''}</div>
+        </div>
+      </div>`;
+    }
+
+    let pageHtml;
+    if (slots.length === 0) {
+      pageHtml = '<div class="lib-cerrado">Cerrado</div>';
+    } else {
+      const manana = slots.filter(s => parseInt(s) < 14);
+      const tarde  = slots.filter(s => parseInt(s) >= 14);
+      pageHtml =
+        '<div class="lib-turno"><div class="lib-turno-label">Mañana</div><div class="lib-turno-line"></div></div>' +
+        manana.map(renderSlotRow).join('') +
+        (tarde.length ? '<div class="lib-turno"><div class="lib-turno-label">Tarde</div><div class="lib-turno-line"></div></div>' + tarde.map(renderSlotRow).join('') : '');
+    }
+
+    wrap.innerHTML = `
+      <div class="lib-nav">
+        <button class="lib-nav-btn" id="libPrev">← Anterior</button>
+        <span class="lib-nav-rango">${rangoLabel}</span>
+        <button class="lib-nav-btn" id="libNext">Siguiente →</button>
+      </div>
+      <div class="lib-dias">${tabsHtml}</div>
+      <div class="lib-page">
+        <div class="lib-paper">
+          <div class="lib-head">
+            <div class="lib-head-left">
+              <div class="lib-head-dia">${diaLabel} ${diaNum}</div>
+              <div class="lib-head-fecha">${mesLabel} · ${anyo}</div>
+            </div>
+            <div class="lib-head-count">
+              <strong>${ocupadas}</strong>
+              de ${total} citas
+            </div>
+          </div>
+          ${pageHtml}
+        </div>
+      </div>`;
+
+    document.getElementById('libPrev').onclick = () => {
+      libretaLunes = new Date(libretaLunes);
+      libretaLunes.setDate(libretaLunes.getDate() - 7);
+      libretaDiaActivo = null;
+      renderLibreta();
+    };
+    document.getElementById('libNext').onclick = () => {
+      libretaLunes = new Date(libretaLunes);
+      libretaLunes.setDate(libretaLunes.getDate() + 7);
+      libretaDiaActivo = null;
+      renderLibreta();
+    };
+  }
+
+  window.libretaSelDia = function(iso) {
+    libretaDiaActivo = iso;
+    renderLibreta();
+  };
+
 })();
 </script>
 </body>
