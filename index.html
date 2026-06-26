@@ -1502,16 +1502,25 @@
         -webkit-overflow-scrolling: touch;
         padding: 0 !important;
       }
-      #reservar.modal-open .reservar-inner { padding: 0.75rem 1rem 5rem; }
+      #reservar.modal-open .reservar-inner { padding: 0.6rem 1rem 2rem; }
       #reservar.modal-open .booking-close-btn {
         display: flex; align-items: center; gap: 0.35rem;
-        margin-left: auto; margin-bottom: 0.9rem;
+        margin-left: auto; margin-bottom: 0.6rem;
         background: rgba(124,181,24,0.07);
         border: 1px solid rgba(124,181,24,0.25);
         color: rgba(242,237,215,0.65);
-        padding: 0.4rem 0.8rem; border-radius: 6px;
-        font-family: 'Space Mono', monospace; font-size: 0.65rem;
+        padding: 0.35rem 0.7rem; border-radius: 6px;
+        font-family: 'Space Mono', monospace; font-size: 0.62rem;
         letter-spacing: 0.05em; cursor: pointer;
+      }
+      /* En modal: ocultar el gran encabezado y desactivar sticky de botones */
+      #reservar.modal-open .reservar-header { display: none; }
+      #reservar.modal-open .steps-bar { margin-bottom: 0.8rem; }
+      #reservar.modal-open .paso-nav {
+        position: static;
+        background: none;
+        padding: 0.8rem 0 0;
+        margin-top: 1rem;
       }
       /* En modo normal en móvil: compactar */
       #reservar { padding: 2.5rem 1rem 3rem; }
