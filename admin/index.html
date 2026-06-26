@@ -31,21 +31,53 @@
 
     /* ── DASHBOARD ── */
     #dashboard { display: none; min-height: 100vh; }
-    .adm-header { background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); padding: 0.9rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; gap: 1rem; }
-    .adm-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.08em; flex-shrink: 0; }
+
+    /* Header */
+    .adm-header {
+      background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12);
+      padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50; gap: 0.75rem;
+    }
+    .adm-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.55rem; letter-spacing: 0.08em; flex-shrink: 0; }
     .adm-logo span { color: var(--verde); }
-    .adm-logo em { font-style: normal; font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--gris); letter-spacing: 0.15em; margin-left: 0.5rem; vertical-align: middle; }
-    .header-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-    .btn-nueva { background: var(--verde); border: none; border-radius: 7px; padding: 0.5rem 1.1rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+    .adm-logo em { font-style: normal; font-family: 'Space Mono', monospace; font-size: 0.52rem; color: var(--gris); letter-spacing: 0.15em; margin-left: 0.4rem; vertical-align: middle; }
+    .header-right { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+
+    .btn-nueva {
+      background: var(--verde); border: none; border-radius: 7px;
+      padding: 0.55rem 1rem; color: var(--negro);
+      font-family: 'Space Mono', monospace; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.05em; cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
     .btn-nueva:hover { background: #8fd11e; }
-    .btn-logout { background: none; border: 1px solid rgba(124,181,24,0.25); color: var(--gris); padding: 0.4rem 0.85rem; border-radius: 6px; font-family: 'Space Mono', monospace; font-size: 0.6rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
-    .btn-logout:hover { border-color: var(--verde); color: var(--verde); }
+    .btn-menu {
+      background: none; border: 1px solid rgba(124,181,24,0.25); color: var(--gris);
+      width: 2.2rem; height: 2.2rem; border-radius: 7px; font-size: 1.3rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; line-height: 1; padding-bottom: 2px;
+    }
+    .btn-menu:hover { border-color: var(--verde); color: var(--verde); }
+
+    /* Dropdown menú secundario */
+    .admin-drop {
+      position: sticky; top: 53px; z-index: 49; display: none;
+      background: var(--bg2); border-bottom: 1px solid rgba(124,181,24,0.12);
+      padding: 0.55rem 1rem; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .admin-drop.open { display: flex; }
+    .admin-drop-btn {
+      background: none; border: 1px solid rgba(242,237,215,0.12); border-radius: 6px;
+      padding: 0.45rem 0.9rem; color: var(--gris);
+      font-family: 'Space Mono', monospace; font-size: 0.62rem; cursor: pointer;
+      transition: all 0.18s; white-space: nowrap;
+    }
+    .admin-drop-btn:hover { border-color: rgba(242,237,215,0.35); color: var(--crema); }
 
     /* Stats */
     .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: rgba(124,181,24,0.08); border-bottom: 1px solid rgba(124,181,24,0.08); }
-    .stat-card { background: var(--negro); padding: 1.1rem; text-align: center; }
-    .stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 2.6rem; color: var(--verde); line-height: 1; }
-    .stat-label { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--gris); text-transform: uppercase; margin-top: 0.3rem; }
+    .stat-card { background: var(--negro); padding: 0.9rem 0.5rem; text-align: center; }
+    .stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: var(--verde); line-height: 1; }
+    .stat-label { font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; color: var(--gris); text-transform: uppercase; margin-top: 0.25rem; }
 
     /* Tabs */
     .tabs { display: flex; border-bottom: 1px solid rgba(124,181,24,0.1); background: var(--negro); overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
@@ -71,18 +103,60 @@
     /* Cards */
     #reservasList { padding: 0.5rem 1rem 5rem; }
     .fecha-grupo { margin-bottom: 1.5rem; }
-    .fecha-header { font-family: 'Space Mono', monospace; font-size: 0.75rem; letter-spacing: 0.1em; color: var(--verde); text-transform: uppercase; padding: 0.75rem 0.5rem 0.5rem; border-bottom: 1px solid rgba(124,181,24,0.12); margin-bottom: 0.6rem; }
-    .reserva-card { background: var(--bg2); border: 1px solid rgba(124,181,24,0.1); border-radius: 12px; padding: 1.1rem 1.3rem; margin-bottom: 0.75rem; display: grid; grid-template-columns: auto 1fr auto; gap: 0 1rem; align-items: start; transition: border-color 0.2s; }
-    .reserva-card:hover { border-color: rgba(124,181,24,0.25); }
-    .card-hora { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--crema); letter-spacing: 0.05em; line-height: 1; padding-top: 0.1rem; min-width: 4.2rem; }
-    .card-body { min-width: 0; }
-    .card-servicio { font-family: 'Space Mono', monospace; font-size: 0.72rem; color: var(--verde); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.35rem; }
-    .card-cliente { font-size: 1.25rem; font-weight: 600; color: var(--crema); margin-bottom: 0.2rem; }
-    .card-tel { font-family: 'Space Mono', monospace; font-size: 0.75rem; color: rgba(242,237,215,0.65); }
-    .card-tel a { color: inherit; text-decoration: none; }
-    .card-tel a:hover { color: var(--verde); }
-    .card-notas { font-size: 0.95rem; color: rgba(242,237,215,0.5); margin-top: 0.25rem; font-style: italic; }
-    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; }
+    .fecha-header { font-family: 'Space Mono', monospace; font-size: 0.72rem; letter-spacing: 0.1em; color: var(--verde); text-transform: uppercase; padding: 0.75rem 0.5rem 0.5rem; border-bottom: 1px solid rgba(124,181,24,0.12); margin-bottom: 0.6rem; }
+
+    .reserva-card {
+      background: var(--bg2); border: 1px solid rgba(124,181,24,0.1);
+      border-radius: 12px; padding: 0.9rem 1rem 0.8rem;
+      margin-bottom: 0.75rem; display: flex; flex-direction: column; gap: 0.35rem;
+      transition: border-color 0.2s;
+    }
+    .reserva-card:hover { border-color: rgba(124,181,24,0.22); }
+
+    /* Fila superior: hora + estado */
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    .card-hora { font-family: 'Bebas Neue', sans-serif; font-size: 1.75rem; color: var(--crema); letter-spacing: 0.04em; line-height: 1; }
+
+    /* Nombre cliente */
+    .card-nombre { font-size: 1.15rem; font-weight: 600; color: var(--crema); line-height: 1.2; }
+
+    /* Meta: servicio · duración · teléfono */
+    .card-meta { font-family: 'Space Mono', monospace; font-size: 0.67rem; color: rgba(242,237,215,0.5); letter-spacing: 0.02em; }
+    .card-meta a { color: inherit; text-decoration: none; }
+    .card-meta a:hover { color: var(--verde); }
+
+    .card-notas { font-size: 0.9rem; color: rgba(242,237,215,0.45); font-style: italic; }
+
+    /* Pie de tarjeta: CTA principal + iconos secundarios */
+    .card-footer { display: flex; align-items: center; gap: 0.45rem; margin-top: 0.3rem; }
+    .card-cta {
+      flex: 1; padding: 0.55rem 0.5rem;
+      font-family: 'Space Mono', monospace; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.04em; border-radius: 7px; cursor: pointer;
+      transition: background 0.15s; border: 1.5px solid; background: none;
+      white-space: nowrap;
+    }
+    .card-cta.act-confirmar { border-color: rgba(124,181,24,0.45); color: #9ad420; }
+    .card-cta.act-confirmar:hover { background: rgba(124,181,24,0.18); }
+    .card-cta.act-completar { border-color: rgba(74,143,212,0.45); color: #6eb5f0; }
+    .card-cta.act-completar:hover { background: rgba(74,143,212,0.15); }
+    .card-cta.act-reactivar { border-color: rgba(124,181,24,0.35); color: var(--verde); }
+    .card-cta.act-reactivar:hover { background: rgba(124,181,24,0.1); }
+
+    .card-icons { display: flex; gap: 0.35rem; flex-shrink: 0; }
+    .card-icon-btn {
+      width: 2.1rem; height: 2.1rem; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 7px; border: 1.5px solid; font-size: 0.85rem;
+      cursor: pointer; background: none; text-decoration: none;
+      transition: background 0.15s;
+    }
+    .card-icon-btn.act-cancelar { border-color: rgba(220,80,80,0.4); color: #e06060; }
+    .card-icon-btn.act-cancelar:hover { background: rgba(220,80,80,0.12); }
+    .card-icon-btn.act-wa { border-color: rgba(37,211,102,0.4); color: #25D366; }
+    .card-icon-btn.act-wa:hover { background: rgba(37,211,102,0.1); }
+    .card-icon-btn.act-editar { border-color: rgba(200,136,42,0.4); color: #f5a623; }
+    .card-icon-btn.act-editar:hover { background: rgba(200,136,42,0.12); }
 
     /* Estado — grande y con color de fondo sólido */
     .status-badge {
@@ -189,11 +263,9 @@
     .agenda-chip.completada { background: rgba(74,143,212,0.15); border-color: rgba(74,143,212,0.35); color: #6eb5f0; }
 
     @media (max-width: 500px) {
-      .reserva-card { grid-template-columns: auto 1fr; }
-      .card-right { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; grid-column: 1/-1; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid rgba(124,181,24,0.08); }
-      .card-actions { flex-direction: row; flex-wrap: wrap; }
       .campos-2col { grid-template-columns: 1fr; }
       .modal { border-radius: 14px 14px 0 0; }
+      #reservasList { padding: 0.5rem 0.75rem 5rem; }
     }
 
     /* ═══════════════════════════════════════
@@ -375,11 +447,14 @@
   <header class="adm-header">
     <div class="adm-logo">WTJ<span>.</span><em>ADMIN</em></div>
     <div class="header-right">
-      <button class="btn-nueva" onclick="abrirModal()">+ Nueva reserva</button>
-      <button class="btn-nueva" style="background:var(--oro);color:var(--negro);" onclick="abrirBloqueos()">✕ Días bloqueados</button>
-      <button class="btn-logout" onclick="logout()">Salir</button>
+      <button class="btn-nueva" onclick="abrirModal()">+ Nueva</button>
+      <button class="btn-menu" id="btnMenu" onclick="toggleAdminMenu()" aria-label="Más opciones">⋮</button>
     </div>
   </header>
+  <div class="admin-drop" id="adminDrop">
+    <button class="admin-drop-btn" onclick="abrirBloqueos();toggleAdminMenu()">✕ Días bloqueados</button>
+    <button class="admin-drop-btn" onclick="logout()">→ Cerrar sesión</button>
+  </div>
 
   <div class="stats-row">
     <div class="stat-card"><div class="stat-n" id="statTotal">—</div><div class="stat-label">Hoy</div></div>
@@ -547,6 +622,18 @@
     if (ds === 6) return ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
     return ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
   }
+
+  // ── HEADER MENU ──
+  window.toggleAdminMenu = function() {
+    document.getElementById('adminDrop').classList.toggle('open');
+  };
+  document.addEventListener('click', function(e) {
+    const drop = document.getElementById('adminDrop');
+    const btn  = document.getElementById('btnMenu');
+    if (drop && btn && !drop.contains(e.target) && !btn.contains(e.target)) {
+      drop.classList.remove('open');
+    }
+  });
 
   // ── AUTH ──
   window.login = async function() {
@@ -1005,44 +1092,56 @@
     const card = document.createElement('div');
     card.className = 'reserva-card';
     card.id = 'card-' + r.id;
-    const hora = r.hora ? r.hora.slice(0,5) : '—';
-    const servicio = r.servicios ? r.servicios.nombre : '—';
-    const duracion = r.servicios ? ' · ' + r.servicios.duracion_minutos + 'min' : '';
-    const clienteNombre = r.clientes ? (r.clientes.nombre || 'Sin nombre') : 'Sin nombre';
-    const clienteTel = r.clientes ? r.clientes.telefono : '';
-    const badgeClass = 'badge-' + r.estado;
 
-    let acciones = '<button class="act-btn act-editar" onclick="abrirModal(\'' + r.id + '\')">Editar</button>';
+    const hora          = r.hora ? r.hora.slice(0,5) : '—';
+    const servicio      = r.servicios ? r.servicios.nombre : '—';
+    const duracion      = r.servicios ? r.servicios.duracion_minutos + 'min' : '';
+    const clienteNombre = r.clientes ? (r.clientes.nombre || 'Sin nombre') : 'Sin nombre';
+    const clienteTel    = r.clientes ? (r.clientes.telefono || '') : '';
+    const badgeClass    = 'badge-' + r.estado;
+
+    // Línea meta: servicio · duración · teléfono (clicable)
+    const telHtml = clienteTel
+      ? '<a href="tel:' + clienteTel.replace(/\s/g,'') + '">' + clienteTel + '</a>'
+      : '';
+    const metaParts = [servicio, duracion, telHtml].filter(Boolean);
+    const metaHtml  = metaParts.join(' · ');
+
+    // Botón CTA principal
+    let cta = '';
     if (r.estado === 'pendiente') {
-      acciones += '<button class="act-btn act-confirmar" onclick="cambiarEstado(\'' + r.id + '\',\'confirmada\')">Confirmar</button>';
-      acciones += '<button class="act-btn act-cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">Cancelar</button>';
+      cta = '<button class="card-cta act-confirmar" onclick="cambiarEstado(\'' + r.id + '\',\'confirmada\')">✓ Confirmar</button>';
     } else if (r.estado === 'confirmada') {
-      acciones += '<button class="act-btn act-completar" onclick="cambiarEstado(\'' + r.id + '\',\'completada\')">Completada</button>';
-      acciones += '<button class="act-btn act-cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">Cancelar</button>';
+      cta = '<button class="card-cta act-completar" onclick="cambiarEstado(\'' + r.id + '\',\'completada\')">✓ Completar</button>';
     } else if (r.estado === 'cancelada') {
-      acciones += '<button class="act-btn act-reactivar" onclick="cambiarEstado(\'' + r.id + '\',\'pendiente\')">Reactivar</button>';
+      cta = '<button class="card-cta act-reactivar" onclick="cambiarEstado(\'' + r.id + '\',\'pendiente\')">↺ Reactivar</button>';
+    } else {
+      cta = '<div style="flex:1"></div>';
+    }
+
+    // Iconos secundarios
+    let icons = '';
+    if (r.estado === 'pendiente' || r.estado === 'confirmada') {
+      icons += '<button class="card-icon-btn act-cancelar" title="Cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">✕</button>';
     }
     if ((r.estado === 'pendiente' || r.estado === 'confirmada') && clienteTel) {
       const waNum = (function(t){ const d=t.replace(/\D/g,''); return d.startsWith('34')?d:'34'+d; })(clienteTel);
-      const fd = new Date(r.fecha + 'T00:00:00');
-      const fl = fd.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
-      const flCap = fl.charAt(0).toUpperCase() + fl.slice(1);
-      const waMsg = encodeURIComponent('Hola ' + clienteNombre + '! Te recordamos tu cita en WTJ Barber Shop:\n✂ ' + servicio + '\n📅 ' + flCap + '\n🕐 ' + hora + '\n\n¡Te esperamos!');
-      acciones += '<a class="act-btn act-wa" href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener">📲 Recordar</a>';
+      const fd    = new Date(r.fecha + 'T00:00:00');
+      const fl    = fd.toLocaleDateString('es', { weekday:'long', day:'numeric', month:'long' });
+      const waMsg = encodeURIComponent('Hola ' + clienteNombre + '! Te recordamos tu cita en WTJ Barber Shop:\n✂ ' + servicio + '\n📅 ' + fl.charAt(0).toUpperCase() + fl.slice(1) + '\n🕐 ' + hora + '\n\n¡Te esperamos!');
+      icons += '<a class="card-icon-btn act-wa" href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener" title="Recordar por WA">📲</a>';
     }
+    icons += '<button class="card-icon-btn act-editar" title="Editar" onclick="abrirModal(\'' + r.id + '\')">✏</button>';
 
     card.innerHTML =
-      '<div class="card-hora">' + hora + '</div>' +
-      '<div class="card-body">' +
-        '<div class="card-servicio">' + servicio + duracion + '</div>' +
-        '<div class="card-cliente">' + clienteNombre + '</div>' +
-        (clienteTel ? '<div class="card-tel"><a href="tel:' + clienteTel.replace(/\s/g,'') + '">' + clienteTel + '</a></div>' : '') +
-        (r.notas ? '<div class="card-notas">' + r.notas + '</div>' : '') +
-      '</div>' +
-      '<div class="card-right">' +
+      '<div class="card-top">' +
+        '<span class="card-hora">' + hora + '</span>' +
         '<span class="status-badge ' + badgeClass + '">' + r.estado + '</span>' +
-        '<div class="card-actions">' + acciones + '</div>' +
-      '</div>';
+      '</div>' +
+      '<div class="card-nombre">' + clienteNombre + '</div>' +
+      '<div class="card-meta">' + metaHtml + '</div>' +
+      (r.notas ? '<div class="card-notas">' + r.notas + '</div>' : '') +
+      '<div class="card-footer">' + cta + '<div class="card-icons">' + icons + '</div></div>';
     return card;
   }
 
