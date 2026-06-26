@@ -2047,6 +2047,7 @@
       <!-- PASO 4: Datos cliente -->
       <div class="paso" id="paso4">
         <div class="paso-titulo">// Tus datos</div>
+        <div id="paso4Resumen" style="background:rgba(124,181,24,0.06);border:1px solid rgba(124,181,24,0.18);border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.2rem;font-family:'Space Mono',monospace;font-size:0.68rem;line-height:2;color:rgba(242,237,215,0.75);letter-spacing:0.03em;"></div>
         <div class="campo-grupo">
           <label class="campo-label" for="r-nombre">Nombre</label>
           <input class="campo-input" id="r-nombre" type="text" placeholder="Tu nombre" autocomplete="given-name" />
@@ -2054,6 +2055,12 @@
         <div class="campo-grupo">
           <label class="campo-label" for="r-telefono">Teléfono</label>
           <input class="campo-input" id="r-telefono" type="tel" placeholder="+34 600 000 000" autocomplete="tel" />
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.65rem;margin:0.8rem 0 0.2rem;">
+          <input type="checkbox" id="r-gdpr" style="width:1.1rem;height:1.1rem;min-width:1.1rem;accent-color:var(--verde-neon);cursor:pointer;margin-top:0.2rem;" />
+          <label for="r-gdpr" style="font-family:'Crimson Pro',serif;font-size:0.95rem;color:rgba(242,237,215,0.6);line-height:1.4;cursor:pointer;">
+            He leído y acepto la <a href="privacidad.html" target="_blank" rel="noopener" style="color:var(--verde-neon);text-decoration:underline;">política de privacidad</a>
+          </label>
         </div>
         <div id="r-error" class="r-error" style="display:none;"></div>
         <div class="paso-nav">
@@ -2511,6 +2518,14 @@
       actualizarSteps();
       if (n === 2) { cargarDiasBloqueados().then(() => renderCalendario()); }
       if (n === 3) cargarHoras();
+      if (n === 4 && est.servicio && est.fecha && est.hora) {
+        const fd = new Date(est.fecha + 'T00:00:00');
+        const fl = fd.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+        document.getElementById('paso4Resumen').innerHTML =
+          '<div>✂&nbsp; ' + est.servicio.nombre + '</div>' +
+          '<div>📅&nbsp; ' + fl.charAt(0).toUpperCase() + fl.slice(1) + '</div>' +
+          '<div>🕐&nbsp; ' + est.hora + '</div>';
+      }
       window.scrollTo({ top: document.getElementById('reservar').offsetTop - 80, behavior: 'smooth' });
     };
 
@@ -2705,6 +2720,7 @@
       errDiv.style.display = 'none';
       if (!nombre || !telefono) { errDiv.textContent = 'Por favor rellena nombre y teléfono.'; errDiv.style.display = 'block'; return; }
       if (telefono.replace(/\D/g,'').length < 9) { errDiv.textContent = 'Teléfono no válido.'; errDiv.style.display = 'block'; return; }
+      if (!document.getElementById('r-gdpr').checked) { errDiv.textContent = 'Debes aceptar la política de privacidad para continuar.'; errDiv.style.display = 'block'; return; }
       est.nombre = nombre;
       est.telefono = telefono;
       const btn4 = document.getElementById('btn4');

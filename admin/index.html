@@ -106,6 +106,8 @@
     .act-editar:hover { background: rgba(200,136,42,0.12); }
     .act-reactivar  { border-color: rgba(124,181,24,0.4); color: var(--verde); }
     .act-reactivar:hover { background: rgba(124,181,24,0.1); }
+    .act-wa         { border-color: rgba(37,211,102,0.5); color: #25D366; text-decoration: none; display: inline-block; }
+    .act-wa:hover   { background: rgba(37,211,102,0.1); }
 
     /* Empty / loading */
     .empty-msg { text-align: center; padding: 3rem 1rem; font-family: 'Space Mono', monospace; font-size: 0.7rem; color: var(--gris); }
@@ -849,6 +851,14 @@
       acciones += '<button class="act-btn act-cancelar" onclick="cambiarEstado(\'' + r.id + '\',\'cancelada\')">Cancelar</button>';
     } else if (r.estado === 'cancelada') {
       acciones += '<button class="act-btn act-reactivar" onclick="cambiarEstado(\'' + r.id + '\',\'pendiente\')">Reactivar</button>';
+    }
+    if ((r.estado === 'pendiente' || r.estado === 'confirmada') && clienteTel) {
+      const waNum = (function(t){ const d=t.replace(/\D/g,''); return d.startsWith('34')?d:'34'+d; })(clienteTel);
+      const fd = new Date(r.fecha + 'T00:00:00');
+      const fl = fd.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+      const flCap = fl.charAt(0).toUpperCase() + fl.slice(1);
+      const waMsg = encodeURIComponent('Hola ' + clienteNombre + '! Te recordamos tu cita en WTJ Barber Shop:\n✂ ' + servicio + '\n📅 ' + flCap + '\n🕐 ' + hora + '\n\n¡Te esperamos!');
+      acciones += '<a class="act-btn act-wa" href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener">📲 Recordar</a>';
     }
 
     card.innerHTML =
