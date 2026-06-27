@@ -1403,17 +1403,27 @@
   let libretaLunes = null;
   let libretaDiaActivo = null;
 
+  // Convierte un Date a YYYY-MM-DD usando hora LOCAL (no UTC)
+  function isoLocal(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const dia = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${dia}`;
+  }
+
   function iniciarLibreta() {
     if (!libretaLunes) libretaLunes = lunesToSemana(new Date());
     if (!libretaDiaActivo) {
       const h = new Date();
       const dow = h.getDay();
       if (dow >= 2 && dow <= 6) {
-        libretaDiaActivo = h.toISOString().slice(0,10);
+        // Hoy es día laborable de la barbería (mar-sáb)
+        libretaDiaActivo = isoLocal(h);
       } else {
+        // Domingo (0) → próximo martes (+2); Lunes (1) → próximo martes (+1)
         const t = new Date(h);
         t.setDate(t.getDate() + (dow === 0 ? 2 : 1));
-        libretaDiaActivo = t.toISOString().slice(0,10);
+        libretaDiaActivo = isoLocal(t);
       }
     }
     renderLibreta();
@@ -1423,7 +1433,7 @@
     const wrap = document.getElementById('libretaWrap');
     wrap.innerHTML = '<div class="lib-nav"><div class="lib-nav-rango" style="margin:auto;"><div class="spinner"></div></div></div>';
 
-    // Build Tue–Sat of the current libreta week
+    // Build Mar–Sáb de la semana actual de libreta
     const diasSemana = [];
     for (let i = 1; i <= 5; i++) {
       const d = new Date(libretaLunes);
@@ -1431,8 +1441,8 @@
       diasSemana.push(d);
     }
 
-    const desde = diasSemana[0].toISOString().slice(0,10);
-    const hasta  = diasSemana[4].toISOString().slice(0,10);
+    const desde = isoLocal(diasSemana[0]);
+    const hasta  = isoLocal(diasSemana[4]);
 
     // Fetch all reservas for the week (including cancelled so admin sees full picture)
     const { data: reservas } = await db.from('reservas')
@@ -1446,23 +1456,23 @@
       byFecha[r.fecha].push(r);
     });
 
-    const hoyStr = new Date().toISOString().slice(0,10);
+    const hoyStr = isoLocal(new Date());
 
-    // Default active day to first day of new week if out of range
-    if (!diasSemana.some(d => d.toISOString().slice(0,10) === libretaDiaActivo)) {
-      const inWeek = diasSemana.find(d => d.toISOString().slice(0,10) === hoyStr);
-      libretaDiaActivo = inWeek ? hoyStr : diasSemana[0].toISOString().slice(0,10);
+    // Si el día activo no está en la semana mostrada, seleccionar hoy o el primer día
+    if (!diasSemana.some(d => isoLocal(d) === libretaDiaActivo)) {
+      const inWeek = diasSemana.find(d => isoLocal(d) === hoyStr);
+      libretaDiaActivo = inWeek ? hoyStr : isoLocal(diasSemana[0]);
     }
 
-    // Week nav label
+    // Rango de semana en la cabecera
     const fmt = d => d.toLocaleDateString('es', { day:'numeric', month:'short' });
     const rangoLabel = fmt(diasSemana[0]) + ' – ' + fmt(diasSemana[4]) + ' · ' +
       diasSemana[0].toLocaleDateString('es', { year:'numeric' });
 
-    // Day selector tabs (Tue–Sat)
+    // Pestañas de día (Mar–Sáb)
     const DIA_LABEL = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
     const tabsHtml = diasSemana.map(d => {
-      const iso = d.toISOString().slice(0,10);
+      const iso = isoLocal(d);
       const activo = iso === libretaDiaActivo ? ' active' : '';
       const esHoy  = iso === hoyStr ? ' hoy-tab' : '';
       const cnt    = (byFecha[iso] || []).filter(r => r.estado !== 'cancelada').length;
@@ -1584,7 +1594,7 @@
       }, { passive: true });
     }
 
-    const diasIso = diasSemana.map(d => d.toISOString().slice(0, 10));
+    const diasIso = diasSemana.map(d => isoLocal(d));
     const curIdx  = diasIso.indexOf(libretaDiaActivo);
 
     // Swipe en la página de citas → cambiar de día
