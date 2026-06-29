@@ -22,51 +22,56 @@ serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
   );
 
-  const { data: r } = await db
+  const { data: reserva } = await db
     .from("reservas")
-    .select("id,fecha,hora,estado,notas,clientes(nombre,telefono),servicios(nombre,precio)")
+    .select("id,fecha,hora,estado,notas,cliente_id,servicio_id")
     .eq("id", reserva_id)
     .single();
 
-  if (!r) return new Response("not found", { status: 404 });
+  if (!reserva) return new Response("not found", { status: 404 });
 
-  const nombre   = r.clientes?.nombre   || "—";
-  const tel      = r.clientes?.telefono || "—";
-  const servicio = r.servicios?.nombre  || "—";
-  const precio   = r.servicios?.precio  ? ` · ${r.servicios.precio}€` : "";
-  const fecha    = new Date(r.fecha + "T12:00:00").toLocaleDateString("es", {
+  const [{ data: cliente }, { data: servicio }] = await Promise.all([
+    db.from("clientes").select("nombre,telefono").eq("id", reserva.cliente_id).single(),
+    db.from("servicios").select("nombre,precio").eq("id", reserva.servicio_id).single(),
+  ]);
+
+  const nombre    = cliente?.nombre   || "—";
+  const tel       = cliente?.telefono || "—";
+  const svcNombre = servicio?.nombre  || "—";
+  const precio    = servicio?.precio  ? ` · ${servicio.precio}€` : "";
+  const fecha     = new Date(reserva.fecha + "T12:00:00").toLocaleDateString("es", {
     weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Madrid",
   });
-  const hora = r.hora?.slice(0, 5) || "—";
+  const hora = reserva.hora?.slice(0, 5) || "—";
 
   const mensajes: Record<string, string> = {
     nueva:
       `✂️ <b>NUEVA RESERVA</b>\n\n` +
       `👤 ${nombre}\n` +
       `📱 ${tel}\n` +
-      `💈 ${servicio}${precio}\n` +
+      `💈 ${svcNombre}${precio}\n` +
       `📅 ${fecha.charAt(0).toUpperCase() + fecha.slice(1)}\n` +
       `🕐 ${hora}` +
-      (r.notas ? `\n📝 ${r.notas}` : ""),
+      (reserva.notas ? `\n📝 ${reserva.notas}` : ""),
 
     cancelada:
       `❌ <b>RESERVA CANCELADA</b>\n\n` +
       `👤 ${nombre}\n` +
-      `💈 ${servicio}\n` +
+      `💈 ${svcNombre}\n` +
       `📅 ${fecha.charAt(0).toUpperCase() + fecha.slice(1)}\n` +
       `🕐 ${hora}`,
 
     confirmada:
       `✅ <b>CITA CONFIRMADA</b>\n\n` +
       `👤 ${nombre}\n` +
-      `💈 ${servicio}\n` +
+      `💈 ${svcNombre}\n` +
       `📅 ${fecha.charAt(0).toUpperCase() + fecha.slice(1)}\n` +
       `🕐 ${hora}`,
 
     completada:
       `🎉 <b>CITA COMPLETADA</b>\n\n` +
       `👤 ${nombre}\n` +
-      `💈 ${servicio}${precio}`,
+      `💈 ${svcNombre}${precio}`,
   };
 
   const texto = mensajes[tipo];
