@@ -612,7 +612,7 @@
   let serviciosData = [];
   let editandoId = null;
 
-  function hoy() { return new Date().toISOString().slice(0, 10); }
+  function hoy() { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); }
 
   // ── Slots por día ──
   function slotsDelDia(iso) {
@@ -785,10 +785,10 @@
     for (let i = 1; i <= 5; i++) {
       const d = new Date(agendaLunes);
       d.setDate(agendaLunes.getDate() + i);
-      fechas.push(d.toISOString().slice(0,10));
+      fechas.push(isoLocal(d));
     }
     const sabado = new Date(agendaLunes); sabado.setDate(agendaLunes.getDate() + 6);
-    fechas.push(sabado.toISOString().slice(0,10));
+    fechas.push(isoLocal(sabado));
     const todosSlots = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
     const fechaInicio = fechas[0]; const fechaFin = fechas[fechas.length-1];
     const lunes  = new Date(agendaLunes); lunes.setDate(agendaLunes.getDate() + 1);
@@ -826,7 +826,7 @@
     for (let i = 1; i <= 5; i++) {
       const d = new Date(agendaLunes);
       d.setDate(agendaLunes.getDate() + i);
-      fechasOk.push({ iso: d.toISOString().slice(0,10), d });
+      fechasOk.push({ iso: isoLocal(d), d });
     }
     const dNombres = ['MAR','MIÉ','JUE','VIE','SÁB'];
     // Slot filter per column (Sáb only morning)
@@ -877,7 +877,7 @@
     for (let i = 0; i < 6; i++) {
       const d = new Date(lunes);
       d.setDate(lunes.getDate() + i);
-      const iso = d.toISOString().slice(0,10);
+      const iso = isoLocal(d);
       const btn = document.createElement('button');
       btn.className = 'day-tab' + (iso === diaSeleccionado ? ' active' : '');
       btn.innerHTML = '<span class="dt-dia">' + dias[i] + '</span>' + d.getDate();
