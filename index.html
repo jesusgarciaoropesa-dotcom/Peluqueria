@@ -1056,20 +1056,12 @@
         radial-gradient(ellipse at 90% 10%, rgba(124,181,24,0.08) 0%, transparent 50%),
         var(--bg-alt) !important;
     }
-    .servicios-grid { counter-reset: serv-counter; }
     .servicio-card {
-      counter-increment: serv-counter;
       border-top: 2px solid rgba(124,181,24,0.1) !important;
       transition: background 0.3s, border-top-color 0.3s, transform 0.3s, box-shadow 0.3s !important;
     }
     .servicio-card > * { position: relative; z-index: 1; }
-    .servicio-card::before {
-      content: counter(serv-counter, decimal-leading-zero);
-      position: absolute; bottom: 1rem; right: 1.2rem;
-      font-family: 'Bebas Neue', sans-serif; font-size: 4rem; line-height: 1;
-      color: rgba(124,181,24,0.1); pointer-events: none; letter-spacing: 0.05em;
-      z-index: 0;
-    }
+    .servicio-card::before { content: none; }
     .servicio-card::after {
       top: -2px !important; bottom: auto !important;
       height: 3px !important;
