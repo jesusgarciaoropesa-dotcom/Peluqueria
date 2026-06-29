@@ -39,10 +39,12 @@ serve(async (req) => {
   const tel       = cliente?.telefono     || "—";
   const svcNombre = servicio?.nombre      || "—";
   const precio    = servicio?.precio_desde ? ` · desde ${servicio.precio_desde}€` : "";
-  const fecha     = new Date(reserva.fecha + "T12:00:00").toLocaleDateString("es", {
+  const fecha    = new Date(reserva.fecha + "T12:00:00").toLocaleDateString("es", {
     weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Madrid",
   });
   const hora = reserva.hora?.slice(0, 5) || "—";
+
+  const shortId = reserva_id?.split("-")[0] || "";
 
   const mensajes: Record<string, string> = {
     nueva:
@@ -52,7 +54,8 @@ serve(async (req) => {
       `💈 ${svcNombre}${precio}\n` +
       `📅 ${fecha.charAt(0).toUpperCase() + fecha.slice(1)}\n` +
       `🕐 ${hora}` +
-      (reserva.notas ? `\n📝 ${reserva.notas}` : ""),
+      (reserva.notas ? `\n📝 ${reserva.notas}` : "") +
+      `\n\n/confirmar ${shortId}  ·  /cancelar ${shortId}`,
 
     cancelada:
       `❌ <b>RESERVA CANCELADA</b>\n\n` +
