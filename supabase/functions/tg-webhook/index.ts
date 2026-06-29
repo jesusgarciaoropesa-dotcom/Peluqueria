@@ -12,6 +12,22 @@ async function tg(chatId: string | number, text: string) {
   });
 }
 
+async function answerCallback(callbackQueryId: string, text: string) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ callback_query_id: callbackQueryId, text }),
+  });
+}
+
+async function editMessage(chatId: string | number, messageId: number, text: string) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, message_id: messageId, text, parse_mode: "HTML" }),
+  });
+}
+
 function isoMadrid(offsetDias = 0): string {
   const d = new Date();
   d.setDate(d.getDate() + offsetDias);
@@ -69,6 +85,47 @@ async function reservasDelDia(db: ReturnType<typeof createClient>, fecha: string
 serve(async (req) => {
   const body = await req.json().catch(() => null);
   if (!body) return new Response("OK");
+
+  // ── Botones inline (callback_query) ─────────────────────
+  if (body.callback_query) {
+    const cbq    = body.callback_query;
+    const chatId = String(cbq.message?.chat?.id);
+    if (chatId !== CHAT_ID) return new Response("OK");
+
+    const [accion, reservaId] = (cbq.data || "").split(":");
+    const db = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    if (accion === "confirmar" || accion === "cancelar") {
+      const nuevoEstado = accion === "confirmar" ? "confirmada" : "cancelada";
+      const { data: r } = await db.from("reservas")
+        .select("id,estado,cliente_id,fecha,hora")
+        .eq("id", reservaId).single();
+
+      if (!r) {
+        await answerCallback(cbq.id, "❌ Reserva no encontrada");
+      } else if (r.estado === nuevoEstado) {
+        await answerCallback(cbq.id, `Ya estaba ${nuevoEstado}`);
+      } else {
+        await db.from("reservas").update({ estado: nuevoEstado }).eq("id", reservaId);
+        const { data: c } = await db.from("clientes").select("nombre").eq("id", r.cliente_id).single();
+        const ico = nuevoEstado === "confirmada" ? "✅" : "❌";
+        await answerCallback(cbq.id, `${ico} ${nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1)}`);
+        // Actualizar el mensaje original quitando los botones
+        const textoOriginal = cbq.message?.text || "";
+        const cabecera = nuevoEstado === "confirmada"
+          ? `✅ <b>CONFIRMADA</b> — ${c?.nombre || "—"}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`
+          : `❌ <b>CANCELADA</b> — ${c?.nombre || "—"}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`;
+        await editMessage(chatId, cbq.message.message_id,
+          textoOriginal.split("\n\n")[0] + "\n\n" + cabecera
+        );
+      }
+    }
+
+    return new Response("OK");
+  }
 
   const msg = body.message || body.edited_message;
   if (!msg?.text) return new Response("OK");
