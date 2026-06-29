@@ -2701,8 +2701,8 @@
       dias.forEach(d => { const h = document.createElement('div'); h.className = 'cal-dh'; h.textContent = d; grid.appendChild(h); });
 
       // Obtener reservas ocupadas del mes
-      const primerStr = new Date(anio, mes, 1).toISOString().slice(0,10);
-      const ultimoStr = new Date(anio, mes+1, 0).toISOString().slice(0,10);
+      const primerStr = `${anio}-${String(mes+1).padStart(2,'0')}-01`;
+      const ultimoStr = `${anio}-${String(mes+1).padStart(2,'0')}-${String(new Date(anio, mes+1, 0).getDate()).padStart(2,'0')}`;
       const { data: ocupMes } = await db.from('reservas')
         .select('fecha')
         .gte('fecha', primerStr)
@@ -2721,7 +2721,7 @@
       for (let d = 1; d <= totalDias; d++) {
         const fecha = new Date(anio, mes, d);
         const diaSem = fecha.getDay();
-        const fechaStr = fecha.toISOString().slice(0,10);
+        const fechaStr = `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`;
         const celda = document.createElement('div');
         celda.className = 'cal-d';
         const esPasado = fecha < hoy;
@@ -2962,7 +2962,7 @@
         btn.disabled = false; btn.textContent = 'Buscar mis reservas'; return;
       }
 
-      const hoyStr = new Date().toISOString().slice(0,10);
+      const hoyStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
       const { data: reservas } = await db2.from('reservas')
         .select('id, fecha, hora, estado, servicios(nombre)')
         .eq('cliente_id', cli.id)
