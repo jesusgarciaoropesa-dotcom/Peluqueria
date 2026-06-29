@@ -1154,6 +1154,13 @@
     cargarEstadisticas();
     const labels = { confirmada: '✓ Confirmada', cancelada: '✗ Cancelada', completada: '✓ Completada', pendiente: '↺ Reactivada' };
     mostrarToast(labels[nuevoEstado] || nuevoEstado);
+    if (['confirmada','cancelada','completada'].includes(nuevoEstado)) {
+      fetch('https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-notificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipo: nuevoEstado, reserva_id: id })
+      }).catch(() => {});
+    }
   };
 
   // ── MODAL ──
