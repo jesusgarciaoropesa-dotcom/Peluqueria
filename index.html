@@ -2897,13 +2897,21 @@
     // ── Reiniciar ──
     window.reiniciarReserva = function() {
       est = { paso: 1, servicio: null, fecha: null, hora: null, nombre: '', telefono: '' };
+      calFecha = new Date(); calFecha.setDate(1);
       document.getElementById('r-nombre').value = '';
       document.getElementById('r-telefono').value = '';
+      document.getElementById('r-gdpr').checked = false;
+      document.getElementById('r-error').style.display = 'none';
       document.getElementById('btn1').disabled = true;
       document.getElementById('btn2').disabled = true;
       document.getElementById('btn3').disabled = true;
+      const btn4 = document.getElementById('btn4');
+      btn4.disabled = false;
+      btn4.textContent = 'Confirmar reserva';
       document.getElementById('stepsBar').style.display = 'flex';
       document.querySelectorAll('.servicio-btn').forEach(b => b.classList.remove('sel'));
+      document.getElementById('horasGrid').innerHTML = '';
+      document.getElementById('paso4Resumen').innerHTML = '';
       document.getElementById('paso5').classList.remove('activo');
       document.getElementById('paso1').classList.add('activo');
       actualizarSteps();
