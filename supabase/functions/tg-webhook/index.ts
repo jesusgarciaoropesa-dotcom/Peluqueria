@@ -4,11 +4,11 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const CHAT_ID   = Deno.env.get("TELEGRAM_CHAT_ID")!;
 
-async function tg(chatId: string | number, text: string) {
+async function tg(chatId: string | number, text: string, reply_markup?: object) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", reply_markup }),
   });
 }
 
@@ -253,15 +253,26 @@ serve(async (req) => {
         await tg(chatId, `✅ No hay reservas pendientes de confirmar.`);
       } else {
         const ids = [...new Set(pendientes.map((r: any) => r.cliente_id))];
-        const { data: clientes } = await db.from("clientes").select("id,nombre").in("id", ids);
-        const cMap: Record<string, string> = {};
-        (clientes || []).forEach((c: any) => { cMap[c.id] = c.nombre; });
-        const lineas = pendientes.map((r: any) => {
-          const sid = r.id.split("-")[0];
-          const d = new Date(r.fecha + "T12:00:00").toLocaleDateString("es", { weekday: "short", day: "numeric", month: "short" });
-          return `⏳ <b>${r.hora?.slice(0,5)}</b> ${d} — ${cMap[r.cliente_id] || "—"}\n/confirmar ${sid}`;
-        }).join("\n\n");
-        await tg(chatId, `⏳ <b>PENDIENTES DE CONFIRMAR</b>\n\n${lineas}`);
+        const { data: clientes } = await db.from("clientes").select("id,nombre,telefono").in("id", ids);
+        const cMap: Record<string, any> = {};
+        (clientes || []).forEach((c: any) => { cMap[c.id] = c; });
+        // Enviar un mensaje por reserva, cada uno con sus botones
+        for (const r of pendientes) {
+          const c = cMap[r.cliente_id];
+          const d = new Date(r.fecha + "T12:00:00").toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" });
+          const texto =
+            `⏳ <b>PENDIENTE</b>\n\n` +
+            `👤 ${c?.nombre || "—"}\n` +
+            `📱 ${c?.telefono || "—"}\n` +
+            `📅 ${d.charAt(0).toUpperCase() + d.slice(1)}\n` +
+            `🕐 ${r.hora?.slice(0,5)}`;
+          await tg(chatId, texto, {
+            inline_keyboard: [[
+              { text: "✅ Confirmar", callback_data: `confirmar:${r.id}` },
+              { text: "❌ Cancelar",  callback_data: `cancelar:${r.id}` },
+            ]],
+          });
+        }
       }
     } else {
       const sid = parts[1];
