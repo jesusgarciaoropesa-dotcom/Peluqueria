@@ -2349,7 +2349,7 @@
           celda.classList.add('disabled');
         } else {
           if (fecha.toDateString() === hoy.toDateString()) celda.classList.add('hoy');
-          const fechaStr = fecha.toISOString().slice(0,10);
+          const fechaStr = `${fecha.getFullYear()}-${String(fecha.getMonth()+1).padStart(2,'0')}-${String(fecha.getDate()).padStart(2,'0')}`;
           if (est.fecha === fechaStr) celda.classList.add('sel');
           celda.addEventListener('click', () => {
             document.querySelectorAll('.cal-d').forEach(c => c.classList.remove('sel'));
