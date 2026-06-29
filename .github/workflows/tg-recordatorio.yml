@@ -1,0 +1,16 @@
+name: Recordatorio diario Telegram
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-6'  # 9:00 hora España (UTC+2 verano), lunes a sábado
+  workflow_dispatch:
+
+jobs:
+  recordatorio:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar tg-recordatorio
+        run: |
+          curl -s -X POST \
+            https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-recordatorio \
+            -H 'Content-Type: application/json'

@@ -2845,19 +2845,25 @@
         clienteId = cliNew.id;
       }
       // Insert reserva
-      const { error: resErr } = await db.from('reservas').insert({
+      const { data: resData, error: resErr } = await db.from('reservas').insert({
         cliente_id: clienteId,
         servicio_id: est.servicio.id,
         fecha: est.fecha,
         hora: est.hora + ':00',
         estado: 'pendiente'
-      });
+      }).select('id').single();
       if (resErr) {
         errDiv.textContent = 'Error al crear la reserva: ' + resErr.message;
         errDiv.style.display = 'block';
         btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
         return;
       }
+      // Notificar al barbero por Telegram
+      fetch('https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-notificar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tipo: 'nueva', reserva_id: resData.id })
+      }).catch(() => {});
       // Mostrar éxito
       const fechaObj = new Date(est.fecha + 'T00:00:00');
       const fechaLegible = fechaObj.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
