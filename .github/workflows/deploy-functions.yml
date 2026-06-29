@@ -29,3 +29,7 @@ jobs:
             TELEGRAM_BOT_TOKEN=8853285305:AAE6onn831-5alfxfSL_CwswsuWn_F5UIrY \
             TELEGRAM_CHAT_ID=1076789678 \
             --project-ref gimoqpusrdltlkrwsykr
+
+      - name: Register Telegram webhook
+        run: |
+          curl -s "https://api.telegram.org/bot8853285305:AAE6onn831-5alfxfSL_CwswsuWn_F5UIrY/setWebhook?url=https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-webhook"
