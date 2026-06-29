@@ -32,13 +32,13 @@ serve(async (req) => {
 
   const [{ data: cliente }, { data: servicio }] = await Promise.all([
     db.from("clientes").select("nombre,telefono").eq("id", reserva.cliente_id).single(),
-    db.from("servicios").select("nombre,precio").eq("id", reserva.servicio_id).single(),
+    db.from("servicios").select("nombre,precio_desde").eq("id", reserva.servicio_id).single(),
   ]);
 
-  const nombre   = cliente?.nombre   || "—";
-  const tel      = cliente?.telefono || "—";
-  const svcNombre = servicio?.nombre  || "—";
-  const precio   = servicio?.precio  ? ` · ${servicio.precio}€` : "";
+  const nombre    = cliente?.nombre       || "—";
+  const tel       = cliente?.telefono     || "—";
+  const svcNombre = servicio?.nombre      || "—";
+  const precio    = servicio?.precio_desde ? ` · desde ${servicio.precio_desde}€` : "";
   const fecha    = new Date(reserva.fecha + "T12:00:00").toLocaleDateString("es", {
     weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Madrid",
   });

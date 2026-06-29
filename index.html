@@ -2825,9 +2825,9 @@
         .insert({ telefono, nombre }).select('id').single();
       if (cliErr) {
         if (cliErr.code === '23505') {
-          // Teléfono ya registrado — recuperar ID existente
+          // Teléfono ya registrado — actualizar nombre y recuperar ID
           const { data: cliExist, error: cliSelErr } = await db.from('clientes')
-            .select('id').eq('telefono', telefono).single();
+            .update({ nombre }).eq('telefono', telefono).select('id').single();
           if (cliSelErr || !cliExist) {
             errDiv.textContent = 'Error: ' + (cliSelErr ? cliSelErr.message : 'cliente no encontrado');
             errDiv.style.display = 'block';
