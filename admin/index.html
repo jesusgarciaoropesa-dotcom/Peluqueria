@@ -194,6 +194,7 @@
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal { background: var(--bg2); border: 1px solid rgba(124,181,24,0.2); border-radius: 16px 16px 0 0; width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; padding: 1.5rem 1.5rem 2rem; transform: translateY(40px); transition: transform 0.28s; }
+    .confirm-modal { max-width: 380px; }
     .modal-overlay.open .modal { transform: translateY(0); }
     .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
     .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.06em; color: var(--crema); }
@@ -257,6 +258,8 @@
     .agenda-row:last-child { border-bottom: none; }
     .agenda-time { padding: 0.4rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: right; padding-right: 0.6rem; display: flex; align-items: center; justify-content: flex-end; background: var(--negro); }
     .agenda-cell { border-left: 1px solid rgba(124,181,24,0.06); min-height: 2.4rem; padding: 0.25rem; position: relative; }
+    .agenda-cell-libre { cursor: pointer; transition: background 0.15s; }
+    .agenda-cell-libre:hover, .agenda-cell-libre:active { background: rgba(124,181,24,0.1); }
     .agenda-cell.hoy-col { background: rgba(124,181,24,0.04); }
     .agenda-chip {
       background: rgba(124,181,24,0.15); border: 1px solid rgba(124,181,24,0.3);
@@ -620,6 +623,18 @@
   </div>
 </div>
 
+<!-- MODAL CONFIRMACIÓN GENÉRICA -->
+<div class="modal-overlay" id="confirmOverlay">
+  <div class="modal confirm-modal" id="confirmModal">
+    <div class="modal-titulo" id="confirmTitulo" style="margin-bottom:0.8rem;">¿Confirmar?</div>
+    <p id="confirmMensaje" style="font-size:1rem;color:var(--crema);line-height:1.5;margin-bottom:1.6rem;"></p>
+    <div class="modal-footer" style="margin-top:0;">
+      <button class="btn-cancelar-modal" id="confirmBtnNo">Cancelar</button>
+      <button class="btn-guardar" id="confirmBtnSi">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function() {
   const SUPA_URL = 'https://gimoqpusrdltlkrwsykr.supabase.co';
@@ -852,13 +867,16 @@
       fechasOk.forEach((f) => {
         const esHoy = f.iso === hoyStr;
         const available = slotsPorColumna(f).includes(slot);
-        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + '">';
+        const key = f.iso + '_' + slot;
+        const ocupada = available && mapaReservas[key] && mapaReservas[key].length > 0;
+        const cellClickable = available && !ocupada;
+        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + (cellClickable ? ' agenda-cell-libre' : '') + '"' +
+          (cellClickable ? ' data-fecha="' + f.iso + '" data-hora="' + slot + '" onclick="confirmarNuevaReservaCelda(this)"' : '') + '>';
         if (available) {
-          const key = f.iso + '_' + slot;
           (mapaReservas[key] || []).forEach(r => {
             const nombre = escapeHtml(r.clientes ? (r.clientes.nombre || '—') : '—');
             const srv = escapeHtml(r.servicios ? r.servicios.nombre : '');
-            html += '<div class="agenda-chip ' + r.estado + '" onclick="abrirModal(\'' + r.id + '\')" title="' + nombre + ' · ' + srv + '">' +
+            html += '<div class="agenda-chip ' + r.estado + '" data-id="' + r.id + '" data-nombre="' + nombre + '" data-fecha="' + f.iso + '" data-hora="' + slot + '" onclick="confirmarEditarReservaChip(this)" title="' + nombre + ' · ' + srv + '">' +
               nombre.split(' ')[0] + '<br><span style="opacity:0.7">' + srv.split(' ')[0] + '</span></div>';
           });
         }
@@ -1174,7 +1192,53 @@
   };
 
   // ── MODAL ──
-  window.abrirModal = function(id) {
+  // ── Confirmación genérica (Promise<boolean>) ──
+  function pedirConfirmacion(mensaje, titulo) {
+    const overlay = document.getElementById('confirmOverlay');
+    document.getElementById('confirmTitulo').textContent = titulo || '¿Confirmar?';
+    document.getElementById('confirmMensaje').textContent = mensaje;
+    overlay.classList.add('open');
+    return new Promise(resolve => {
+      const btnSi = document.getElementById('confirmBtnSi');
+      const btnNo = document.getElementById('confirmBtnNo');
+      const cerrar = (resultado) => {
+        overlay.classList.remove('open');
+        btnSi.onclick = null; btnNo.onclick = null; overlay.onclick = null;
+        resolve(resultado);
+      };
+      btnSi.onclick = () => cerrar(true);
+      btnNo.onclick = () => cerrar(false);
+      overlay.onclick = (e) => { if (e.target === overlay) cerrar(false); };
+    });
+  }
+
+  function fechaLabelCorta(iso) {
+    const d = new Date(iso + 'T00:00:00');
+    const l = d.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' });
+    return l.charAt(0).toUpperCase() + l.slice(1);
+  }
+
+  // Clic en una casilla libre de la agenda del mes → crear reserva ahí, previa confirmación
+  window.confirmarNuevaReservaCelda = async function(el) {
+    const fecha = el.dataset.fecha, hora = el.dataset.hora;
+    const ok = await pedirConfirmacion(
+      fechaLabelCorta(fecha) + ' a las ' + hora + '. ¿Creamos una reserva en este hueco?',
+      'Nueva reserva'
+    );
+    if (ok) abrirModal(null, fecha, hora);
+  };
+
+  // Clic en una cita ya existente en la agenda del mes → editarla, previa confirmación
+  window.confirmarEditarReservaChip = async function(el) {
+    const id = el.dataset.id, nombre = el.dataset.nombre, hora = el.dataset.hora, fecha = el.dataset.fecha;
+    const ok = await pedirConfirmacion(
+      nombre + ' · ' + fechaLabelCorta(fecha) + ' a las ' + hora + '. ¿Quieres abrir esta reserva para modificarla?',
+      'Modificar reserva'
+    );
+    if (ok) abrirModal(id);
+  };
+
+  window.abrirModal = function(id, fechaPrefill, horaPrefill) {
     editandoId = id || null;
     const overlay = document.getElementById('modalOverlay');
     document.getElementById('modalTitulo').textContent = id ? 'Editar reserva' : 'Nueva reserva';
@@ -1190,10 +1254,10 @@
       sel.appendChild(o);
     });
 
-    // Fecha por defecto: el día que se está viendo ahora mismo (no siempre "hoy")
-    const fechaInicial = id ? hoy() : diaSeleccionado;
+    // Fecha por defecto: la casilla pulsada, o si no, el día que se está viendo ahora (no siempre "hoy")
+    const fechaInicial = id ? hoy() : (fechaPrefill || diaSeleccionado);
     document.getElementById('mFecha').value = fechaInicial;
-    actualizarHorasModal(fechaInicial);
+    actualizarHorasModal(fechaInicial, id ? null : horaPrefill);
 
     const histWrap  = document.getElementById('mHistorialWrap');
     const histLista = document.getElementById('mHistorialLista');
