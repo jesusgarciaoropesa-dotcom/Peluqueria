@@ -10,7 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Llamar tg-recordatorio
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           curl -s -X POST \
             https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-recordatorio \
-            -H 'Content-Type: application/json'
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer ${CRON_SECRET}"

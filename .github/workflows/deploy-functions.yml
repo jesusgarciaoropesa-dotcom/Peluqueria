@@ -24,12 +24,23 @@ jobs:
       - name: Set Supabase secrets
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           supabase secrets set \
-            TELEGRAM_BOT_TOKEN=8853285305:AAE6onn831-5alfxfSL_CwswsuWn_F5UIrY \
-            TELEGRAM_CHAT_ID=1076789678 \
+            TELEGRAM_BOT_TOKEN="$TELEGRAM_BOT_TOKEN" \
+            TELEGRAM_CHAT_ID="$TELEGRAM_CHAT_ID" \
+            TELEGRAM_WEBHOOK_SECRET="$TELEGRAM_WEBHOOK_SECRET" \
+            CRON_SECRET="$CRON_SECRET" \
             --project-ref gimoqpusrdltlkrwsykr
 
       - name: Register Telegram webhook
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
         run: |
-          curl -s "https://api.telegram.org/bot8853285305:AAE6onn831-5alfxfSL_CwswsuWn_F5UIrY/setWebhook?url=https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-webhook"
+          curl -s "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
+            -d "url=https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-webhook" \
+            --data-urlencode "secret_token=${TELEGRAM_WEBHOOK_SECRET}"
