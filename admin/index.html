@@ -248,7 +248,7 @@
       letter-spacing: 0.05em;
     }
     .agenda-wrap { overflow-x: auto; padding: 0 1rem 4rem; -webkit-overflow-scrolling: touch; }
-    .agenda-grid { display: grid; min-width: 520px; border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; }
+    .agenda-grid { display: grid; border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; width: max-content; min-width: 100%; }
     .agenda-head { display: grid; grid-template-columns: 3.5rem repeat(5,1fr) 0.85fr; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); }
     .agenda-hcell { padding: 0.55rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: center; text-transform: uppercase; letter-spacing: 0.08em; }
     .agenda-hcell.hoy-col { color: var(--verde); }
@@ -483,7 +483,7 @@
 
   <div class="tabs">
     <button class="tab active" data-vista="hoy"        onclick="setVista('hoy',this)">Hoy</button>
-    <button class="tab"        data-vista="semana"     onclick="setVista('semana',this)">Semana</button>
+    <button class="tab"        data-vista="semana"     onclick="setVista('semana',this)">Mes</button>
     <button class="tab"        data-vista="proximas"   onclick="setVista('proximas',this)">Próximas</button>
     <button class="tab"        data-vista="stats"      onclick="setVista('stats',this)">Stats</button>
     <button class="tab"        data-vista="libreta"    onclick="setVista('libreta',this)">📓 Libreta</button>
@@ -491,12 +491,12 @@
 
   <div class="week-tabs" id="weekTabs"></div>
 
-  <!-- Agenda semanal (solo visible en vista semana) -->
+  <!-- Agenda del mes (solo visible en vista "Mes") -->
   <div id="agendaWrap" style="display:none;">
     <div class="agenda-nav">
-      <button class="agenda-btn" id="agendaPrev">← Semana anterior</button>
+      <button class="agenda-btn" id="agendaPrev">← Mes anterior</button>
       <div class="agenda-rango" id="agendaRango"></div>
-      <button class="agenda-btn" id="agendaNext">Semana siguiente →</button>
+      <button class="agenda-btn" id="agendaNext">Mes siguiente →</button>
     </div>
     <div class="agenda-scroll-hint">◄ desliza para ver el resto de días ►</div>
     <div class="agenda-wrap">
@@ -748,7 +748,7 @@
   }
 
   // ── VISTA ──
-  let agendaLunes = null;
+  let agendaMes = null; // Date: día 1 del mes que se está mostrando
 
   window.setVista = function(v, btn) {
     vista = v;
@@ -783,47 +783,42 @@
     }
   };
 
-  function lunesToSemana(ref) {
-    const d = new Date(ref);
-    const dow = d.getDay();
-    d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
-    d.setHours(0,0,0,0);
-    return d;
-  }
-
   function iniciarAgenda() {
-    if (!agendaLunes) agendaLunes = lunesToSemana(new Date());
+    if (!agendaMes) { agendaMes = new Date(); agendaMes.setDate(1); agendaMes.setHours(0,0,0,0); }
     renderAgenda();
   }
 
   document.getElementById('agendaPrev').addEventListener('click', () => {
-    agendaLunes.setDate(agendaLunes.getDate() - 7);
+    agendaMes.setMonth(agendaMes.getMonth() - 1);
     renderAgenda();
   });
   document.getElementById('agendaNext').addEventListener('click', () => {
-    agendaLunes.setDate(agendaLunes.getDate() + 7);
+    agendaMes.setMonth(agendaMes.getMonth() + 1);
     renderAgenda();
   });
+
+  const DNOM_CORTO = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 
   async function renderAgenda() {
     const grid = document.getElementById('agendaGrid');
     grid.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;"><div class="spinner"></div><br>Cargando...</div>';
-    const dias = ['Mar','Mié','Jue','Vie','Sáb'];
-    const fechas = []; // Mar-Sáb (índices 1-5 desde lunes)
-    for (let i = 1; i <= 5; i++) {
-      const d = new Date(agendaLunes);
-      d.setDate(agendaLunes.getDate() + i);
-      fechas.push(isoLocal(d));
-    }
-    const sabado = new Date(agendaLunes); sabado.setDate(agendaLunes.getDate() + 6);
-    fechas.push(isoLocal(sabado));
-    const todosSlots = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
-    const fechaInicio = fechas[0]; const fechaFin = fechas[fechas.length-1];
-    const lunes  = new Date(agendaLunes); lunes.setDate(agendaLunes.getDate() + 1);
-    const viernes = new Date(agendaLunes); viernes.setDate(agendaLunes.getDate() + 5);
+
     document.getElementById('agendaRango').textContent =
-      lunes.toLocaleDateString('es', { day:'numeric', month:'short' }) + ' — ' +
-      sabado.toLocaleDateString('es', { day:'numeric', month:'short', year:'numeric' });
+      agendaMes.toLocaleDateString('es', { month:'long', year:'numeric' }).replace(/^./, c => c.toUpperCase());
+
+    // Todos los días laborables del mes (cerrado domingo y lunes)
+    const anio = agendaMes.getFullYear(), mes = agendaMes.getMonth();
+    const ultimoDia = new Date(anio, mes + 1, 0).getDate();
+    const fechasOk = [];
+    for (let dia = 1; dia <= ultimoDia; dia++) {
+      const d = new Date(anio, mes, dia);
+      const dow = d.getDay();
+      if (dow === 0 || dow === 1) continue;
+      fechasOk.push({ iso: isoLocal(d), d, esSabado: dow === 6 });
+    }
+
+    const fechaInicio = fechasOk[0].iso;
+    const fechaFin = fechasOk[fechasOk.length - 1].iso;
 
     const { data } = await db.from('reservas')
       .select('*, servicios(nombre), clientes(nombre)')
@@ -838,44 +833,25 @@
     });
 
     const hoyStr = hoy();
-    const diasHead = ['Mar','Mié','Jue','Vie','Vie','Sáb'];
-    const diasNombres = ['Martes','Miércoles','Jueves','Viernes','Viernes','Sábado'];
-    // 6 columnas: mar,mie,jue,vie,vie... wait, actually it should be Mar,Mié,Jue,Vie,Sáb — 5 días laborables + sábado = 6 cols
-    // Let me redo: fechas[0]=mar, [1]=mie, [2]=jue, [3]=vie, [4]=sab  -- wait no
-    // agendaLunes is Monday. +1=Tue,+2=Wed,+3=Thu,+4=Fri,+5=Sat
-    // Actually I set fechas as [mar,mie,jue,vie,sab] (5 days), then pushed sabado again — let me fix
-    // fechas = [mar, mie, jue, vie, ???, sab] — I had i from 1-5 (+sab separately)
-    // i=1 = Tue, i=2=Wed, i=3=Thu, i=4=Fri, i=5=Sat, then pushed sab again => 6 items, wrong
-    // Fix: just do i=1 to 5 for Tue-Sat (5 workdays+sat=correct since sat is +5)
-    // Actually: lunes+1=mar, +2=mie, +3=jue, +4=vie, +5=sab — perfect, 5 items
+    const slotsEntreSemana = ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+    const slotsSabado      = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
+    const slotsPorColumna = (f) => f.esSabado ? slotsSabado : slotsEntreSemana;
+    const allSlots = [...new Set([...slotsEntreSemana, ...slotsSabado])].sort();
 
-    // Rebuild correct fechas
-    const fechasOk = [];
-    for (let i = 1; i <= 5; i++) {
-      const d = new Date(agendaLunes);
-      d.setDate(agendaLunes.getDate() + i);
-      fechasOk.push({ iso: isoLocal(d), d });
-    }
-    const dNombres = ['MAR','MIÉ','JUE','VIE','SÁB'];
-    // Slot filter per column (Sáb only morning)
-    const slotsCol = (colIdx) => colIdx < 4
-      ? ['10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30']
-      : ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30'];
-    const allSlots = [...new Set([...slotsCol(0), ...slotsCol(4)])].sort();
+    const gridCols = '3.5rem repeat(' + fechasOk.length + ', minmax(4.2rem, 1fr))';
 
-    let html = '<div class="agenda-head"><div class="agenda-hcell">Hora</div>';
-    fechasOk.forEach((f, i) => {
-      const d = f.d;
+    let html = '<div class="agenda-head" style="grid-template-columns:' + gridCols + ';"><div class="agenda-hcell">Hora</div>';
+    fechasOk.forEach((f) => {
       const esHoy = f.iso === hoyStr;
-      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + '">' + dNombres[i] + '<br><span style="font-size:0.75rem;color:' + (esHoy ? 'var(--verde)' : 'var(--crema)') + ';">' + d.getDate() + '</span></div>';
+      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + '">' + DNOM_CORTO[f.d.getDay()] + '<br><span style="font-size:0.75rem;color:' + (esHoy ? 'var(--verde)' : 'var(--crema)') + ';">' + f.d.getDate() + '</span></div>';
     });
     html += '</div>';
 
     allSlots.forEach(slot => {
-      html += '<div class="agenda-row"><div class="agenda-time">' + slot + '</div>';
-      fechasOk.forEach((f, colIdx) => {
+      html += '<div class="agenda-row" style="grid-template-columns:' + gridCols + ';"><div class="agenda-time">' + slot + '</div>';
+      fechasOk.forEach((f) => {
         const esHoy = f.iso === hoyStr;
-        const available = slotsCol(colIdx).includes(slot);
+        const available = slotsPorColumna(f).includes(slot);
         html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + '">';
         if (available) {
           const key = f.iso + '_' + slot;
@@ -892,6 +868,10 @@
     });
 
     grid.innerHTML = html;
+
+    // Si el mes mostrado incluye hoy, dejar la vista centrada ahí en vez de en el día 1
+    const colHoy = grid.querySelector('.agenda-hcell.hoy-col');
+    if (colHoy) colHoy.scrollIntoView({ behavior: 'auto', inline: 'start', block: 'nearest' });
   }
 
   function renderWeekTabs() {
