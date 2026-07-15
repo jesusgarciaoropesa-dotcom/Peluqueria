@@ -1381,6 +1381,18 @@
       errDiv.textContent = 'Nombre, teléfono, fecha y hora son obligatorios.'; return;
     }
 
+    // Comprobar que ese hueco sigue libre (o es el mismo que ya tenía esta reserva)
+    if (estado !== 'cancelada') {
+      let queryOcupada = db.from('reservas').select('id')
+        .eq('fecha', fecha).eq('hora', hora + ':00').neq('estado', 'cancelada');
+      if (editandoId) queryOcupada = queryOcupada.neq('id', editandoId);
+      const { data: ocupada } = await queryOcupada.limit(1);
+      if (ocupada && ocupada.length > 0) {
+        errDiv.textContent = 'Ese horario ya está ocupado por otra reserva. Elige otra fecha u hora.';
+        return;
+      }
+    }
+
     btn.disabled = true; btn.textContent = 'Guardando...';
 
     // Obtener o crear cliente
@@ -1509,6 +1521,14 @@
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const dia = String(d.getDate()).padStart(2, '0');
     return `${y}-${m}-${dia}`;
+  }
+
+  function lunesToSemana(ref) {
+    const d = new Date(ref);
+    const dow = d.getDay();
+    d.setDate(d.getDate() - (dow === 0 ? 6 : dow - 1));
+    d.setHours(0,0,0,0);
+    return d;
   }
 
   function iniciarLibreta() {
