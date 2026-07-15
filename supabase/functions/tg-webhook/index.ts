@@ -94,8 +94,10 @@ async function proximosDiasHabiles(db: ReturnType<typeof createClient>, n = 7): 
   const from = isoMadrid(1);
   const to = isoMadrid(30);
   const { data: bloqueados } = await db.from("dias_bloqueados")
-    .select("fecha").gte("fecha", from).lte("fecha", to);
-  const bloqSet = new Set((bloqueados || []).map((b: any) => b.fecha));
+    .select("fecha,hora_inicio").gte("fecha", from).lte("fecha", to);
+  // Solo excluir el día si está bloqueado entero (hora_inicio null) — un
+  // tramo parcial no debe quitar el día completo del selector.
+  const bloqSet = new Set((bloqueados || []).filter((b: any) => !b.hora_inicio).map((b: any) => b.fecha));
 
   const dias: string[] = [];
   let offset = 1;
@@ -204,7 +206,15 @@ serve(async (req) => {
         const { data: ocupadas } = await db.from("reservas")
           .select("hora").eq("fecha", fecha).in("estado", ["pendiente","confirmada"]);
         const ocupSet = new Set((ocupadas || []).map((r: any) => r.hora?.slice(0, 5)));
-        const libres = todosSlots.filter(s => !ocupSet.has(s));
+
+        const { data: bloqueos } = await db.from("dias_bloqueados")
+          .select("hora_inicio,hora_fin").eq("fecha", fecha);
+        const rangosBloqueados = (bloqueos || [])
+          .filter((b: any) => b.hora_inicio && b.hora_fin)
+          .map((b: any) => ({ inicio: b.hora_inicio.slice(0, 5), fin: b.hora_fin.slice(0, 5) }));
+        const horaBloqueada = (h: string) => rangosBloqueados.some(r => h >= r.inicio && h < r.fin);
+
+        const libres = todosSlots.filter(s => !ocupSet.has(s) && !horaBloqueada(s));
 
         if (!libres.length) {
           await answerCallback(cbq.id, "Ese día está completo");
@@ -663,13 +673,19 @@ serve(async (req) => {
       await tg(chatId, `Uso: /bloquear <fecha> [motivo]\n\nEjemplos:\n/bloquear 2026-07-15\n/bloquear mañana festivo`);
     } else {
       const motivo = parts.slice(2).join(" ") || null;
-      const { error } = await db.from("dias_bloqueados").insert({ fecha, motivo });
-      if (error?.code === "23505") {
-        await tg(chatId, `ℹ️ El ${fecha} ya estaba bloqueado.`);
-      } else if (error) {
-        await tg(chatId, `❌ Error: ${escapeHtml(error.message)}`);
+      // Ya no hay restricción de fecha única (ahora puede haber varios
+      // tramos por día) — comprobar a mano si ya estaba bloqueado entero.
+      const { data: yaBloqueado } = await db.from("dias_bloqueados")
+        .select("id").eq("fecha", fecha).is("hora_inicio", null).limit(1);
+      if (yaBloqueado && yaBloqueado.length > 0) {
+        await tg(chatId, `ℹ️ El ${fecha} ya estaba bloqueado entero.`);
       } else {
-        await tg(chatId, `🔒 Bloqueado: ${fechaLabel(fecha)}${motivo ? ` — ${escapeHtml(motivo)}` : ""}`);
+        const { error } = await db.from("dias_bloqueados").insert({ fecha, motivo });
+        if (error) {
+          await tg(chatId, `❌ Error: ${escapeHtml(error.message)}`);
+        } else {
+          await tg(chatId, `🔒 Bloqueado: ${fechaLabel(fecha)}${motivo ? ` — ${escapeHtml(motivo)}` : ""}`);
+        }
       }
     }
 
