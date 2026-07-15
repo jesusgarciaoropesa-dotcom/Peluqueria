@@ -191,7 +191,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── MODAL ── */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+    .modal-overlay { position: fixed; inset: 0; overflow-x: hidden; background: rgba(0,0,0,0.75); z-index: 100; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.25s; }
     .modal-overlay.open { opacity: 1; pointer-events: all; }
     .modal { background: var(--bg2); border: 1px solid rgba(124,181,24,0.2); border-radius: 16px 16px 0 0; width: 100%; max-width: 520px; max-height: 94vh; overflow-y: auto; overflow-x: hidden; padding: 1.1rem 1.2rem 1.3rem; transform: translateY(40px); transition: transform 0.28s; }
     .confirm-modal { max-width: 380px; }
@@ -200,18 +200,20 @@
     .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: 0.06em; color: var(--crema); }
     .modal-close { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); width: 2.75rem; height: 2.75rem; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
     .modal-close:hover { border-color: var(--verde); color: var(--verde); }
-    .campo-grupo { margin-bottom: 0.65rem; min-width: 0; }
+    .campo-grupo { margin-bottom: 0.65rem; min-width: 0; max-width: 100%; overflow: hidden; }
     .campo-label { display: block; font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; color: var(--gris); text-transform: uppercase; margin-bottom: 0.25rem; }
     .campo-input, .campo-select, .campo-textarea {
-      width: 100%; min-width: 0; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.18);
+      width: 100%; max-width: 100%; min-width: 0; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.18);
       border-radius: 7px; padding: 0.55rem 0.8rem; min-height: 2.75rem; color: var(--crema);
       font-family: 'Crimson Pro', serif; font-size: 1rem; outline: none; transition: border-color 0.2s;
-      box-sizing: border-box;
+      box-sizing: border-box; -webkit-box-sizing: border-box;
     }
     .campo-input:focus, .campo-select:focus, .campo-textarea:focus { border-color: var(--verde); }
     .campo-select option { background: var(--bg3); }
     .campo-textarea { resize: vertical; min-height: 2.75rem; height: 2.75rem; }
-    .campos-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; min-width: 0; }
+    /* input[type=date] en iOS Safari puede ignorar el width y desbordar su caja */
+    input.campo-input[type="date"] { width: 100%; max-width: 100%; }
+    .campos-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; min-width: 0; max-width: 100%; }
     .modal-footer { display: flex; gap: 0.6rem; margin-top: 0.9rem; }
     .btn-guardar { flex: 1; background: var(--verde); border: none; border-radius: 7px; padding: 0.8rem; min-height: 2.75rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
     .btn-guardar:hover { background: #8fd11e; }
