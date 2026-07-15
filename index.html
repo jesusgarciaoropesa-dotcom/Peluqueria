@@ -2120,11 +2120,11 @@
         <div id="paso4Resumen" style="background:rgba(124,181,24,0.06);border:1px solid rgba(124,181,24,0.18);border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.2rem;font-family:'Space Mono',monospace;font-size:0.68rem;line-height:2;color:rgba(242,237,215,0.75);letter-spacing:0.03em;"></div>
         <div class="campo-grupo">
           <label class="campo-label" for="r-nombre">Nombre</label>
-          <input class="campo-input" id="r-nombre" type="text" placeholder="Tu nombre" autocomplete="given-name" />
+          <input class="campo-input" id="r-nombre" type="text" placeholder="Tu nombre" autocomplete="given-name" maxlength="100" />
         </div>
         <div class="campo-grupo">
           <label class="campo-label" for="r-telefono">Teléfono</label>
-          <input class="campo-input" id="r-telefono" type="tel" placeholder="+34 600 000 000" autocomplete="tel" />
+          <input class="campo-input" id="r-telefono" type="tel" placeholder="+34 600 000 000" autocomplete="tel" maxlength="20" />
         </div>
         <div style="display:flex;align-items:flex-start;gap:0.65rem;margin:0.8rem 0 0.2rem;">
           <input type="checkbox" id="r-gdpr" style="width:1.1rem;height:1.1rem;min-width:1.1rem;accent-color:var(--verde-neon);cursor:pointer;margin-top:0.2rem;" />
@@ -2167,7 +2167,7 @@
     <div id="cancelPasoA">
       <p style="font-family:'Crimson Pro',serif;font-size:1rem;color:rgba(242,237,215,0.6);margin-bottom:1.2rem;">Introduce el teléfono con el que hiciste la reserva.</p>
       <label style="display:block;font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:rgba(242,237,215,0.45);text-transform:uppercase;margin-bottom:0.4rem;">Teléfono</label>
-      <input id="cancelTel" type="tel" placeholder="+34 600 000 000" autocomplete="tel"
+      <input id="cancelTel" type="tel" placeholder="+34 600 000 000" autocomplete="tel" maxlength="20"
         style="width:100%;background:#1a1a1a;border:1.5px solid rgba(124,181,24,0.2);border-radius:8px;padding:0.8rem 1rem;color:var(--crema);font-family:'Crimson Pro',serif;font-size:1rem;outline:none;margin-bottom:0.9rem;" />
       <div id="cancelErr" style="color:#ff6b6b;font-family:'Space Mono',monospace;font-size:0.62rem;margin-bottom:0.6rem;display:none;"></div>
       <button onclick="buscarReservasCancelar()"
@@ -2844,41 +2844,16 @@
       const btn4 = document.getElementById('btn4');
       btn4.disabled = true;
       btn4.textContent = 'Enviando...';
-      // Insertar cliente (si ya existe por teléfono, recuperar el existente)
-      let clienteId;
-      const { data: cliNew, error: cliErr } = await db.from('clientes')
-        .insert({ telefono, nombre }).select('id').single();
-      if (cliErr) {
-        if (cliErr.code === '23505') {
-          // Teléfono ya registrado — actualizar nombre y recuperar ID
-          const { data: cliExist, error: cliSelErr } = await db.from('clientes')
-            .update({ nombre }).eq('telefono', telefono).select('id').single();
-          if (cliSelErr || !cliExist) {
-            errDiv.textContent = 'Error: ' + (cliSelErr ? cliSelErr.message : 'cliente no encontrado');
-            errDiv.style.display = 'block';
-            btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
-            return;
-          }
-          clienteId = cliExist.id;
-        } else {
-          errDiv.textContent = 'Error al guardar datos: ' + cliErr.message;
-          errDiv.style.display = 'block';
-          btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
-          return;
-        }
-      } else {
-        clienteId = cliNew.id;
-      }
-      // Insert reserva
-      const { data: resData, error: resErr } = await db.from('reservas').insert({
-        cliente_id: clienteId,
-        servicio_id: est.servicio.id,
-        fecha: est.fecha,
-        hora: est.hora + ':00',
-        estado: 'pendiente'
-      }).select('id').single();
-      if (resErr) {
-        errDiv.textContent = 'Error al crear la reserva: ' + resErr.message;
+      // Crear cliente + reserva de forma atómica y validada en el servidor
+      const { data: reservaId, error: rpcErr } = await db.rpc('crear_reserva_publica', {
+        p_nombre: nombre,
+        p_telefono: telefono,
+        p_servicio_id: est.servicio.id,
+        p_fecha: est.fecha,
+        p_hora: est.hora + ':00'
+      });
+      if (rpcErr) {
+        errDiv.textContent = rpcErr.message || 'Error al crear la reserva.';
         errDiv.style.display = 'block';
         btn4.disabled = false; btn4.textContent = 'Confirmar reserva';
         return;
@@ -2887,7 +2862,7 @@
       fetch('https://gimoqpusrdltlkrwsykr.supabase.co/functions/v1/tg-notificar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tipo: 'nueva', reserva_id: resData.id })
+        body: JSON.stringify({ tipo: 'nueva', reserva_id: reservaId })
       }).catch(() => {});
       // Mostrar éxito
       const fechaObj = new Date(est.fecha + 'T00:00:00');
@@ -2988,22 +2963,15 @@
       const btn = document.getElementById('cancelBuscarBtn');
       btn.disabled = true; btn.textContent = 'Buscando...';
 
-      const { data: cli } = await db2.from('clientes').select('id').eq('telefono', tel).single();
-      if (!cli) {
-        errDiv.textContent = 'No encontramos reservas con ese número.';
-        errDiv.style.display = 'block';
-        btn.disabled = false; btn.textContent = 'Buscar mis reservas'; return;
-      }
-
-      const hoyStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
-      const { data: reservas } = await db2.from('reservas')
-        .select('id, fecha, hora, estado, servicios(nombre)')
-        .eq('cliente_id', cli.id)
-        .gte('fecha', hoyStr)
-        .in('estado', ['pendiente', 'confirmada'])
-        .order('fecha').order('hora');
+      const { data: reservasRpc, error: buscarErr } = await db2.rpc('mis_reservas_por_telefono', { p_telefono: tel });
+      const reservas = (reservasRpc || []).map(r => ({ ...r, servicios: { nombre: r.servicio_nombre } }));
 
       btn.disabled = false; btn.textContent = 'Buscar mis reservas';
+
+      if (buscarErr) {
+        errDiv.textContent = 'Error al buscar. Inténtalo de nuevo.';
+        errDiv.style.display = 'block'; return;
+      }
 
       if (!reservas || reservas.length === 0) {
         errDiv.textContent = 'No tienes reservas próximas activas con ese número.';
@@ -3042,9 +3010,10 @@
 
     window.cancelarReservaId = async function(btn) {
       const id = btn.dataset.id;
+      const tel = document.getElementById('cancelTel').value.trim();
       btn.disabled = true; btn.textContent = 'Cancelando...';
-      const { error } = await db2.from('reservas').update({ estado: 'cancelada' }).eq('id', id);
-      if (error) {
+      const { data: ok, error } = await db2.rpc('cancelar_reserva_publica', { p_id: id, p_telefono: tel });
+      if (error || !ok) {
         // Fallback: abrir WhatsApp si no hay permiso de UPDATE
         const waUrl = 'https://wa.me/34637847114?text=' + encodeURIComponent('Hola, quiero cancelar mi reserva (ID: ' + id.slice(0,8) + '...). Gracias.');
         btn.disabled = false;

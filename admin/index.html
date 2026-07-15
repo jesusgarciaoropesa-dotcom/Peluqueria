@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WTJ Admin · Reservas</title>
+  <meta name="robots" content="noindex, nofollow" />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:wght@400;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
@@ -614,6 +615,14 @@
 
   function hoy() { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); }
 
+  // Escapa datos de cliente (nombre/teléfono/notas vienen de un formulario público
+  // sin validación de contenido) antes de insertarlos como HTML.
+  function escapeHtml(str) {
+    return String(str == null ? '' : str).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
   // ── Slots por día ──
   function slotsDelDia(iso) {
     const d = new Date(iso + 'T00:00:00');
@@ -852,8 +861,8 @@
         if (available) {
           const key = f.iso + '_' + slot;
           (mapaReservas[key] || []).forEach(r => {
-            const nombre = r.clientes ? (r.clientes.nombre || '—') : '—';
-            const srv = r.servicios ? r.servicios.nombre : '';
+            const nombre = escapeHtml(r.clientes ? (r.clientes.nombre || '—') : '—');
+            const srv = escapeHtml(r.servicios ? r.servicios.nombre : '');
             html += '<div class="agenda-chip ' + r.estado + '" onclick="abrirModal(\'' + r.id + '\')" title="' + nombre + ' · ' + srv + '">' +
               nombre.split(' ')[0] + '<br><span style="opacity:0.7">' + srv.split(' ')[0] + '</span></div>';
           });
@@ -1030,7 +1039,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0;border-bottom:1px solid rgba(124,181,24,0.06);">
             <div style="display:flex;align-items:center;gap:0.7rem;">
               <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--verde);min-width:1.2rem;">${i+1}</div>
-              <div style="font-family:'Crimson Pro',serif;font-size:1rem;color:var(--crema);">${n}</div>
+              <div style="font-family:'Crimson Pro',serif;font-size:1rem;color:var(--crema);">${escapeHtml(n)}</div>
             </div>
             <div style="font-family:'Space Mono',monospace;font-size:0.62rem;color:var(--gris);">${d.citas} cita${d.citas>1?'s':''} · ${d.total}€</div>
           </div>`).join('')}
@@ -1096,8 +1105,10 @@
     const hora          = r.hora ? r.hora.slice(0,5) : '—';
     const servicio      = r.servicios ? r.servicios.nombre : '—';
     const duracion      = r.servicios ? r.servicios.duracion_minutos + 'min' : '';
-    const clienteNombre = r.clientes ? (r.clientes.nombre || 'Sin nombre') : 'Sin nombre';
-    const clienteTel    = r.clientes ? (r.clientes.telefono || '') : '';
+    const clienteNombreRaw = r.clientes ? (r.clientes.nombre || 'Sin nombre') : 'Sin nombre';
+    const clienteTelRaw    = r.clientes ? (r.clientes.telefono || '') : '';
+    const clienteNombre = escapeHtml(clienteNombreRaw);
+    const clienteTel    = escapeHtml(clienteTelRaw);
     const badgeClass    = 'badge-' + r.estado;
 
     // Línea meta: servicio · duración · teléfono (clicable)
@@ -1128,7 +1139,7 @@
       const waNum = (function(t){ const d=t.replace(/\D/g,''); return d.startsWith('34')?d:'34'+d; })(clienteTel);
       const fd    = new Date(r.fecha + 'T00:00:00');
       const fl    = fd.toLocaleDateString('es', { weekday:'long', day:'numeric', month:'long' });
-      const waMsg = encodeURIComponent('Hola ' + clienteNombre + '! Te recordamos tu cita en WTJ Barber Shop:\n✂ ' + servicio + '\n📅 ' + fl.charAt(0).toUpperCase() + fl.slice(1) + '\n🕐 ' + hora + '\n\n¡Te esperamos!');
+      const waMsg = encodeURIComponent('Hola ' + clienteNombreRaw + '! Te recordamos tu cita en WTJ Barber Shop:\n✂ ' + servicio + '\n📅 ' + fl.charAt(0).toUpperCase() + fl.slice(1) + '\n🕐 ' + hora + '\n\n¡Te esperamos!');
       icons += '<a class="card-icon-btn act-wa" href="https://wa.me/' + waNum + '?text=' + waMsg + '" target="_blank" rel="noopener" title="Recordar por WA">📲</a>';
     }
     icons += '<button class="card-icon-btn act-editar" title="Editar" onclick="abrirModal(\'' + r.id + '\')">✏</button>';
@@ -1140,7 +1151,7 @@
       '</div>' +
       '<div class="card-nombre">' + clienteNombre + '</div>' +
       '<div class="card-meta">' + metaHtml + '</div>' +
-      (r.notas ? '<div class="card-notas">' + r.notas + '</div>' : '') +
+      (r.notas ? '<div class="card-notas">' + escapeHtml(r.notas) + '</div>' : '') +
       '<div class="card-footer">' + cta + '<div class="card-icons">' + icons + '</div></div>';
     return card;
   }
@@ -1375,7 +1386,7 @@
       row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(124,181,24,0.08);gap:0.5rem;';
       row.innerHTML =
         '<div><div style="font-size:1rem;color:var(--crema);">' + label.charAt(0).toUpperCase() + label.slice(1) + '</div>' +
-        (b.motivo ? '<div style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--gris);">' + b.motivo + '</div>' : '') +
+        (b.motivo ? '<div style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--gris);">' + escapeHtml(b.motivo) + '</div>' : '') +
         '</div>' +
         '<button onclick="eliminarBloqueo(\'' + b.id + '\')" style="background:rgba(200,80,80,0.15);border:1px solid rgba(200,80,80,0.3);color:#e06060;border-radius:5px;padding:0.3rem 0.7rem;font-family:Space Mono,monospace;font-size:0.6rem;cursor:pointer;">Quitar</button>';
       cont.appendChild(row);
@@ -1520,9 +1531,9 @@
           <div class="lib-slot-body"></div>
         </div>`;
       }
-      const nombre   = res.clientes  ? res.clientes.nombre   : '—';
-      const tel      = res.clientes  ? (res.clientes.telefono || '') : '';
-      const servicio = res.servicios ? res.servicios.nombre  : '—';
+      const nombre   = escapeHtml(res.clientes  ? res.clientes.nombre   : '—');
+      const tel      = escapeHtml(res.clientes  ? (res.clientes.telefono || '') : '');
+      const servicio = escapeHtml(res.servicios ? res.servicios.nombre  : '—');
       const est      = res.estado;
       const dotMap   = { pendiente:'lib-dot-pend', confirmada:'lib-dot-conf', completada:'lib-dot-comp', cancelada:'lib-dot-canc' };
       const clsMap   = { pendiente:'lib-slot-pend', confirmada:'lib-slot-conf', completada:'lib-slot-comp', cancelada:'lib-slot-canc' };
