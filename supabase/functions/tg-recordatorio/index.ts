@@ -1,8 +1,15 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
-const CHAT_ID   = Deno.env.get("TELEGRAM_CHAT_ID")!;
+const BOT_TOKEN    = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
+const CHAT_ID      = Deno.env.get("TELEGRAM_CHAT_ID")!;
+const CRON_SECRET  = Deno.env.get("CRON_SECRET"); // opcional: si está configurado, se exige
+
+function escapeHtml(str: string): string {
+  return String(str ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!)
+  );
+}
 
 async function tg(text: string) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -14,7 +21,16 @@ async function tg(text: string) {
 
 const DIAS = ["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 
-serve(async () => {
+serve(async (req) => {
+  // Si hay CRON_SECRET configurado, exigirlo — evita que cualquiera
+  // dispare este aviso repetidamente llamando a la URL pública.
+  if (CRON_SECRET) {
+    const auth = req.headers.get("authorization") || "";
+    if (auth !== `Bearer ${CRON_SECRET}`) {
+      return new Response("unauthorized", { status: 401 });
+    }
+  }
+
   const db = createClient(
     Deno.env.get("SUPABASE_URL")!,
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
@@ -45,9 +61,9 @@ serve(async () => {
       db.from("servicios").select("id,nombre").in("id", servicioIds),
     ]);
     const cMap: Record<string, string> = {};
-    (clientes || []).forEach((c: any) => { cMap[c.id] = c.nombre; });
+    (clientes || []).forEach((c: any) => { cMap[c.id] = escapeHtml(c.nombre); });
     const sMap: Record<string, string> = {};
-    (servicios || []).forEach((s: any) => { sMap[s.id] = s.nombre; });
+    (servicios || []).forEach((s: any) => { sMap[s.id] = escapeHtml(s.nombre); });
 
     const lineas = (reservasHoy || []).map((r: any) =>
       `${r.estado === "confirmada" ? "✅" : "⏳"} <b>${r.hora?.slice(0,5)}</b>  ${cMap[r.cliente_id] || "—"} · ${sMap[r.servicio_id] || "—"}`

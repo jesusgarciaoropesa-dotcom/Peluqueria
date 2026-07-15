@@ -1,8 +1,15 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const BOT_TOKEN = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
-const CHAT_ID   = Deno.env.get("TELEGRAM_CHAT_ID")!;
+const BOT_TOKEN      = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
+const CHAT_ID        = Deno.env.get("TELEGRAM_CHAT_ID")!;
+const WEBHOOK_SECRET = Deno.env.get("TELEGRAM_WEBHOOK_SECRET"); // opcional: si está configurado, se exige
+
+function escapeHtml(str: string): string {
+  return String(str ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!)
+  );
+}
 
 async function tg(chatId: string | number, text: string, reply_markup?: object) {
   await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
@@ -77,8 +84,8 @@ async function reservasDelDia(db: ReturnType<typeof createClient>, fecha: string
 
   return reservas.map((r: any) => ({
     ...r,
-    clienteNombre: cMap[r.cliente_id] || "—",
-    servicioNombre: sMap[r.servicio_id] || "—",
+    clienteNombre: escapeHtml(cMap[r.cliente_id] || "—"),
+    servicioNombre: escapeHtml(sMap[r.servicio_id] || "—"),
     shortId: r.id.split("-")[0],
   }));
 }
@@ -119,6 +126,13 @@ function fechaLabel(fecha: string): string {
 }
 
 serve(async (req) => {
+  // Si hay TELEGRAM_WEBHOOK_SECRET configurado, exigir que Telegram lo mande
+  // en la cabecera (se configura al registrar el webhook con secret_token).
+  if (WEBHOOK_SECRET) {
+    const got = req.headers.get("x-telegram-bot-api-secret-token");
+    if (got !== WEBHOOK_SECRET) return new Response("OK");
+  }
+
   const body = await req.json().catch(() => null);
   if (!body) return new Response("OK");
 
@@ -176,7 +190,7 @@ serve(async (req) => {
 
         await answerCallback(cbq.id, `✂️ ${svc.nombre}`);
         await editMessage(chatId, cbq.message.message_id,
-          `✂️ <b>${svc.nombre}</b>\n\n📅 ¿Qué día?`,
+          `✂️ <b>${escapeHtml(svc.nombre)}</b>\n\n📅 ¿Qué día?`,
           buildGrid(items)
         );
       }
@@ -233,9 +247,9 @@ serve(async (req) => {
 
         const resumen =
           `📋 <b>NUEVA CITA</b>\n\n` +
-          `👤 ${nuevosDatos.nombre}\n` +
-          `📱 ${nuevosDatos.telefono}\n` +
-          `💈 ${nuevosDatos.servicio_nombre}${nuevosDatos.precio ? ` · desde ${nuevosDatos.precio}€` : ""}\n` +
+          `👤 ${escapeHtml(nuevosDatos.nombre)}\n` +
+          `📱 ${escapeHtml(nuevosDatos.telefono)}\n` +
+          `💈 ${escapeHtml(nuevosDatos.servicio_nombre)}${nuevosDatos.precio ? ` · desde ${nuevosDatos.precio}€` : ""}\n` +
           `📅 ${fechaLabel(nuevosDatos.fecha)}\n` +
           `🕐 ${hora}\n\n` +
           `¿Confirmar?`;
@@ -276,7 +290,7 @@ serve(async (req) => {
 
         if (resErr) {
           await answerCallback(cbq.id, "Error al crear la cita");
-          await editMessage(chatId, cbq.message.message_id, `❌ Error: ${resErr.message}`);
+          await editMessage(chatId, cbq.message.message_id, `❌ Error: ${escapeHtml(resErr.message)}`);
           return new Response("OK");
         }
 
@@ -284,9 +298,9 @@ serve(async (req) => {
         await answerCallback(cbq.id, "✅ Cita creada");
         await editMessage(chatId, cbq.message.message_id,
           `✅ <b>CITA CREADA</b>\n\n` +
-          `👤 ${nombre}\n` +
-          `📱 ${telefono}\n` +
-          `💈 ${servicio_nombre}${precio ? ` · desde ${precio}€` : ""}\n` +
+          `👤 ${escapeHtml(nombre)}\n` +
+          `📱 ${escapeHtml(telefono)}\n` +
+          `💈 ${escapeHtml(servicio_nombre)}${precio ? ` · desde ${precio}€` : ""}\n` +
           `📅 ${fechaLabel(fecha)}\n` +
           `🕐 ${hora}`
         );
@@ -328,9 +342,10 @@ serve(async (req) => {
         const ico = nuevoEstado === "confirmada" ? "✅" : "❌";
         await answerCallback(cbq.id, `${ico} ${nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1)}`);
         const textoOriginal = cbq.message?.text || "";
+        const nombreSeguro = escapeHtml(c?.nombre || "—");
         const cabecera = nuevoEstado === "confirmada"
-          ? `✅ <b>CONFIRMADA</b> — ${c?.nombre || "—"}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`
-          : `❌ <b>CANCELADA</b> — ${c?.nombre || "—"}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`;
+          ? `✅ <b>CONFIRMADA</b> — ${nombreSeguro}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`
+          : `❌ <b>CANCELADA</b> — ${nombreSeguro}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`;
         await editMessage(chatId, cbq.message.message_id,
           textoOriginal.split("\n\n")[0] + "\n\n" + cabecera
         );
@@ -393,7 +408,7 @@ serve(async (req) => {
       }));
 
       await tg(chatId,
-        `👤 <b>${nombre}</b>  📱 ${telefono}\n\n💈 ¿Qué servicio?`,
+        `👤 <b>${escapeHtml(nombre)}</b>  📱 ${escapeHtml(telefono)}\n\n💈 ¿Qué servicio?`,
         buildGrid(items)
       );
     }
@@ -465,7 +480,7 @@ serve(async (req) => {
       const clienteIds = [...new Set(reservas.map((r: any) => r.cliente_id))];
       const { data: clientes } = await db.from("clientes").select("id,nombre").in("id", clienteIds);
       const cMap: Record<string, string> = {};
-      (clientes || []).forEach((c: any) => { cMap[c.id] = c.nombre; });
+      (clientes || []).forEach((c: any) => { cMap[c.id] = escapeHtml(c.nombre); });
 
       const porDia: Record<string, any[]> = {};
       reservas.forEach((r: any) => { (porDia[r.fecha] ??= []).push(r); });
@@ -506,9 +521,9 @@ serve(async (req) => {
       await tg(chatId,
         `⏭ <b>PRÓXIMA CITA</b>\n\n` +
         `🕐 <b>${r.hora?.slice(0,5)}</b> — ${r.estado === "confirmada" ? "✅ confirmada" : "⏳ pendiente"}\n` +
-        `👤 ${cliente?.nombre || "—"}\n` +
-        `📱 ${cliente?.telefono || "—"}\n` +
-        `💈 ${servicio?.nombre || "—"}\n\n` +
+        `👤 ${escapeHtml(cliente?.nombre || "—")}\n` +
+        `📱 ${escapeHtml(cliente?.telefono || "—")}\n` +
+        `💈 ${escapeHtml(servicio?.nombre || "—")}\n\n` +
         `/confirmar ${sid}  ·  /cancelar ${sid}`
       );
     }
@@ -535,8 +550,8 @@ serve(async (req) => {
           const d = new Date(r.fecha + "T12:00:00").toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" });
           await tg(chatId,
             `⏳ <b>PENDIENTE</b>\n\n` +
-            `👤 ${c?.nombre || "—"}\n` +
-            `📱 ${c?.telefono || "—"}\n` +
+            `👤 ${escapeHtml(c?.nombre || "—")}\n` +
+            `📱 ${escapeHtml(c?.telefono || "—")}\n` +
             `📅 ${d.charAt(0).toUpperCase() + d.slice(1)}\n` +
             `🕐 ${r.hora?.slice(0,5)}`,
             { inline_keyboard: [[
@@ -554,13 +569,13 @@ serve(async (req) => {
         .limit(1);
       const r = rs?.[0];
       if (!r) {
-        await tg(chatId, `❌ No encontré la reserva <code>#${sid}</code>`);
+        await tg(chatId, `❌ No encontré la reserva <code>#${escapeHtml(sid)}</code>`);
       } else if (r.estado === "confirmada") {
-        await tg(chatId, `ℹ️ La reserva <code>#${sid}</code> ya está confirmada.`);
+        await tg(chatId, `ℹ️ La reserva <code>#${escapeHtml(sid)}</code> ya está confirmada.`);
       } else {
         await db.from("reservas").update({ estado: "confirmada" }).eq("id", r.id);
         const { data: c } = await db.from("clientes").select("nombre").eq("id", r.cliente_id).single();
-        await tg(chatId, `✅ Confirmada\n👤 ${c?.nombre || "—"}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`);
+        await tg(chatId, `✅ Confirmada\n👤 ${escapeHtml(c?.nombre || "—")}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`);
       }
     }
 
@@ -576,13 +591,13 @@ serve(async (req) => {
         .limit(1);
       const r = rs?.[0];
       if (!r) {
-        await tg(chatId, `❌ No encontré la reserva <code>#${sid}</code>`);
+        await tg(chatId, `❌ No encontré la reserva <code>#${escapeHtml(sid)}</code>`);
       } else if (r.estado === "cancelada") {
-        await tg(chatId, `ℹ️ La reserva <code>#${sid}</code> ya está cancelada.`);
+        await tg(chatId, `ℹ️ La reserva <code>#${escapeHtml(sid)}</code> ya está cancelada.`);
       } else {
         await db.from("reservas").update({ estado: "cancelada" }).eq("id", r.id);
         const { data: c } = await db.from("clientes").select("nombre").eq("id", r.cliente_id).single();
-        await tg(chatId, `❌ Cancelada\n👤 ${c?.nombre || "—"}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`);
+        await tg(chatId, `❌ Cancelada\n👤 ${escapeHtml(c?.nombre || "—")}  🕐 ${r.hora?.slice(0,5)} · ${r.fecha}`);
       }
     }
 
@@ -621,7 +636,7 @@ serve(async (req) => {
       const { data: clientes } = await db.from("clientes")
         .select("id,nombre,telefono").ilike("nombre", `%${nombre}%`).limit(5);
       if (!clientes?.length) {
-        await tg(chatId, `🔍 Sin resultados para "${nombre}".`);
+        await tg(chatId, `🔍 Sin resultados para "${escapeHtml(nombre)}".`);
       } else {
         const bloques = await Promise.all(clientes.map(async (c: any) => {
           const { data: rs } = await db.from("reservas")
@@ -630,14 +645,14 @@ serve(async (req) => {
           const sIds = [...new Set((rs || []).map((r: any) => r.servicio_id))];
           const { data: svcs } = await db.from("servicios").select("id,nombre").in("id", sIds);
           const sMap: Record<string, string> = {};
-          (svcs || []).forEach((s: any) => { sMap[s.id] = s.nombre; });
+          (svcs || []).forEach((s: any) => { sMap[s.id] = escapeHtml(s.nombre); });
           const hist = (rs || []).map((r: any) => {
             const ico = { confirmada:"✅", completada:"🎉", cancelada:"❌", pendiente:"⏳" }[r.estado] || "•";
             return `  ${ico} ${r.fecha} ${r.hora?.slice(0,5)} ${sMap[r.servicio_id] || ""}`;
           }).join("\n");
-          return `👤 <b>${c.nombre}</b>  📱 ${c.telefono}\n${hist || "  Sin reservas"}`;
+          return `👤 <b>${escapeHtml(c.nombre)}</b>  📱 ${escapeHtml(c.telefono)}\n${hist || "  Sin reservas"}`;
         }));
-        await tg(chatId, `🔍 <b>Clientes: "${nombre}"</b>\n\n${bloques.join("\n\n")}`);
+        await tg(chatId, `🔍 <b>Clientes: "${escapeHtml(nombre)}"</b>\n\n${bloques.join("\n\n")}`);
       }
     }
 
@@ -652,9 +667,9 @@ serve(async (req) => {
       if (error?.code === "23505") {
         await tg(chatId, `ℹ️ El ${fecha} ya estaba bloqueado.`);
       } else if (error) {
-        await tg(chatId, `❌ Error: ${error.message}`);
+        await tg(chatId, `❌ Error: ${escapeHtml(error.message)}`);
       } else {
-        await tg(chatId, `🔒 Bloqueado: ${fechaLabel(fecha)}${motivo ? ` — ${motivo}` : ""}`);
+        await tg(chatId, `🔒 Bloqueado: ${fechaLabel(fecha)}${motivo ? ` — ${escapeHtml(motivo)}` : ""}`);
       }
     }
 
