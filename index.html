@@ -2614,7 +2614,7 @@
     let calFecha = new Date();
     calFecha.setDate(1);
     let serviciosData = [];
-    let diasBloqueados = new Set();
+    let diasBloqueados = new Map(); // fecha -> { completo: bool, rangos: [{inicio,fin}] }
 
     // ── Slots por día ──
     function slotsDelDia(diaSem) {
@@ -2706,10 +2706,26 @@
       });
     }
 
-    // ── Días bloqueados ──
+    // ── Días bloqueados (día completo o solo un rango de horas) ──
     async function cargarDiasBloqueados() {
-      const { data } = await db.from('dias_bloqueados').select('fecha');
-      diasBloqueados = new Set((data || []).map(r => r.fecha));
+      const { data } = await db.from('dias_bloqueados').select('fecha,hora_inicio,hora_fin');
+      diasBloqueados = new Map();
+      (data || []).forEach(r => {
+        if (!diasBloqueados.has(r.fecha)) diasBloqueados.set(r.fecha, { completo: false, rangos: [] });
+        const entry = diasBloqueados.get(r.fecha);
+        if (!r.hora_inicio || !r.hora_fin) {
+          entry.completo = true;
+        } else {
+          entry.rangos.push({ inicio: r.hora_inicio.slice(0,5), fin: r.hora_fin.slice(0,5) });
+        }
+      });
+    }
+
+    function horaBloqueada(fechaStr, horaStr) {
+      const entry = diasBloqueados.get(fechaStr);
+      if (!entry) return false;
+      if (entry.completo) return true;
+      return entry.rangos.some(r => horaStr >= r.inicio && horaStr < r.fin);
     }
 
     // ── Calendario (Mejora 9: muestra huecos disponibles por día) ──
@@ -2751,7 +2767,7 @@
         celda.className = 'cal-d';
         const esPasado = fecha < hoy;
         const esCerrado = diaSem === 0 || diaSem === 1;
-        const esBloqueado = diasBloqueados.has(fechaStr);
+        const esBloqueado = !!(diasBloqueados.get(fechaStr) && diasBloqueados.get(fechaStr).completo);
         if (esPasado || esCerrado || esBloqueado) {
           celda.innerHTML = '<span class="cal-num">' + d + '</span>';
           celda.classList.add('disabled');
@@ -2816,7 +2832,7 @@
         const btn = document.createElement('button');
         btn.className = 'hora-btn';
         btn.textContent = h;
-        if (ocupadasSet.has(h)) {
+        if (ocupadasSet.has(h) || horaBloqueada(est.fecha, h)) {
           btn.classList.add('ocupada');
         } else {
           btn.addEventListener('click', () => {

@@ -222,6 +222,29 @@
     .btn-cancelar-modal:hover { border-color: rgba(242,237,215,0.3); color: var(--crema); }
     .modal-error { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.62rem; margin-top: 0.6rem; }
 
+    /* ── Mini calendario de bloqueo (selección múltiple) ── */
+    .bloq-cal-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.6rem; }
+    .bloq-cal-nav .agenda-rango { font-size: 0.78rem; }
+    .bloq-cal-dias { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; margin-bottom: 2px; }
+    .bloq-cal-dias span { text-align: center; font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--gris); text-transform: uppercase; padding: 0.2rem 0; }
+    .bloq-cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; margin-bottom: 0.6rem; }
+    .bloq-cal-d {
+      aspect-ratio: 1; min-height: 2.6rem; display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; border: 1.5px solid rgba(124,181,24,0.12); background: var(--bg3);
+      font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--crema); cursor: pointer;
+      position: relative; transition: all 0.15s;
+    }
+    .bloq-cal-d.vacio { visibility: hidden; cursor: default; }
+    .bloq-cal-d.pasado, .bloq-cal-d.cerrado { color: rgba(242,237,215,0.2); border-color: transparent; cursor: default; }
+    .bloq-cal-d.bloqueado-total { background: rgba(200,80,80,0.18); border-color: rgba(200,80,80,0.4); color: #e69; }
+    .bloq-cal-d.bloqueado-parcial { background: rgba(200,136,42,0.15); border-color: rgba(200,136,42,0.4); color: #f5a623; }
+    .bloq-cal-d.hoy:not(.sel) { border-color: rgba(124,181,24,0.4); }
+    .bloq-cal-d.sel { background: var(--verde); border-color: var(--verde); color: var(--negro); font-weight: 700; }
+    .bloq-sel-info { font-family: 'Space Mono', monospace; font-size: 0.68rem; color: var(--verde); margin-bottom: 1rem; min-height: 1em; }
+    .bloq-modo-row { display: flex; flex-direction: column; gap: 0.5rem; }
+    .bloq-modo-opt { display: flex; align-items: center; gap: 0.5rem; font-family: 'Crimson Pro', serif; font-size: 0.95rem; color: var(--crema); cursor: pointer; }
+    .bloq-modo-opt input { width: 1.1rem; height: 1.1rem; accent-color: var(--verde); cursor: pointer; }
+
     /* Toast */
     .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--bg3); border: 1px solid rgba(124,181,24,0.3); border-radius: 8px; padding: 0.7rem 1.4rem; font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--verde); opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 999; white-space: nowrap; }
     .toast.show { opacity: 1; }
@@ -608,19 +631,43 @@
       <div class="modal-titulo">Días bloqueados</div>
       <button class="modal-close" onclick="cerrarBloqueos()">✕</button>
     </div>
-    <p style="font-size:0.95rem;color:var(--gris);margin-bottom:1.2rem;">Bloquea días de vacaciones o festivos para que los clientes no puedan reservar.</p>
-    <div class="campos-2col" style="margin-bottom:1rem;">
-      <div class="campo-grupo" style="margin-bottom:0;">
-        <label class="campo-label">Fecha a bloquear</label>
-        <input class="campo-input" id="bFecha" type="date" />
-      </div>
-      <div class="campo-grupo" style="margin-bottom:0;">
-        <label class="campo-label">Motivo (opcional)</label>
-        <input class="campo-input" id="bMotivo" type="text" placeholder="Vacaciones, festivo..." />
+    <p style="font-size:0.9rem;color:var(--gris);margin-bottom:0.8rem;">Toca los días que quieras bloquear (puedes elegir varios a la vez).</p>
+
+    <div class="bloq-cal-nav">
+      <button class="agenda-btn" id="bloqCalPrev" type="button">←</button>
+      <div class="agenda-rango" id="bloqCalRango"></div>
+      <button class="agenda-btn" id="bloqCalNext" type="button">→</button>
+    </div>
+    <div class="bloq-cal-dias" id="bloqCalDias"></div>
+    <div class="bloq-cal-grid" id="bloqCalGrid"></div>
+    <div id="bloqSeleccionInfo" class="bloq-sel-info"></div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Qué bloquear</label>
+      <div class="bloq-modo-row">
+        <label class="bloq-modo-opt"><input type="radio" name="bloqModo" value="dia" checked /> Todo el día</label>
+        <label class="bloq-modo-opt"><input type="radio" name="bloqModo" value="horas" /> Solo un rango de horas</label>
       </div>
     </div>
-    <button class="btn-guardar" style="width:100%;margin-bottom:1.5rem;" onclick="agregarBloqueo()">Bloquear este día</button>
-    <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--verde);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem;">Días actualmente bloqueados</div>
+
+    <div class="campos-2col" id="bloqHorasRow" style="display:none;">
+      <div class="campo-grupo" style="margin-bottom:0;">
+        <label class="campo-label">Desde</label>
+        <select class="campo-select" id="bHoraInicio"></select>
+      </div>
+      <div class="campo-grupo" style="margin-bottom:0;">
+        <label class="campo-label">Hasta</label>
+        <select class="campo-select" id="bHoraFin"></select>
+      </div>
+    </div>
+
+    <div class="campo-grupo">
+      <label class="campo-label">Motivo (opcional)</label>
+      <input class="campo-input" id="bMotivo" type="text" placeholder="Vacaciones, festivo, dentista..." />
+    </div>
+
+    <button class="btn-guardar" style="width:100%;margin-bottom:1.3rem;" onclick="agregarBloqueo()" id="bBtnGuardar">Bloquear</button>
+    <div style="font-family:'Space Mono',monospace;font-size:0.65rem;color:var(--verde);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.6rem;">Días y tramos ya bloqueados</div>
     <div id="bloqueosList"></div>
   </div>
 </div>
@@ -1452,11 +1499,28 @@
   }
 
   // ── DÍAS BLOQUEADOS ──
+  let bloqCalMes = null;
+  let bloqDiasSel = new Set();
+  let bloqYaBloqueados = new Map(); // fecha -> 'total' | 'parcial'
+
+  const BLOQ_HORAS = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30','20:00'];
+
   window.abrirBloqueos = function() {
     document.getElementById('bloqueosOverlay').classList.add('open');
     document.body.style.overflow = 'hidden';
-    document.getElementById('bFecha').value = '';
     document.getElementById('bMotivo').value = '';
+    bloqDiasSel = new Set();
+    if (!bloqCalMes) { bloqCalMes = new Date(); bloqCalMes.setDate(1); }
+    document.querySelectorAll('input[name="bloqModo"]')[0].checked = true;
+    document.getElementById('bloqHorasRow').style.display = 'none';
+    if (!document.getElementById('bHoraInicio').options.length) {
+      BLOQ_HORAS.forEach(h => {
+        document.getElementById('bHoraInicio').add(new Option(h, h));
+        document.getElementById('bHoraFin').add(new Option(h, h));
+      });
+      document.getElementById('bHoraFin').value = '20:00';
+    }
+    renderBloqCalendario();
     cargarBloqueos();
   };
 
@@ -1466,10 +1530,88 @@
     document.body.style.overflow = '';
   };
 
+  document.querySelectorAll('input[name="bloqModo"]').forEach(r => {
+    r.addEventListener('change', () => {
+      document.getElementById('bloqHorasRow').style.display = r.value === 'horas' && r.checked ? 'grid' : 'none';
+    });
+  });
+
+  document.getElementById('bloqCalPrev').addEventListener('click', () => {
+    bloqCalMes.setMonth(bloqCalMes.getMonth() - 1);
+    renderBloqCalendario();
+  });
+  document.getElementById('bloqCalNext').addEventListener('click', () => {
+    bloqCalMes.setMonth(bloqCalMes.getMonth() + 1);
+    renderBloqCalendario();
+  });
+
+  function actualizarSeleccionInfo() {
+    const info = document.getElementById('bloqSeleccionInfo');
+    const n = bloqDiasSel.size;
+    info.textContent = n === 0 ? '' : n === 1 ? '1 día seleccionado' : n + ' días seleccionados';
+    document.getElementById('bBtnGuardar').textContent = n > 1 ? 'Bloquear ' + n + ' días' : 'Bloquear';
+  }
+
+  function renderBloqCalendario() {
+    document.getElementById('bloqCalRango').textContent =
+      bloqCalMes.toLocaleDateString('es', { month: 'long', year: 'numeric' }).replace(/^./, c => c.toUpperCase());
+
+    const diasCab = document.getElementById('bloqCalDias');
+    if (!diasCab.children.length) {
+      ['L','M','X','J','V','S','D'].forEach(d => { const s = document.createElement('span'); s.textContent = d; diasCab.appendChild(s); });
+    }
+
+    const grid = document.getElementById('bloqCalGrid');
+    grid.innerHTML = '';
+    const anio = bloqCalMes.getFullYear(), mes = bloqCalMes.getMonth();
+    const hoyStr = hoy();
+    const primerDia = new Date(anio, mes, 1);
+    let inicio = primerDia.getDay(); inicio = inicio === 0 ? 6 : inicio - 1;
+    for (let i = 0; i < inicio; i++) {
+      const e = document.createElement('div'); e.className = 'bloq-cal-d vacio'; grid.appendChild(e);
+    }
+    const totalDias = new Date(anio, mes + 1, 0).getDate();
+    for (let d = 1; d <= totalDias; d++) {
+      const fecha = new Date(anio, mes, d);
+      const fechaStr = isoLocal(fecha);
+      const diaSem = fecha.getDay();
+      const celda = document.createElement('div');
+      celda.className = 'bloq-cal-d';
+      celda.textContent = d;
+      const esPasado = fechaStr < hoyStr;
+      const esCerrado = diaSem === 0 || diaSem === 1;
+      if (esPasado || esCerrado) {
+        celda.classList.add(esPasado ? 'pasado' : 'cerrado');
+      } else {
+        if (fechaStr === hoyStr) celda.classList.add('hoy');
+        const estadoBloq = bloqYaBloqueados.get(fechaStr);
+        if (estadoBloq === 'total') celda.classList.add('bloqueado-total');
+        else if (estadoBloq === 'parcial') celda.classList.add('bloqueado-parcial');
+        if (bloqDiasSel.has(fechaStr)) celda.classList.add('sel');
+        celda.addEventListener('click', () => {
+          if (bloqDiasSel.has(fechaStr)) bloqDiasSel.delete(fechaStr); else bloqDiasSel.add(fechaStr);
+          celda.classList.toggle('sel');
+          actualizarSeleccionInfo();
+        });
+      }
+      grid.appendChild(celda);
+    }
+    actualizarSeleccionInfo();
+  }
+
   async function cargarBloqueos() {
     const cont = document.getElementById('bloqueosList');
     cont.innerHTML = '<div style="color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;">Cargando...</div>';
     const { data } = await db.from('dias_bloqueados').select('*').order('fecha');
+
+    bloqYaBloqueados = new Map();
+    (data || []).forEach(b => {
+      const esParcial = !!(b.hora_inicio && b.hora_fin);
+      if (!esParcial) bloqYaBloqueados.set(b.fecha, 'total');
+      else if (!bloqYaBloqueados.has(b.fecha)) bloqYaBloqueados.set(b.fecha, 'parcial');
+    });
+    renderBloqCalendario();
+
     if (!data || data.length === 0) {
       cont.innerHTML = '<div style="color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;">Sin días bloqueados.</div>';
       return;
@@ -1477,26 +1619,46 @@
     cont.innerHTML = '';
     data.forEach(b => {
       const d = new Date(b.fecha + 'T00:00:00');
-      const label = d.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+      const label = d.toLocaleDateString('es', { weekday: 'short', day: 'numeric', month: 'short' });
+      const tramo = (b.hora_inicio && b.hora_fin)
+        ? b.hora_inicio.slice(0,5) + '–' + b.hora_fin.slice(0,5)
+        : 'Todo el día';
       const row = document.createElement('div');
       row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0;border-bottom:1px solid rgba(124,181,24,0.08);gap:0.5rem;';
       row.innerHTML =
-        '<div><div style="font-size:1rem;color:var(--crema);">' + label.charAt(0).toUpperCase() + label.slice(1) + '</div>' +
+        '<div><div style="font-size:1rem;color:var(--crema);">' + label.charAt(0).toUpperCase() + label.slice(1) + ' <span style="color:var(--verde);font-family:Space Mono,monospace;font-size:0.72rem;">' + tramo + '</span></div>' +
         (b.motivo ? '<div style="font-family:Space Mono,monospace;font-size:0.6rem;color:var(--gris);">' + escapeHtml(b.motivo) + '</div>' : '') +
         '</div>' +
-        '<button onclick="eliminarBloqueo(\'' + b.id + '\')" style="background:rgba(200,80,80,0.15);border:1px solid rgba(200,80,80,0.3);color:#e06060;border-radius:5px;padding:0.3rem 0.7rem;min-height:2.75rem;font-family:Space Mono,monospace;font-size:0.6rem;cursor:pointer;">Quitar</button>';
+        '<button onclick="eliminarBloqueo(\'' + b.id + '\')" style="background:rgba(200,80,80,0.15);border:1px solid rgba(200,80,80,0.3);color:#e06060;border-radius:5px;padding:0.3rem 0.7rem;min-height:2.75rem;font-family:Space Mono,monospace;font-size:0.6rem;cursor:pointer;flex-shrink:0;">Quitar</button>';
       cont.appendChild(row);
     });
   }
 
   window.agregarBloqueo = async function() {
-    const fecha  = document.getElementById('bFecha').value;
-    const motivo = document.getElementById('bMotivo').value.trim();
-    if (!fecha) { mostrarToast('Elige una fecha'); return; }
-    const { error } = await db.from('dias_bloqueados').insert({ fecha, motivo: motivo || null });
-    if (error) { mostrarToast('Error: ' + (error.code === '23505' ? 'ese día ya está bloqueado' : error.message)); return; }
-    mostrarToast('✓ Día bloqueado');
-    document.getElementById('bFecha').value = '';
+    if (bloqDiasSel.size === 0) { mostrarToast('Elige al menos un día en el calendario'); return; }
+    const motivo = document.getElementById('bMotivo').value.trim() || null;
+    const modo = document.querySelector('input[name="bloqModo"]:checked').value;
+
+    let horaInicio = null, horaFin = null;
+    if (modo === 'horas') {
+      horaInicio = document.getElementById('bHoraInicio').value;
+      horaFin    = document.getElementById('bHoraFin').value;
+      if (horaFin <= horaInicio) { mostrarToast('La hora "hasta" debe ser posterior a "desde"'); return; }
+    }
+
+    const filas = [...bloqDiasSel].map(fecha => ({
+      fecha, motivo,
+      hora_inicio: horaInicio ? horaInicio + ':00' : null,
+      hora_fin: horaFin ? horaFin + ':00' : null,
+    }));
+
+    const btn = document.getElementById('bBtnGuardar');
+    btn.disabled = true;
+    const { error } = await db.from('dias_bloqueados').insert(filas);
+    btn.disabled = false;
+    if (error) { mostrarToast('Error: ' + error.message); return; }
+    mostrarToast(filas.length > 1 ? '✓ ' + filas.length + ' días bloqueados' : '✓ Día bloqueado');
+    bloqDiasSel = new Set();
     document.getElementById('bMotivo').value = '';
     cargarBloqueos();
   };
@@ -1504,7 +1666,7 @@
   window.eliminarBloqueo = async function(id) {
     const { error } = await db.from('dias_bloqueados').delete().eq('id', id);
     if (error) { mostrarToast('Error: ' + error.message); return; }
-    mostrarToast('✓ Día desbloqueado');
+    mostrarToast('✓ Desbloqueado');
     cargarBloqueos();
   };
 
