@@ -99,7 +99,7 @@
     /* List */
     .list-header { padding: 1rem 1.5rem 0.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
     .list-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.05em; color: var(--crema); }
-    .filter-sel { background: var(--bg3); border: 1px solid rgba(124,181,24,0.2); border-radius: 6px; padding: 0.5rem 0.8rem; color: var(--crema); font-family: 'Space Mono', monospace; font-size: 0.72rem; outline: none; cursor: pointer; }
+    .filter-sel { background: var(--bg3); border: 1px solid rgba(124,181,24,0.2); border-radius: 6px; padding: 0.5rem 0.8rem; min-height: 2.75rem; color: var(--crema); font-family: 'Space Mono', monospace; font-size: 0.72rem; outline: none; cursor: pointer; }
 
     /* Cards */
     #reservasList { padding: 0.5rem 1rem 5rem; }
@@ -203,18 +203,19 @@
     .campo-label { display: block; font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--gris); text-transform: uppercase; margin-bottom: 0.4rem; }
     .campo-input, .campo-select, .campo-textarea {
       width: 100%; background: var(--bg3); border: 1.5px solid rgba(124,181,24,0.18);
-      border-radius: 7px; padding: 0.7rem 0.9rem; color: var(--crema);
+      border-radius: 7px; padding: 0.7rem 0.9rem; min-height: 2.75rem; color: var(--crema);
       font-family: 'Crimson Pro', serif; font-size: 1rem; outline: none; transition: border-color 0.2s;
+      box-sizing: border-box;
     }
     .campo-input:focus, .campo-select:focus, .campo-textarea:focus { border-color: var(--verde); }
     .campo-select option { background: var(--bg3); }
     .campo-textarea { resize: vertical; min-height: 70px; }
     .campos-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
     .modal-footer { display: flex; gap: 0.75rem; margin-top: 1.5rem; }
-    .btn-guardar { flex: 1; background: var(--verde); border: none; border-radius: 7px; padding: 0.8rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
+    .btn-guardar { flex: 1; background: var(--verde); border: none; border-radius: 7px; padding: 0.8rem; min-height: 2.75rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
     .btn-guardar:hover { background: #8fd11e; }
     .btn-guardar:disabled { opacity: 0.4; cursor: default; }
-    .btn-cancelar-modal { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); padding: 0.8rem 1.2rem; border-radius: 7px; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
+    .btn-cancelar-modal { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); padding: 0.8rem 1.2rem; min-height: 2.75rem; border-radius: 7px; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
     .btn-cancelar-modal:hover { border-color: rgba(242,237,215,0.3); color: var(--crema); }
     .modal-error { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.62rem; margin-top: 0.6rem; }
 
@@ -1209,9 +1210,10 @@
       sel.appendChild(o);
     });
 
-    // Fecha por defecto: hoy
-    document.getElementById('mFecha').value = hoy();
-    actualizarHorasModal(hoy());
+    // Fecha por defecto: el día que se está viendo ahora mismo (no siempre "hoy")
+    const fechaInicial = id ? hoy() : diaSeleccionado;
+    document.getElementById('mFecha').value = fechaInicial;
+    actualizarHorasModal(fechaInicial);
 
     const histWrap  = document.getElementById('mHistorialWrap');
     const histLista = document.getElementById('mHistorialLista');
