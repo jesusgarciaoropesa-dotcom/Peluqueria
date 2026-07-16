@@ -287,7 +287,18 @@
     .agenda-head { display: grid; grid-template-columns: 3.5rem repeat(5,1fr) 0.85fr; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); }
     .agenda-hcell { padding: 0.55rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: center; text-transform: uppercase; letter-spacing: 0.08em; }
     .agenda-hcell.hoy-col { color: var(--verde); }
-    .agenda-hcell:first-child, .agenda-time { position: sticky; left: 0; z-index: 2; background: var(--negro); box-shadow: 1px 0 0 rgba(124,181,24,0.12); }
+    /* translateZ(0) fuerza su propia capa de composición: Safari/iOS tiene un bug
+       conocido donde las celdas position:sticky dentro de un grid con scroll
+       horizontal dejan "fantasmas" de la columna anterior mal repintados. */
+    .agenda-hcell:first-child, .agenda-time { position: sticky; left: 0; z-index: 2; background: var(--negro); box-shadow: 1px 0 0 rgba(124,181,24,0.12); -webkit-transform: translateZ(0); transform: translateZ(0); }
+    .agenda-hcell.bloqueada-col { color: #e69; }
+    .agenda-cell.bloqueada-total, .agenda-cell.bloqueada-parcial { cursor: default; }
+    .agenda-cell.bloqueada-total {
+      background: repeating-linear-gradient(45deg, rgba(200,80,80,0.14), rgba(200,80,80,0.14) 4px, rgba(200,80,80,0.05) 4px, rgba(200,80,80,0.05) 8px);
+    }
+    .agenda-cell.bloqueada-parcial {
+      background: repeating-linear-gradient(45deg, rgba(200,136,42,0.14), rgba(200,136,42,0.14) 4px, rgba(200,136,42,0.05) 4px, rgba(200,136,42,0.05) 8px);
+    }
     .agenda-row { display: grid; grid-template-columns: 3.5rem repeat(5,1fr) 0.85fr; border-bottom: 1px solid rgba(124,181,24,0.06); }
     .agenda-row:last-child { border-bottom: none; }
     .agenda-time { padding: 0.4rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: right; padding-right: 0.6rem; display: flex; align-items: center; justify-content: flex-end; background: var(--negro); }
@@ -894,16 +905,28 @@
     const fechaInicio = fechasOk[0].iso;
     const fechaFin = fechasOk[fechasOk.length - 1].iso;
 
-    const { data } = await db.from('reservas')
-      .select('*, servicios(nombre), clientes(nombre)')
-      .gte('fecha', fechaInicio).lte('fecha', fechaFin)
-      .neq('estado','cancelada').order('hora');
+    const [{ data }, { data: bloqueosData }] = await Promise.all([
+      db.from('reservas')
+        .select('*, servicios(nombre), clientes(nombre)')
+        .gte('fecha', fechaInicio).lte('fecha', fechaFin)
+        .neq('estado','cancelada').order('hora'),
+      db.from('dias_bloqueados')
+        .select('fecha,hora_inicio,hora_fin')
+        .gte('fecha', fechaInicio).lte('fecha', fechaFin),
+    ]);
 
     const mapaReservas = {};
     (data || []).forEach(r => {
       const key = r.fecha + '_' + r.hora.slice(0,5);
       if (!mapaReservas[key]) mapaReservas[key] = [];
       mapaReservas[key].push(r);
+    });
+
+    const bloqueosPorFecha = {};
+    (bloqueosData || []).forEach(b => {
+      if (!bloqueosPorFecha[b.fecha]) bloqueosPorFecha[b.fecha] = { entero: false, rangos: [] };
+      if (!b.hora_inicio) bloqueosPorFecha[b.fecha].entero = true;
+      else bloqueosPorFecha[b.fecha].rangos.push({ inicio: b.hora_inicio.slice(0,5), fin: b.hora_fin.slice(0,5) });
     });
 
     const hoyStr = hoy();
@@ -917,7 +940,10 @@
     let html = '<div class="agenda-head" style="grid-template-columns:' + gridCols + ';"><div class="agenda-hcell">Hora</div>';
     fechasOk.forEach((f) => {
       const esHoy = f.iso === hoyStr;
-      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + '">' + DNOM_CORTO[f.d.getDay()] + '<br><span style="font-size:0.75rem;color:' + (esHoy ? 'var(--verde)' : 'var(--crema)') + ';">' + f.d.getDate() + '</span></div>';
+      const bloqDia = bloqueosPorFecha[f.iso];
+      const esBloqueadoEntero = !!(bloqDia && bloqDia.entero);
+      const colorNum = esBloqueadoEntero ? '#e69' : (esHoy ? 'var(--verde)' : 'var(--crema)');
+      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + (esBloqueadoEntero ? ' bloqueada-col' : '') + '" title="' + (esBloqueadoEntero ? 'Día bloqueado' : '') + '">' + DNOM_CORTO[f.d.getDay()] + '<br><span style="font-size:0.75rem;color:' + colorNum + ';">' + f.d.getDate() + (esBloqueadoEntero ? ' 🔒' : '') + '</span></div>';
     });
     html += '</div>';
 
@@ -928,8 +954,13 @@
         const available = slotsPorColumna(f).includes(slot);
         const key = f.iso + '_' + slot;
         const ocupada = available && mapaReservas[key] && mapaReservas[key].length > 0;
-        const cellClickable = available && !ocupada;
-        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + (cellClickable ? ' agenda-cell-libre' : '') + '"' +
+        const bloqDia = bloqueosPorFecha[f.iso];
+        const bloqueadoEntero = !!(bloqDia && bloqDia.entero);
+        const bloqueadoParcial = !bloqueadoEntero && !!(bloqDia && bloqDia.rangos.some(r => slot >= r.inicio && slot < r.fin));
+        const bloqueada = bloqueadoEntero || bloqueadoParcial;
+        const claseBloq = bloqueadoEntero ? ' bloqueada-total' : (bloqueadoParcial ? ' bloqueada-parcial' : '');
+        const cellClickable = available && !ocupada && !bloqueada;
+        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + claseBloq + (cellClickable ? ' agenda-cell-libre' : '') + '"' +
           (cellClickable ? ' data-fecha="' + f.iso + '" data-hora="' + slot + '" onclick="confirmarNuevaReservaCelda(this)"' : '') + '>';
         if (available) {
           (mapaReservas[key] || []).forEach(r => {
@@ -946,9 +977,12 @@
 
     grid.innerHTML = html;
 
-    // Si el mes mostrado incluye hoy, dejar la vista centrada ahí en vez de en el día 1
+    // Si el mes mostrado incluye hoy, dejar la vista centrada ahí en vez de en el día 1.
+    // Se difiere al siguiente frame para no saltar antes de que el navegador
+    // termine de maquetar las nuevas columnas (en iOS eso deja fantasmas mal
+    // repintados junto a la columna fija de HORA).
     const colHoy = grid.querySelector('.agenda-hcell.hoy-col');
-    if (colHoy) colHoy.scrollIntoView({ behavior: 'auto', inline: 'start', block: 'nearest' });
+    if (colHoy) requestAnimationFrame(() => colHoy.scrollIntoView({ behavior: 'auto', inline: 'start', block: 'nearest' }));
   }
 
   function renderWeekTabs() {
