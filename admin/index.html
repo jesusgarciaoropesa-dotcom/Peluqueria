@@ -288,9 +288,12 @@
        contenedor que hace scroll, así que no depende en absoluto de sticky. */
     .agenda-table { display: flex; border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; margin: 0 1rem 4rem; overflow: hidden; }
     .agenda-horas-fija { flex: 0 0 3.5rem; width: 3.5rem; background: var(--negro); border-right: 1px solid rgba(124,181,24,0.12); }
-    .agenda-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-width: 0; }
+    /* scroll-snap: al soltar el dedo, el scroll siempre encaja en el borde de
+       un día completo en vez de quedarse a medias mostrando un trocito del
+       día anterior. */
+    .agenda-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-width: 0; scroll-snap-type: x proximity; }
     .agenda-grid { display: grid; width: max-content; min-width: 100%; }
-    .agenda-hcell { padding: 0.55rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: center; text-transform: uppercase; letter-spacing: 0.08em; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); }
+    .agenda-hcell { padding: 0.55rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: center; text-transform: uppercase; letter-spacing: 0.08em; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); scroll-snap-align: start; }
     .agenda-hcell.hoy-col { color: var(--verde); }
     .agenda-hcell.bloqueada-col { color: #e69; }
     .agenda-cell.bloqueada-total, .agenda-cell.bloqueada-parcial { cursor: default; }
