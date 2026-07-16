@@ -282,16 +282,16 @@
       font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--gris);
       letter-spacing: 0.05em;
     }
-    .agenda-wrap { overflow-x: auto; padding: 0 1rem 4rem; -webkit-overflow-scrolling: touch; }
-    /* Un único grid para cabecera + todas las filas (en vez de un grid por fila):
-       Safari/iOS es poco fiable con position:sticky cuando hay muchos grids
-       independientes anidados, uno por fila, cada uno con su propia celda
-       sticky — con un solo grid compartido solo hay un contexto sticky que
-       calcular y la columna HORA se queda pegada de forma consistente. */
-    .agenda-grid { display: grid; border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; width: max-content; min-width: 100%; }
+    /* La columna HORA ya NO usa position:sticky (Safari/iOS es poco fiable
+       fijando columnas dentro de un grid con scroll horizontal, incluso con
+       un solo grid compartido). En su lugar es una columna aparte, fuera del
+       contenedor que hace scroll, así que no depende en absoluto de sticky. */
+    .agenda-table { display: flex; border: 1px solid rgba(124,181,24,0.1); border-radius: 10px; margin: 0 1rem 4rem; overflow: hidden; }
+    .agenda-horas-fija { flex: 0 0 3.5rem; width: 3.5rem; background: var(--negro); border-right: 1px solid rgba(124,181,24,0.12); }
+    .agenda-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; flex: 1 1 auto; min-width: 0; }
+    .agenda-grid { display: grid; width: max-content; min-width: 100%; }
     .agenda-hcell { padding: 0.55rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: center; text-transform: uppercase; letter-spacing: 0.08em; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.12); }
     .agenda-hcell.hoy-col { color: var(--verde); }
-    .agenda-hcell:first-child, .agenda-time { position: sticky; left: 0; z-index: 2; background: var(--negro); box-shadow: 1px 0 0 rgba(124,181,24,0.12); }
     .agenda-hcell.bloqueada-col { color: #e69; }
     .agenda-cell.bloqueada-total, .agenda-cell.bloqueada-parcial { cursor: default; }
     .agenda-cell.bloqueada-total {
@@ -300,8 +300,8 @@
     .agenda-cell.bloqueada-parcial {
       background: repeating-linear-gradient(45deg, rgba(200,136,42,0.14), rgba(200,136,42,0.14) 4px, rgba(200,136,42,0.05) 4px, rgba(200,136,42,0.05) 8px);
     }
-    .agenda-time { padding: 0.4rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: right; padding-right: 0.6rem; display: flex; align-items: center; justify-content: flex-end; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.06); }
-    .agenda-cell { border-left: 1px solid rgba(124,181,24,0.06); border-bottom: 1px solid rgba(124,181,24,0.06); min-height: 2.4rem; padding: 0.25rem; position: relative; }
+    .agenda-time { padding: 0.4rem 0.3rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--gris); text-align: right; padding-right: 0.6rem; display: flex; align-items: center; justify-content: flex-end; background: var(--negro); border-bottom: 1px solid rgba(124,181,24,0.06); box-sizing: border-box; min-height: 2.4rem; }
+    .agenda-cell { border-left: 1px solid rgba(124,181,24,0.06); border-bottom: 1px solid rgba(124,181,24,0.06); min-height: 2.4rem; padding: 0.25rem; position: relative; box-sizing: border-box; }
     .agenda-cell-libre { cursor: pointer; transition: background 0.15s; }
     .agenda-cell-libre:hover, .agenda-cell-libre:active { background: rgba(124,181,24,0.1); }
     .agenda-cell.hoy-col { background: rgba(124,181,24,0.04); }
@@ -327,7 +327,7 @@
     @media (max-width: 640px) {
       .agenda-scroll-hint { display: block; }
       .agenda-chip { padding: 0.35rem 0.45rem; font-size: 0.62rem; min-height: 1.9rem; }
-      .agenda-cell { min-height: 2.9rem; }
+      .agenda-cell, .agenda-time { min-height: 2.9rem; }
       .agenda-hcell { padding: 0.7rem 0.4rem; font-size: 0.65rem; }
       .agenda-nav { padding: 0.7rem 1rem; gap: 0.5rem; }
       .agenda-btn { padding: 0.35rem 0.6rem; font-size: 0.6rem; }
@@ -546,8 +546,11 @@
       <button class="agenda-btn" id="agendaNext">Mes siguiente →</button>
     </div>
     <div class="agenda-scroll-hint">◄ desliza para ver el resto de días ►</div>
-    <div class="agenda-wrap">
-      <div class="agenda-grid" id="agendaGrid"></div>
+    <div class="agenda-table">
+      <div class="agenda-horas-fija" id="agendaHoras"></div>
+      <div class="agenda-wrap">
+        <div class="agenda-grid" id="agendaGrid"></div>
+      </div>
     </div>
   </div>
 
@@ -884,8 +887,10 @@
   const DNOM_CORTO = ['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 
   async function renderAgenda() {
-    const grid = document.getElementById('agendaGrid');
+    const grid  = document.getElementById('agendaGrid');
+    const horas = document.getElementById('agendaHoras');
     grid.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;"><div class="spinner"></div><br>Cargando...</div>';
+    horas.innerHTML = '';
 
     document.getElementById('agendaRango').textContent =
       agendaMes.toLocaleDateString('es', { month:'long', year:'numeric' }).replace(/^./, c => c.toUpperCase());
@@ -934,22 +939,29 @@
     const slotsPorColumna = (f) => f.esSabado ? slotsSabado : slotsEntreSemana;
     const allSlots = [...new Set([...slotsEntreSemana, ...slotsSabado])].sort();
 
-    const gridCols = '3.5rem repeat(' + fechasOk.length + ', minmax(4.2rem, 1fr))';
+    const gridCols = 'repeat(' + fechasOk.length + ', minmax(4.2rem, 1fr))';
     grid.style.gridTemplateColumns = gridCols;
 
-    // Un único grid plano (cabecera + todas las filas como hijos directos, en
-    // orden de fila) en vez de un <div> por fila, cada uno con su propio grid.
-    let html = '<div class="agenda-hcell">Hora</div>';
+    // Columna de horas: elemento aparte, fuera del contenedor con scroll
+    // horizontal, para no depender de position:sticky (poco fiable en
+    // Safari/iOS dentro de un grid con scroll). El grid de la derecha solo
+    // lleva las columnas de los días.
+    let htmlHoras = '<div class="agenda-hcell" data-row="0">Hora</div>';
+    allSlots.forEach((slot, i) => {
+      htmlHoras += '<div class="agenda-time" data-row="' + (i + 1) + '">' + slot + '</div>';
+    });
+    horas.innerHTML = htmlHoras;
+
+    let html = '';
     fechasOk.forEach((f) => {
       const esHoy = f.iso === hoyStr;
       const bloqDia = bloqueosPorFecha[f.iso];
       const esBloqueadoEntero = !!(bloqDia && bloqDia.entero);
       const colorNum = esBloqueadoEntero ? '#e69' : (esHoy ? 'var(--verde)' : 'var(--crema)');
-      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + (esBloqueadoEntero ? ' bloqueada-col' : '') + '" title="' + (esBloqueadoEntero ? 'Día bloqueado' : '') + '">' + DNOM_CORTO[f.d.getDay()] + '<br><span style="font-size:0.75rem;color:' + colorNum + ';">' + f.d.getDate() + (esBloqueadoEntero ? ' 🔒' : '') + '</span></div>';
+      html += '<div class="agenda-hcell' + (esHoy ? ' hoy-col' : '') + (esBloqueadoEntero ? ' bloqueada-col' : '') + '" data-row="0" title="' + (esBloqueadoEntero ? 'Día bloqueado' : '') + '">' + DNOM_CORTO[f.d.getDay()] + '<br><span style="font-size:0.75rem;color:' + colorNum + ';">' + f.d.getDate() + (esBloqueadoEntero ? ' 🔒' : '') + '</span></div>';
     });
 
-    allSlots.forEach(slot => {
-      html += '<div class="agenda-time">' + slot + '</div>';
+    allSlots.forEach((slot, i) => {
       fechasOk.forEach((f) => {
         const esHoy = f.iso === hoyStr;
         const available = slotsPorColumna(f).includes(slot);
@@ -961,7 +973,7 @@
         const bloqueada = bloqueadoEntero || bloqueadoParcial;
         const claseBloq = bloqueadoEntero ? ' bloqueada-total' : (bloqueadoParcial ? ' bloqueada-parcial' : '');
         const cellClickable = available && !ocupada && !bloqueada;
-        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + claseBloq + (cellClickable ? ' agenda-cell-libre' : '') + '"' +
+        html += '<div class="agenda-cell' + (esHoy ? ' hoy-col' : '') + claseBloq + (cellClickable ? ' agenda-cell-libre' : '') + '" data-row="' + (i + 1) + '"' +
           (cellClickable ? ' data-fecha="' + f.iso + '" data-hora="' + slot + '" onclick="confirmarNuevaReservaCelda(this)"' : '') + '>';
         if (available) {
           (mapaReservas[key] || []).forEach(r => {
@@ -977,12 +989,27 @@
 
     grid.innerHTML = html;
 
-    // Si el mes mostrado incluye hoy, dejar la vista centrada ahí en vez de en el día 1.
-    // Se difiere al siguiente frame para no saltar antes de que el navegador
-    // termine de maquetar las nuevas columnas (en iOS eso deja fantasmas mal
-    // repintados junto a la columna fija de HORA).
-    const colHoy = grid.querySelector('.agenda-hcell.hoy-col');
-    if (colHoy) requestAnimationFrame(() => colHoy.scrollIntoView({ behavior: 'auto', inline: 'start', block: 'nearest' }));
+    // Las dos columnas se maquetan por separado, así que si una celda de día
+    // crece más que su min-height (p.ej. dos citas en el mismo hueco), su
+    // fila puede quedar más alta que la celda de HORA correspondiente. Se
+    // igualan las alturas por fila tras el primer pintado.
+    requestAnimationFrame(() => {
+      const alturas = {};
+      grid.querySelectorAll('[data-row]').forEach(c => {
+        const h = c.getBoundingClientRect().height;
+        const idx = c.dataset.row;
+        if (!alturas[idx] || h > alturas[idx]) alturas[idx] = h;
+      });
+      horas.querySelectorAll('[data-row]').forEach(t => {
+        const h = alturas[t.dataset.row];
+        if (h) t.style.height = h + 'px';
+      });
+
+      // Si el mes mostrado incluye hoy, dejar la vista centrada ahí en vez
+      // de en el día 1.
+      const colHoy = grid.querySelector('.agenda-hcell.hoy-col');
+      if (colHoy) colHoy.scrollIntoView({ behavior: 'auto', inline: 'start', block: 'nearest' });
+    });
   }
 
   function renderWeekTabs() {
