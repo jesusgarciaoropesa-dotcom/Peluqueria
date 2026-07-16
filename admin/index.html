@@ -228,6 +228,8 @@
     .btn-cancelar-modal { background: none; border: 1px solid rgba(124,181,24,0.2); color: var(--gris); padding: 0.8rem 1.2rem; min-height: 2.75rem; border-radius: 7px; font-family: 'Space Mono', monospace; font-size: 0.65rem; cursor: pointer; transition: all 0.2s; }
     .btn-cancelar-modal:hover { border-color: rgba(242,237,215,0.3); color: var(--crema); }
     .modal-error { color: #ff6b6b; font-family: 'Space Mono', monospace; font-size: 0.62rem; margin-top: 0.6rem; }
+    .campo-aviso { color: #f5a623; font-family: 'Space Mono', monospace; font-size: 0.58rem; margin-top: 0.3rem; min-height: 1em; }
+    .campo-select option:disabled { color: #806a4a; }
 
     /* ── Mini calendario de bloqueo (selección múltiple) ── */
     .bloq-cal-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.6rem; }
@@ -593,6 +595,7 @@
       <div class="campo-grupo">
         <label class="campo-label">Fecha</label>
         <input class="campo-input" id="mFecha" type="date" />
+        <div class="campo-aviso" id="mFechaAviso"></div>
       </div>
       <div class="campo-grupo">
         <label class="campo-label">Hora</label>
@@ -1400,18 +1403,55 @@
     editandoId = null;
   };
 
-  function actualizarHorasModal(fecha, horaActual) {
+  async function actualizarHorasModal(fecha, horaActual) {
     const slots = slotsDelDia(fecha);
-    const sel = document.getElementById('mHora');
+    const sel   = document.getElementById('mHora');
+    const aviso = document.getElementById('mFechaAviso');
     sel.innerHTML = '';
+    aviso.textContent = '';
     if (slots.length === 0) {
       const o = document.createElement('option');
       o.textContent = 'Día cerrado'; sel.appendChild(o); return;
     }
+    // Placeholder inmediato mientras llega la comprobación de ocupación/bloqueos
     slots.forEach(h => {
       const o = document.createElement('option');
       o.value = h; o.textContent = h;
       if (h === horaActual) o.selected = true;
+      sel.appendChild(o);
+    });
+
+    let queryOcup = db.from('reservas').select('hora').eq('fecha', fecha).neq('estado', 'cancelada');
+    if (editandoId) queryOcup = queryOcup.neq('id', editandoId);
+    const [{ data: ocupadas }, { data: bloqueos }] = await Promise.all([
+      queryOcup,
+      db.from('dias_bloqueados').select('hora_inicio,hora_fin').eq('fecha', fecha),
+    ]);
+    // Si el usuario ya cambió de fecha mientras llegaban los datos, no pisar su selección actual
+    if (document.getElementById('mFecha').value !== fecha) return;
+
+    const ocupadasSet = new Set((ocupadas || []).map(r => r.hora ? r.hora.slice(0,5) : null));
+    const bloqueadoEntero = (bloqueos || []).some(b => !b.hora_inicio);
+    const rangosBloqueados = (bloqueos || [])
+      .filter(b => b.hora_inicio && b.hora_fin)
+      .map(b => ({ inicio: b.hora_inicio.slice(0,5), fin: b.hora_fin.slice(0,5) }));
+
+    if (bloqueadoEntero) {
+      aviso.textContent = '⚠ Este día está bloqueado por completo.';
+    } else if (rangosBloqueados.length) {
+      aviso.textContent = '⚠ Bloqueado: ' + rangosBloqueados.map(r => r.inicio + '–' + r.fin).join(', ');
+    }
+
+    sel.innerHTML = '';
+    slots.forEach(h => {
+      const o = document.createElement('option');
+      o.value = h;
+      const esHoraActual   = h === horaActual;
+      const horaBloqueada  = bloqueadoEntero || rangosBloqueados.some(r => h >= r.inicio && h < r.fin);
+      const horaOcupada    = ocupadasSet.has(h);
+      o.textContent = h + (horaBloqueada ? ' · Bloqueada' : horaOcupada ? ' · Ocupada' : '');
+      if ((horaBloqueada || horaOcupada) && !esHoraActual) o.disabled = true;
+      if (esHoraActual) o.selected = true;
       sel.appendChild(o);
     });
   }
