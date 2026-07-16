@@ -211,8 +211,15 @@
     .campo-input:focus, .campo-select:focus, .campo-textarea:focus { border-color: var(--verde); }
     .campo-select option { background: var(--bg3); }
     .campo-textarea { resize: vertical; min-height: 2.75rem; height: 2.75rem; }
-    /* input[type=date] en iOS Safari puede ignorar el width y desbordar su caja */
-    input.campo-input[type="date"] { width: 100%; max-width: 100%; }
+    /* input[type=date] en iOS Safari puede ignorar el width y desbordar su caja,
+       y renderiza su propio estilo nativo (texto centrado, altura distinta) que
+       ignora el resto de reglas de .campo-input — forzamos appearance:none para
+       que se pinte como un campo de texto normal y comparta el mismo aspecto. */
+    input.campo-input[type="date"] {
+      width: 100%; max-width: 100%;
+      -webkit-appearance: none; appearance: none;
+      text-align: left;
+    }
     .campos-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; min-width: 0; max-width: 100%; }
     .modal-footer { display: flex; gap: 0.6rem; margin-top: 0.9rem; }
     .btn-guardar { flex: 1; background: var(--verde); border: none; border-radius: 7px; padding: 0.8rem; min-height: 2.75rem; color: var(--negro); font-family: 'Space Mono', monospace; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; transition: all 0.2s; }
@@ -1439,6 +1446,19 @@
       if (ocupada && ocupada.length > 0) {
         errDiv.textContent = 'Ese horario ya está ocupado por otra reserva. Elige otra fecha u hora.';
         return;
+      }
+
+      const { data: bloqueos } = await db.from('dias_bloqueados')
+        .select('hora_inicio,hora_fin').eq('fecha', fecha);
+      if (bloqueos && bloqueos.length) {
+        const bloqueadoEntero = bloqueos.some(b => !b.hora_inicio);
+        const bloqueadoParcial = bloqueos.some(b =>
+          b.hora_inicio && b.hora_fin && hora >= b.hora_inicio.slice(0,5) && hora < b.hora_fin.slice(0,5)
+        );
+        if (bloqueadoEntero || bloqueadoParcial) {
+          errDiv.textContent = 'Ese día u horario está bloqueado. Elige otra fecha u hora.';
+          return;
+        }
       }
     }
 
