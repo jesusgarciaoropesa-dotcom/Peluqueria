@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const BOT_TOKEN    = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const CHAT_ID      = Deno.env.get("TELEGRAM_CHAT_ID")!;
 const CRON_SECRET  = Deno.env.get("CRON_SECRET"); // opcional: si está configurado, se exige
+const NEGOCIO_ID   = "29a07dff-f7c7-4dc8-9e22-d1193debbb86"; // WTJ Barber Shop
 
 function escapeHtml(str: string): string {
   return String(str ?? "").replace(/[&<>"']/g, (c) =>
@@ -44,6 +45,7 @@ serve(async (req) => {
   // ── Agenda del día ──
   const { data: reservasHoy } = await db.from("reservas")
     .select("hora,estado,cliente_id,servicio_id")
+    .eq("negocio_id", NEGOCIO_ID)
     .eq("fecha", hoy)
     .in("estado", ["pendiente","confirmada"])
     .order("hora");
@@ -89,8 +91,8 @@ serve(async (req) => {
     const hasta = new Date(lunesAnt.getTime() + 6 * 86400000).toLocaleDateString("en-CA");
 
     const { data: semana } = await db.from("reservas")
-      .select("estado,servicio_id").gte("fecha", desde).lte("fecha", hasta);
-    const { data: svcs } = await db.from("servicios").select("id,precio_desde");
+      .select("estado,servicio_id").eq("negocio_id", NEGOCIO_ID).gte("fecha", desde).lte("fecha", hasta);
+    const { data: svcs } = await db.from("servicios").select("id,precio_desde").eq("negocio_id", NEGOCIO_ID);
     const pMap: Record<string, number> = {};
     (svcs || []).forEach((s: any) => { pMap[s.id] = s.precio_desde || 0; });
 

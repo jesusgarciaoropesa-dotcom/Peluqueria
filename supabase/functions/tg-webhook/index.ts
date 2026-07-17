@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const BOT_TOKEN      = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
 const CHAT_ID        = Deno.env.get("TELEGRAM_CHAT_ID")!;
 const WEBHOOK_SECRET = Deno.env.get("TELEGRAM_WEBHOOK_SECRET"); // opcional: si está configurado, se exige
+const NEGOCIO_ID     = "29a07dff-f7c7-4dc8-9e22-d1193debbb86"; // WTJ Barber Shop
 
 function escapeHtml(str: string): string {
   return String(str ?? "").replace(/[&<>"']/g, (c) =>
@@ -66,6 +67,7 @@ const MESES_CORTO = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct"
 async function reservasDelDia(db: ReturnType<typeof createClient>, fecha: string) {
   const { data: reservas } = await db.from("reservas")
     .select("id,hora,estado,cliente_id,servicio_id")
+    .eq("negocio_id", NEGOCIO_ID)
     .eq("fecha", fecha)
     .in("estado", ["pendiente","confirmada"])
     .order("hora");
@@ -94,7 +96,7 @@ async function proximosDiasHabiles(db: ReturnType<typeof createClient>, n = 7): 
   const from = isoMadrid(1);
   const to = isoMadrid(30);
   const { data: bloqueados } = await db.from("dias_bloqueados")
-    .select("fecha,hora_inicio").gte("fecha", from).lte("fecha", to);
+    .select("fecha,hora_inicio").eq("negocio_id", NEGOCIO_ID).gte("fecha", from).lte("fecha", to);
   // Solo excluir el día si está bloqueado entero (hora_inicio null) — un
   // tramo parcial no debe quitar el día completo del selector.
   const bloqSet = new Set((bloqueados || []).filter((b: any) => !b.hora_inicio).map((b: any) => b.fecha));
@@ -204,11 +206,11 @@ serve(async (req) => {
         const todosSlots = slotsDelDia(dow);
 
         const { data: ocupadas } = await db.from("reservas")
-          .select("hora").eq("fecha", fecha).in("estado", ["pendiente","confirmada"]);
+          .select("hora").eq("negocio_id", NEGOCIO_ID).eq("fecha", fecha).in("estado", ["pendiente","confirmada"]);
         const ocupSet = new Set((ocupadas || []).map((r: any) => r.hora?.slice(0, 5)));
 
         const { data: bloqueos } = await db.from("dias_bloqueados")
-          .select("hora_inicio,hora_fin").eq("fecha", fecha);
+          .select("hora_inicio,hora_fin").eq("negocio_id", NEGOCIO_ID).eq("fecha", fecha);
         const rangosBloqueados = (bloqueos || [])
           .filter((b: any) => b.hora_inicio && b.hora_fin)
           .map((b: any) => ({ inicio: b.hora_inicio.slice(0, 5), fin: b.hora_fin.slice(0, 5) }));
@@ -280,12 +282,12 @@ serve(async (req) => {
         // Upsert client by phone
         let clienteId: string | null = null;
         const { data: existente } = await db.from("clientes")
-          .update({ nombre }).eq("telefono", telefono).select("id").single();
+          .update({ nombre }).eq("telefono", telefono).eq("negocio_id", NEGOCIO_ID).select("id").single();
         if (existente?.id) {
           clienteId = existente.id;
         } else {
           const { data: nuevo } = await db.from("clientes")
-            .insert({ nombre, telefono }).select("id").single();
+            .insert({ nombre, telefono, negocio_id: NEGOCIO_ID }).select("id").single();
           clienteId = nuevo?.id || null;
         }
 
@@ -295,7 +297,7 @@ serve(async (req) => {
         }
 
         const { data: resData, error: resErr } = await db.from("reservas")
-          .insert({ cliente_id: clienteId, servicio_id, fecha, hora: hora + ":00", estado: "confirmada" })
+          .insert({ cliente_id: clienteId, servicio_id, fecha, hora: hora + ":00", estado: "confirmada", negocio_id: NEGOCIO_ID })
           .select("id").single();
 
         if (resErr) {
@@ -397,7 +399,7 @@ serve(async (req) => {
       const nombre   = toks.slice(0, -1).join(" ");
 
       const { data: servicios } = await db.from("servicios")
-        .select("id,nombre,precio_desde").order("nombre");
+        .select("id,nombre,precio_desde").eq("negocio_id", NEGOCIO_ID).order("nombre");
 
       if (!servicios?.length) {
         await tg(chatId, `❌ No hay servicios configurados.`);
@@ -480,6 +482,7 @@ serve(async (req) => {
 
     const { data: reservas } = await db.from("reservas")
       .select("fecha,hora,estado,cliente_id")
+      .eq("negocio_id", NEGOCIO_ID)
       .gte("fecha", desde).lte("fecha", hasta)
       .in("estado", ["pendiente","confirmada"])
       .order("fecha").order("hora");
@@ -513,6 +516,7 @@ serve(async (req) => {
     const ahora = new Date().toLocaleTimeString("en-GB", { timeZone: "Europe/Madrid", hour: "2-digit", minute: "2-digit" });
     const { data: reservas } = await db.from("reservas")
       .select("id,fecha,hora,estado,cliente_id,servicio_id")
+      .eq("negocio_id", NEGOCIO_ID)
       .eq("fecha", hoy)
       .in("estado", ["pendiente","confirmada"])
       .gte("hora", ahora + ":00")
@@ -543,6 +547,7 @@ serve(async (req) => {
     if (!parts[1]) {
       const { data: pendientes } = await db.from("reservas")
         .select("id,fecha,hora,cliente_id")
+        .eq("negocio_id", NEGOCIO_ID)
         .eq("estado", "pendiente")
         .gte("fecha", isoMadrid())
         .order("fecha").order("hora")
@@ -575,6 +580,7 @@ serve(async (req) => {
       const sid = parts[1];
       const { data: rs } = await db.from("reservas")
         .select("id,estado,cliente_id,fecha,hora")
+        .eq("negocio_id", NEGOCIO_ID)
         .filter("id::text", "ilike", `${sid}%`)
         .limit(1);
       const r = rs?.[0];
@@ -597,6 +603,7 @@ serve(async (req) => {
       const sid = parts[1];
       const { data: rs } = await db.from("reservas")
         .select("id,estado,cliente_id,fecha,hora")
+        .eq("negocio_id", NEGOCIO_ID)
         .filter("id::text", "ilike", `${sid}%`)
         .limit(1);
       const r = rs?.[0];
@@ -628,7 +635,7 @@ serve(async (req) => {
         await tg(chatId, `⚠️ ${hora} no es un horario válido.\n\nSlots ese día: ${slots.join(" · ")}`);
       } else {
         const { data } = await db.from("reservas")
-          .select("id").eq("fecha", fecha).eq("hora", hora + ":00")
+          .select("id").eq("negocio_id", NEGOCIO_ID).eq("fecha", fecha).eq("hora", hora + ":00")
           .in("estado", ["pendiente","confirmada"]).limit(1);
         await tg(chatId, data?.length
           ? `🔴 ${fechaLabel(fecha)} a las ${hora} ya está ocupado.`
@@ -644,7 +651,7 @@ serve(async (req) => {
       await tg(chatId, `Uso: /buscar <nombre>\n\nEjemplo: /buscar Juan`);
     } else {
       const { data: clientes } = await db.from("clientes")
-        .select("id,nombre,telefono").ilike("nombre", `%${nombre}%`).limit(5);
+        .select("id,nombre,telefono").eq("negocio_id", NEGOCIO_ID).ilike("nombre", `%${nombre}%`).limit(5);
       if (!clientes?.length) {
         await tg(chatId, `🔍 Sin resultados para "${escapeHtml(nombre)}".`);
       } else {
@@ -676,11 +683,11 @@ serve(async (req) => {
       // Ya no hay restricción de fecha única (ahora puede haber varios
       // tramos por día) — comprobar a mano si ya estaba bloqueado entero.
       const { data: yaBloqueado } = await db.from("dias_bloqueados")
-        .select("id").eq("fecha", fecha).is("hora_inicio", null).limit(1);
+        .select("id").eq("negocio_id", NEGOCIO_ID).eq("fecha", fecha).is("hora_inicio", null).limit(1);
       if (yaBloqueado && yaBloqueado.length > 0) {
         await tg(chatId, `ℹ️ El ${fecha} ya estaba bloqueado entero.`);
       } else {
-        const { error } = await db.from("dias_bloqueados").insert({ fecha, motivo });
+        const { error } = await db.from("dias_bloqueados").insert({ fecha, motivo, negocio_id: NEGOCIO_ID });
         if (error) {
           await tg(chatId, `❌ Error: ${escapeHtml(error.message)}`);
         } else {
@@ -695,7 +702,7 @@ serve(async (req) => {
     if (!fecha) {
       await tg(chatId, `Uso: /desbloquear <fecha>\n\nEjemplo: /desbloquear 2026-07-15`);
     } else {
-      await db.from("dias_bloqueados").delete().eq("fecha", fecha);
+      await db.from("dias_bloqueados").delete().eq("negocio_id", NEGOCIO_ID).eq("fecha", fecha);
       await tg(chatId, `🔓 Desbloqueado: ${fechaLabel(fecha)}`);
     }
 
@@ -710,8 +717,8 @@ serve(async (req) => {
     const hasta = new Date(lunes.getTime() + 6 * 86400000).toLocaleDateString("en-CA");
 
     const { data: reservas } = await db.from("reservas")
-      .select("estado,servicio_id").gte("fecha", desde).lte("fecha", hasta);
-    const { data: svcs } = await db.from("servicios").select("id,precio_desde");
+      .select("estado,servicio_id").eq("negocio_id", NEGOCIO_ID).gte("fecha", desde).lte("fecha", hasta);
+    const { data: svcs } = await db.from("servicios").select("id,precio_desde").eq("negocio_id", NEGOCIO_ID);
     const pMap: Record<string, number> = {};
     (svcs || []).forEach((s: any) => { pMap[s.id] = s.precio_desde || 0; });
 
