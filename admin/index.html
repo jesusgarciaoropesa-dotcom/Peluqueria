@@ -715,6 +715,7 @@
   const SUPA_URL = 'https://gimoqpusrdltlkrwsykr.supabase.co';
   const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbW9xcHVzcmRsdGxrcndzeWtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDA0NDIsImV4cCI6MjA5Nzk3NjQ0Mn0.xmxP3TGAkXNPsrIKSYj1A-NXrIN1JIyzl9Fv6_FP8Dw';
   const db = supabase.createClient(SUPA_URL, SUPA_KEY);
+  const NEGOCIO_ID = '29a07dff-f7c7-4dc8-9e22-d1193debbb86'; // WTJ Barber Shop
 
   let vista = 'hoy';
   let diaSeleccionado = hoy();
@@ -833,7 +834,7 @@
 
   // ── SERVICIOS ──
   async function cargarServicios() {
-    const { data } = await db.from('servicios').select('*').order('precio_desde');
+    const { data } = await db.from('servicios').select('*').eq('negocio_id', NEGOCIO_ID).order('precio_desde');
     if (data) serviciosData = data;
   }
 
@@ -915,10 +916,12 @@
     const [{ data }, { data: bloqueosData }] = await Promise.all([
       db.from('reservas')
         .select('*, servicios(nombre), clientes(nombre)')
+        .eq('negocio_id', NEGOCIO_ID)
         .gte('fecha', fechaInicio).lte('fecha', fechaFin)
         .neq('estado','cancelada').order('hora'),
       db.from('dias_bloqueados')
         .select('fecha,hora_inicio,hora_fin')
+        .eq('negocio_id', NEGOCIO_ID)
         .gte('fecha', fechaInicio).lte('fecha', fechaFin),
     ]);
 
@@ -1042,7 +1045,7 @@
 
   // ── ESTADÍSTICAS CABECERA ──
   async function cargarEstadisticas() {
-    const { data } = await db.from('reservas').select('estado').eq('fecha', hoy());
+    const { data } = await db.from('reservas').select('estado').eq('negocio_id', NEGOCIO_ID).eq('fecha', hoy());
     if (!data) return;
     document.getElementById('statTotal').textContent = data.length || '0';
     document.getElementById('statPend').textContent  = data.filter(r => r.estado === 'pendiente').length  || '0';
@@ -1063,6 +1066,7 @@
 
     const { data: raw, error } = await db.from('reservas')
       .select('id, estado, fecha, cliente_id, clientes(nombre), servicios(nombre, precio_desde)')
+      .eq('negocio_id', NEGOCIO_ID)
       .gte('fecha', inicio6m)
       .neq('estado', 'cancelada');
 
@@ -1192,7 +1196,8 @@
     const list = document.getElementById('reservasList');
     list.innerHTML = '<div class="empty-msg"><div class="spinner"></div><br>Cargando...</div>';
     let query = db.from('reservas')
-      .select('*, servicios(nombre, duracion_minutos), clientes(nombre, telefono)');
+      .select('*, servicios(nombre, duracion_minutos), clientes(nombre, telefono)')
+      .eq('negocio_id', NEGOCIO_ID);
     const titulo = document.getElementById('listTitle');
     if (vista === 'hoy') {
       query = query.eq('fecha', hoy()).order('hora');
@@ -1298,7 +1303,7 @@
 
   // ── CAMBIAR ESTADO RÁPIDO ──
   window.cambiarEstado = async function(id, nuevoEstado) {
-    const { error } = await db.from('reservas').update({ estado: nuevoEstado }).eq('id', id);
+    const { error } = await db.from('reservas').update({ estado: nuevoEstado }).eq('id', id).eq('negocio_id', NEGOCIO_ID);
     if (error) { mostrarToast('Error: ' + error.message); return; }
     todasReservas = todasReservas.map(r => r.id === id ? { ...r, estado: nuevoEstado } : r);
     renderLista();
@@ -1401,6 +1406,7 @@
       db.from('reservas')
         .select('*, servicios(nombre), clientes(nombre,telefono)')
         .eq('id', id)
+        .eq('negocio_id', NEGOCIO_ID)
         .single()
         .then(({ data: r, error }) => {
           if (editandoId !== id) return; // el modal ya se cerró o se abrió otra reserva mientras tanto
@@ -1423,6 +1429,7 @@
             db.from('reservas')
               .select('id,fecha,hora,estado,servicios(nombre)')
               .eq('cliente_id', r.cliente_id)
+              .eq('negocio_id', NEGOCIO_ID)
               .neq('id', id)
               .order('fecha', { ascending: false })
               .limit(10)
@@ -1485,11 +1492,11 @@
       sel.appendChild(o);
     });
 
-    let queryOcup = db.from('reservas').select('hora').eq('fecha', fecha).neq('estado', 'cancelada');
+    let queryOcup = db.from('reservas').select('hora').eq('negocio_id', NEGOCIO_ID).eq('fecha', fecha).neq('estado', 'cancelada');
     if (editandoId) queryOcup = queryOcup.neq('id', editandoId);
     const [{ data: ocupadas }, { data: bloqueos }] = await Promise.all([
       queryOcup,
-      db.from('dias_bloqueados').select('hora_inicio,hora_fin').eq('fecha', fecha),
+      db.from('dias_bloqueados').select('hora_inicio,hora_fin').eq('negocio_id', NEGOCIO_ID).eq('fecha', fecha),
     ]);
     // Si el usuario ya cambió de fecha mientras llegaban los datos, no pisar su selección actual
     if (document.getElementById('mFecha').value !== fecha) return;
@@ -1544,7 +1551,7 @@
     // Comprobar que ese hueco sigue libre (o es el mismo que ya tenía esta reserva)
     if (estado !== 'cancelada') {
       let queryOcupada = db.from('reservas').select('id')
-        .eq('fecha', fecha).eq('hora', hora + ':00').neq('estado', 'cancelada');
+        .eq('negocio_id', NEGOCIO_ID).eq('fecha', fecha).eq('hora', hora + ':00').neq('estado', 'cancelada');
       if (editandoId) queryOcupada = queryOcupada.neq('id', editandoId);
       const { data: ocupada } = await queryOcupada.limit(1);
       if (ocupada && ocupada.length > 0) {
@@ -1553,7 +1560,7 @@
       }
 
       const { data: bloqueos } = await db.from('dias_bloqueados')
-        .select('hora_inicio,hora_fin').eq('fecha', fecha);
+        .select('hora_inicio,hora_fin').eq('negocio_id', NEGOCIO_ID).eq('fecha', fecha);
       if (bloqueos && bloqueos.length) {
         const bloqueadoEntero = bloqueos.some(b => !b.hora_inicio);
         const bloqueadoParcial = bloqueos.some(b =>
@@ -1571,14 +1578,14 @@
     // Obtener o crear cliente
     let clienteId;
     const { data: cliNew, error: cliInsErr } = await db.from('clientes')
-      .insert({ telefono, nombre }).select('id').single();
+      .insert({ telefono, nombre, negocio_id: NEGOCIO_ID }).select('id').single();
     if (cliInsErr) {
       if (cliInsErr.code === '23505') {
-        const { data: cliEx } = await db.from('clientes').select('id').eq('telefono', telefono).single();
+        const { data: cliEx } = await db.from('clientes').select('id').eq('telefono', telefono).eq('negocio_id', NEGOCIO_ID).single();
         if (cliEx) {
           clienteId = cliEx.id;
           // Actualizar nombre si cambió
-          await db.from('clientes').update({ nombre }).eq('id', clienteId);
+          await db.from('clientes').update({ nombre }).eq('id', clienteId).eq('negocio_id', NEGOCIO_ID);
         } else {
           errDiv.textContent = 'Error buscando cliente.';
           btn.disabled = false; btn.textContent = 'Guardar'; return;
@@ -1596,14 +1603,15 @@
       const { error } = await db.from('reservas').update({
         cliente_id: clienteId, servicio_id: servicioId,
         fecha, hora: hora + ':00', estado, notas: notas || null
-      }).eq('id', editandoId);
+      }).eq('id', editandoId).eq('negocio_id', NEGOCIO_ID);
       if (error) { errDiv.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Guardar'; return; }
       mostrarToast('✓ Reserva actualizada');
     } else {
       // CREAR
       const { error } = await db.from('reservas').insert({
         cliente_id: clienteId, servicio_id: servicioId,
-        fecha, hora: hora + ':00', estado, notas: notas || null
+        fecha, hora: hora + ':00', estado, notas: notas || null,
+        negocio_id: NEGOCIO_ID
       });
       if (error) { errDiv.textContent = 'Error: ' + error.message; btn.disabled = false; btn.textContent = 'Guardar'; return; }
       mostrarToast('✓ Reserva creada');
@@ -1726,7 +1734,7 @@
   async function cargarBloqueos() {
     const cont = document.getElementById('bloqueosList');
     cont.innerHTML = '<div style="color:var(--gris);font-family:Space Mono,monospace;font-size:0.7rem;">Cargando...</div>';
-    const { data } = await db.from('dias_bloqueados').select('*').order('fecha');
+    const { data } = await db.from('dias_bloqueados').select('*').eq('negocio_id', NEGOCIO_ID).order('fecha');
 
     bloqYaBloqueados = new Map();
     (data || []).forEach(b => {
@@ -1774,6 +1782,7 @@
       fecha, motivo,
       hora_inicio: horaInicio ? horaInicio + ':00' : null,
       hora_fin: horaFin ? horaFin + ':00' : null,
+      negocio_id: NEGOCIO_ID,
     }));
 
     const btn = document.getElementById('bBtnGuardar');
@@ -1788,7 +1797,7 @@
   };
 
   window.eliminarBloqueo = async function(id) {
-    const { error } = await db.from('dias_bloqueados').delete().eq('id', id);
+    const { error } = await db.from('dias_bloqueados').delete().eq('id', id).eq('negocio_id', NEGOCIO_ID);
     if (error) { mostrarToast('Error: ' + error.message); return; }
     mostrarToast('✓ Desbloqueado');
     cargarBloqueos();
@@ -1855,6 +1864,7 @@
     // Fetch all reservas for the week (including cancelled so admin sees full picture)
     const { data: reservas } = await db.from('reservas')
       .select('id,fecha,hora,estado,clientes(nombre,telefono),servicios(nombre)')
+      .eq('negocio_id', NEGOCIO_ID)
       .gte('fecha', desde).lte('fecha', hasta)
       .order('hora');
 

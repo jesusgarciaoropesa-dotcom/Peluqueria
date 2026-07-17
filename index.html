@@ -2609,6 +2609,7 @@
     const SUPA_URL = 'https://gimoqpusrdltlkrwsykr.supabase.co';
     const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpbW9xcHVzcmRsdGxrcndzeWtyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MDA0NDIsImV4cCI6MjA5Nzk3NjQ0Mn0.xmxP3TGAkXNPsrIKSYj1A-NXrIN1JIyzl9Fv6_FP8Dw';
     const db = supabase.createClient(SUPA_URL, SUPA_KEY);
+    const NEGOCIO_ID = '29a07dff-f7c7-4dc8-9e22-d1193debbb86'; // WTJ Barber Shop
 
     let est = { paso: 1, servicio: null, fecha: null, hora: null, nombre: '', telefono: '' };
     let calFecha = new Date();
@@ -2682,7 +2683,7 @@
 
     // ── Cargar servicios ──
     async function cargarServicios() {
-      const { data, error } = await db.from('servicios').select('*').order('precio_desde');
+      const { data, error } = await db.from('servicios').select('*').eq('negocio_id', NEGOCIO_ID).order('precio_desde');
       const grid = document.getElementById('serviciosGrid');
       if (error || !data) {
         grid.innerHTML = '<div class="r-error">Error cargando servicios. Recarga la página.</div>';
@@ -2708,7 +2709,7 @@
 
     // ── Días bloqueados (día completo o solo un rango de horas) ──
     async function cargarDiasBloqueados() {
-      const { data } = await db.from('dias_bloqueados').select('fecha,hora_inicio,hora_fin');
+      const { data } = await db.from('dias_bloqueados').select('fecha,hora_inicio,hora_fin').eq('negocio_id', NEGOCIO_ID);
       diasBloqueados = new Map();
       (data || []).forEach(r => {
         if (!diasBloqueados.has(r.fecha)) diasBloqueados.set(r.fecha, { completo: false, rangos: [] });
@@ -2746,6 +2747,7 @@
       const ultimoStr = `${anio}-${String(mes+1).padStart(2,'0')}-${String(new Date(anio, mes+1, 0).getDate()).padStart(2,'0')}`;
       const { data: ocupMes } = await db.from('reservas')
         .select('fecha')
+        .eq('negocio_id', NEGOCIO_ID)
         .gte('fecha', primerStr)
         .lte('fecha', ultimoStr)
         .neq('estado', 'cancelada');
@@ -2820,6 +2822,7 @@
       // Fetch ocupadas
       const { data: ocupadas } = await db.from('reservas')
         .select('hora')
+        .eq('negocio_id', NEGOCIO_ID)
         .eq('fecha', est.fecha)
         .neq('estado', 'cancelada');
       const ocupadasSet = new Set((ocupadas || []).map(r => r.hora.slice(0,5)));
